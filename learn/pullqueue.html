@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Learn: The Lease Queue</title>
+<link rel="stylesheet" href="../style.css?v=green3">
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="brand" href="../index.html"><svg class="brandmark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect class="eq eq1" x="2.5" y="11" width="3.6" height="8" rx="1.8"/><rect class="eq eq2" x="9.2" y="5" width="3.6" height="14" rx="1.8"/><rect class="eq eq3" x="15.9" y="8" width="3.6" height="11" rx="1.8"/></svg><span>Hector Jacquez</span></a>
+    <span class="spacer"></span>
+    <a class="item" href="../index.html#featured">Projects</a>
+    <a class="item" href="../essay.html">The Story</a>
+    <a class="item" href="../stats.html">Listening</a>
+    <a class="item" href="pullqueue.html">Learn</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="learn-head">
+    <div class="kicker">Learn With Me · 01</div>
+    <h2>The Lease Queue: surviving a dying worker</h2>
+    <p class="sub">How a job gets done <i>exactly once</i> when the worker doing it can
+    vanish at any moment. Step through the diagram, then test yourself — the quiz
+    questions live in a JSON block at the bottom of this file, so adding one is a
+    ten-second edit.</p>
+  </div>
+
+  <div class="stage">
+    <svg viewBox="0 0 900 310" aria-label="lease queue diagram">
+      <!-- queue -->
+      <rect x="30" y="100" width="190" height="120" rx="12" fill="none" stroke="var(--accent-2)" stroke-width="2"/>
+      <text x="125" y="88" text-anchor="middle" fill="var(--ink-dim)" font-size="14" font-family="monospace">QUEUE (server)</text>
+      <g id="job" >
+        <rect x="55" y="135" width="140" height="50" rx="9" fill="var(--accent-2)" opacity="0.25" stroke="var(--accent-2)"/>
+        <text id="job-label" x="125" y="158" text-anchor="middle" fill="var(--ink)" font-size="13" font-family="monospace">job-7: queued</text>
+        <text id="job-lease" x="125" y="176" text-anchor="middle" fill="var(--ink-dim)" font-size="11" font-family="monospace"></text>
+      </g>
+
+      <!-- workers -->
+      <g id="workerA">
+        <rect x="620" y="40" width="230" height="78" rx="12" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="735" y="70" text-anchor="middle" fill="var(--ink)" font-size="14" font-family="monospace">worker-A</text>
+        <text id="wa-status" x="735" y="94" text-anchor="middle" fill="var(--ink-dim)" font-size="12" font-family="monospace">polling…</text>
+      </g>
+      <g id="workerB">
+        <rect x="620" y="190" width="230" height="78" rx="12" fill="none" stroke="var(--accent-3)" stroke-width="2"/>
+        <text x="735" y="220" text-anchor="middle" fill="var(--ink)" font-size="14" font-family="monospace">worker-B</text>
+        <text id="wb-status" x="735" y="244" text-anchor="middle" fill="var(--ink-dim)" font-size="12" font-family="monospace">polling…</text>
+      </g>
+
+      <!-- arrows -->
+      <path id="arrowA" d="M 225 140 C 400 90, 480 85, 612 80" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 5" opacity="0"/>
+      <path id="arrowB" d="M 225 185 C 400 230, 480 232, 612 228" fill="none" stroke="var(--accent-3)" stroke-width="2" stroke-dasharray="6 5" opacity="0"/>
+      <!-- skull -->
+      <text id="skull" x="735" y="82" text-anchor="middle" font-size="34" opacity="0">💀</text>
+    </svg>
+
+    <div class="controls">
+      <button class="btn" id="prev">← Back</button>
+      <button class="btn primary" id="next">Step →</button>
+      <span id="stepno" style="font-family:var(--mono);color:var(--ink-faint);font-size:0.85rem"></span>
+    </div>
+    <div class="narr" id="narr"></div>
+  </div>
+
+  <div class="quiz" id="quiz">
+    <div class="kicker">Quiz yourself</div>
+    <h2>Five questions, interview-grade</h2>
+    <div id="qbox"></div>
+    <div class="score" id="score"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><span>© 2026 Hector Jacquez</span><a href="../index.html">Home</a></div>
+</footer>
+
+<script>
+/* ---------- step-through diagram ---------- */
+const steps = [
+  { narr: "<b>Start.</b> job-7 sits in the queue with status <code>queued</code>. Two workers poll the server — the server never reaches out to them. Polling IS the claim mechanism.",
+    s: { job: "job-7: queued", lease: "", wa: "polling…", wb: "polling…", arrowA: 0, arrowB: 0, skull: 0 } },
+  { narr: "<b>Claim.</b> worker-A's poll wins. The queue doesn't delete the job — it stamps a <b>lease</b>: ownership with an expiry. If nothing else ever happens, that stamp decides the job's fate.",
+    s: { job: "job-7: leased → A", lease: "lease expires in 30s", wa: "working on job-7", wb: "polling…", arrowA: 1, arrowB: 0, skull: 0 } },
+  { narr: "<b>Death.</b> worker-A is SIGKILLed mid-job. Nothing runs to clean up — no handler, no goodbye. The queue has no idea. And it doesn't need one: <b>the absence of a heartbeat is the detection.</b>",
+    s: { job: "job-7: leased → A", lease: "lease expires in 30s", wa: "", wb: "polling…", arrowA: 0, arrowB: 0, skull: 1 } },
+  { narr: "<b>Expiry.</b> The lease clock runs out. job-7 becomes eligible again, exactly as if it were new — the dead worker's claim simply stops mattering.",
+    s: { job: "job-7: queued (re-eligible)", lease: "lease expired", wa: "", wb: "polling…", arrowA: 0, arrowB: 0, skull: 1 } },
+  { narr: "<b>Re-serve.</b> worker-B's next poll claims job-7 with a fresh lease. Zero coordination code ran. Nobody detected the death; the system just stopped believing in it.",
+    s: { job: "job-7: leased → B", lease: "fresh lease: 30s", wa: "", wb: "working on job-7", arrowA: 0, arrowB: 1, skull: 1 } },
+  { narr: "<b>Exactly once.</b> worker-B completes job-7 (a terminal status write). If zombie-A somehow finished late and reported in, the completion write is arbitrated — in the Postgres version by a <b>UNIQUE constraint</b>: one completion wins, the loser's write bounces off.",
+    s: { job: "job-7: done ✓ (by B)", lease: "", wa: "", wb: "done — polling…", arrowA: 0, arrowB: 0, skull: 1 } },
+];
+let step = 0;
+const $ = id => document.getElementById(id);
+function render() {
+  const st = steps[step].s;
+  $("job-label").textContent = st.job;
+  $("job-lease").textContent = st.lease;
+  $("wa-status").textContent = st.wa;
+  $("wb-status").textContent = st.wb;
+  $("arrowA").style.opacity = st.arrowA;
+  $("arrowB").style.opacity = st.arrowB;
+  $("skull").style.opacity = st.skull;
+  $("narr").innerHTML = steps[step].narr;
+  $("stepno").textContent = `step ${step + 1} / ${steps.length}`;
+  $("prev").disabled = step === 0;
+  $("next").disabled = step === steps.length - 1;
+}
+$("next").onclick = () => { if (step < steps.length - 1) step++; render(); };
+$("prev").onclick = () => { if (step > 0) step--; render(); };
+render();
+
+/* ---------- quiz: edit this JSON to add/update questions ---------- */
+const QUESTIONS = [
+  {
+    q: "A worker claims a job, then its process is SIGKILLed. How does the job eventually get done?",
+    opts: [
+      "A monitor service notices the dead worker and reassigns its jobs",
+      "The job's lease expires, so the next polling worker is served it again",
+      "The worker's shutdown handler returns the job to the queue",
+      "The job is lost and must be re-submitted"
+    ],
+    a: 1,
+    why: "There is no monitor and SIGKILL runs no handlers. The lease has an expiry; when it passes, the job is simply eligible again. Absence of renewal IS the failure detection."
+  },
+  {
+    q: "What stops a job from being completed twice if the 'dead' worker was actually alive and finishes late?",
+    opts: [
+      "The server pings workers before accepting results",
+      "Late results are rejected by timestamp comparison",
+      "Completion is an arbitrated write — a UNIQUE constraint (or terminal-status check) lets exactly one completion win",
+      "Workers check with each other before submitting"
+    ],
+    a: 2,
+    why: "Both workers may legitimately believe they own the job. The tie is broken at the data layer: the completion write is unique, so the second one bounces off."
+  },
+  {
+    q: "Why did the queues move from JSON files to an event-sourced Postgres log?",
+    opts: [
+      "JSON files were too slow",
+      "Postgres is more modern",
+      "State overwrites destroyed history — the append-only log gives an audit trail plus latency analytics (p50/p95/p99) the JSON stores never could",
+      "To support more workers"
+    ],
+    a: 2,
+    why: "The core motive was what overwriting state destroys: 'why did this fail last Tuesday' was unanswerable, and claim-to-done percentiles were impossible. Deriving state from an append-only log fixes both — speed wasn't the complaint."
+  },
+  {
+    q: "Concurrent claims in the Postgres queue are resolved by optimistic INSERT + UNIQUE constraint rather than SELECT … FOR UPDATE SKIP LOCKED. What's the gist of the trade?",
+    opts: [
+      "SKIP LOCKED is deprecated",
+      "Optimistic appends keep claims as plain inserts into the same event log — losers just retry — instead of holding row locks on a status table the design doesn't have",
+      "UNIQUE constraints are faster in all databases",
+      "SKIP LOCKED can't work with multiple lanes"
+    ],
+    a: 1,
+    why: "Event sourcing means there IS no status row to lock — state is derived. A claim is an append; the unique guard arbitrates the race; the rare loser retries its poll. Locking would reintroduce the mutable table the design removed."
+  },
+  {
+    q: "When Postgres is down, the hub…",
+    opts: [
+      "crashes and restarts until the DB returns",
+      "silently drops new jobs",
+      "degrades soft — the queue layer reports unavailability and the rest of the hub keeps serving",
+      "switches to an in-memory queue and loses nothing"
+    ],
+    a: 2,
+    why: "Soft degradation was a design requirement: a music server whose lyrics page dies because the job queue's database is down has its priorities backwards."
+  }
+];
+
+const qbox = $("qbox");
+let answered = 0, correct = 0;
+QUESTIONS.forEach((item, qi) => {
+  const d = document.createElement("div");
+  d.className = "q";
+  d.innerHTML = `<h4>${qi + 1}. ${item.q}</h4>`;
+  item.opts.forEach((opt, oi) => {
+    const b = document.createElement("button");
+    b.className = "opt"; b.textContent = opt;
+    b.onclick = () => {
+      if (d.classList.contains("answered")) return;
+      d.classList.add("answered");
+      answered++;
+      if (oi === item.a) { b.classList.add("right"); correct++; }
+      else {
+        b.classList.add("wrong");
+        d.querySelectorAll(".opt")[item.a].classList.add("right");
+      }
+      $("score").textContent = `score: ${correct}/${answered}` + (answered === QUESTIONS.length ? " — done!" : "");
+    };
+    d.appendChild(b);
+  });
+  const why = document.createElement("div");
+  why.className = "why"; why.textContent = item.why;
+  d.appendChild(why);
+  qbox.appendChild(d);
+});
+</script>
+
+</body>
+</html>

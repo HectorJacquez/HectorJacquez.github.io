@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a Playlist Cover Generator Became a Distributed System</title>
+<link rel="stylesheet" href="style.css?v=green3">
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html"><svg class="brandmark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect class="eq eq1" x="2.5" y="11" width="3.6" height="8" rx="1.8"/><rect class="eq eq2" x="9.2" y="5" width="3.6" height="14" rx="1.8"/><rect class="eq eq3" x="15.9" y="8" width="3.6" height="11" rx="1.8"/></svg><span>Hector Jacquez</span></a>
+    <span class="spacer"></span>
+    <a class="item" href="index.html#featured">Projects</a>
+    <a class="item" href="essay.html" aria-current="page">The Story</a>
+    <a class="item" href="stats.html">Listening</a>
+    <a class="item external" href="https://hedge-at-hog.neocities.org/">The Fun Site</a>
+  </div>
+</nav>
+
+<article class="essay">
+  <div class="kicker">The Story · ~6 min</div>
+  <h1>How a Playlist Cover Generator Became a Distributed System</h1>
+  <p class="dek">One home server, a music collection that kept asking for more,
+  and the textbook monolith-to-distributed-to-consolidation arc — except it
+  happened in my living room.</p>
+
+  <h2>It started with wanting my own Spotify</h2>
+  <p>I left Spotify and set up Navidrome on a home server to stream my own
+  library. Ownership felt great for about a week, and then I started missing
+  two things: the playlists and the lyrics. Chasing those two itches built
+  everything else on this site.</p>
+
+  <p>Lyrics came first. A cron script fetched synced lyrics from LRCLIB and
+  wrote <code>.lrc</code> sidecars into the library so players would scroll
+  them. Polite rate limiting, a cache for misses, a nightly timer. For the
+  tracks nobody had ever transcribed, I eventually pointed stem separation and
+  Whisper at my own files, and added romaji and translation for the Japanese
+  half of my collection. The playlists itch became mood analysis: a Navidrome
+  plugin with an audio-ML sidecar scoring every track, feeding 48 generated
+  mood playlists — and later a chat harness that builds a playlist for whatever
+  mood I ask for, and answers music trivia from real sources instead of a
+  model's imagination.</p>
+
+  <p>And the mood playlists led to the pictures: I wanted AI-painted covers for
+  them, and the image models lived on a different machine's GPU. That forced the first real architecture
+  decision, and everything since has inherited it: <b>the GPU machine pulls jobs,
+  and the server never reaches into it.</b> The image backend only listens on
+  loopback and has no auth, on purpose, so the worker polls a queue, renders, and
+  streams results back. Results come back per model, because SD-Turbo finishes in
+  20 seconds and FLUX takes eleven minutes, and nobody wants to wait on the slow
+  painter to see the fast one.</p>
+
+  <blockquote>The day a second machine started polling the first, the hobby
+  became a distributed system, whether I'd admitted it yet or not.</blockquote>
+
+  <h2>The pattern gets copied — a lot</h2>
+  <p>Once a pull-queue existed, every new want became a lane on it. Voice cloning
+  for a daily listening brief. Stem separation, which promptly fed back into the
+  origin lane by transcribing lyrics LRCLIB didn't have. One commit from that week
+  I still like: <i>"don't pay demucs to prove a track has no vocals."</i> Looping
+  canvas videos for album art, after probing the official source, hitting a wall,
+  and committing the dead end as documentation so nobody retries it. Image-to-3D
+  meshes. And a local coding agent — because after building my chat assistants
+  on a small local model, I'd learned that models optimized for a consumer
+  graphics card can carry real jobs, and I didn't want every task leaning on
+  paid frontier tokens. Each lane copied the same queue-and-lease
+  mechanics. Workers advertise what they can do through a capability heartbeat
+  that probes everything live at beat time, a rule written after a stale venv
+  spent four days advertising a capability it didn't have.</p>
+
+  <p>At the busiest stretch it was two machines and multiple AI coding agents
+  coordinating through a shared board, with a knowledge-base wiki so that
+  anything learned twice only had to be learned once.</p>
+
+  <h2>One GPU, many hungry stacks</h2>
+  <p>A single 12&nbsp;GB consumer card serves image generation, stem separation,
+  several local LLMs, and a coding agent. They take turns through a file lock
+  rather than a daemon, because the kernel mediates a lock file and there is
+  nothing to deploy, restart, or crash. If a process dies holding the lock, the
+  next one checks the pid and breaks it. Admission is gated on memory pressure
+  instead of free-VRAM math, and the resident stack gets put away before the next
+  one loads. Hoping two models fit is not a memory strategy.</p>
+
+  <h2>Consolidation: five queues become one, then become a log</h2>
+  <p>By October the copies had drifted enough to hurt, so I collapsed them into a
+  single lease engine. The migration ran diff-first: tests green on the old
+  implementation, then green and unchanged on the new one. Two weeks later the
+  queues went event-sourced on Postgres. Instead of a status table that
+  overwrites itself, every state change is an append to an event log, and current
+  state is derived from the log. That one change answered two old complaints at
+  once: "why did this job fail last Tuesday" became answerable, and claim-to-done
+  latency percentiles per lane came basically for free. Claims are optimistic
+  appends arbitrated by a unique constraint, and when the database is down the
+  hub limps instead of dying. A load test found the first real inefficiency
+  within hours. The fix landed the next commit.</p>
+
+  <h2>What the system is now</h2>
+  <p>The "my own Spotify" goal eventually reached the players themselves: I
+  forked my desktop and Android music clients so the home-grown features show
+  up on every screen — my playlist folders, the looping video art the server
+  generates for albums (yes, inspired by Spotify's version), and on the phone,
+  the chat assistant built right into the player.</p>
+
+<figure class="diorama" aria-label="Animated diagram of the hedgy-hub pipeline: a song enters the hub, jobs travel out to lyrics, mood analysis, and GPU workers and return; one job's lease expires mid-flight and is re-served to the second worker; a finished cover lands on the playlist shelf.">
+<style>
+.diorama{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.diorama svg{display:block;width:100%;height:auto}
+.diorama figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.diorama text{font-family:var(--mono)}
+.diorama .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.diorama .title{fill:var(--ink);font-size:13.5px;font-weight:600;letter-spacing:.06em}
+.diorama .sub{fill:var(--ink-dim);font-size:11px}
+.diorama .micro{fill:var(--ink-faint);font-size:9.2px;letter-spacing:.14em}
+.diorama .hubname{fill:var(--accent);font-size:14.5px;font-weight:700;letter-spacing:.08em}
+.diorama .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.diorama .glyph{fill:none;stroke:var(--ink-dim);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.diorama .dot{fill:var(--accent);opacity:0;filter:drop-shadow(0 0 3px var(--accent))}
+.diorama .d-ret{fill:var(--accent-2);filter:drop-shadow(0 0 3px var(--accent-2))}
+.diorama .note-g{opacity:0;stroke:var(--accent);fill:var(--accent);filter:drop-shadow(0 0 3px var(--accent))}
+.diorama .cover{stroke:var(--line);stroke-width:1}
+.diorama .c1{fill:color-mix(in srgb,var(--accent) 32%,var(--bg-raise))}
+.diorama .c2{fill:color-mix(in srgb,var(--accent-2) 32%,var(--bg-raise))}
+.diorama .c3{fill:color-mix(in srgb,var(--accent-3) 36%,var(--bg-raise))}
+.diorama .xmark{opacity:0}
+.diorama .xmark line{stroke:var(--accent-3);stroke-width:2;stroke-linecap:round}
+.diorama .xmark text{fill:var(--accent-3)}
+.diorama .lease-dot{fill:var(--accent-3);opacity:.15}
+@supports (offset-path:path("M0 0h1")){
+  .diorama .note-g{offset-path:path("M12 185 C 40 185,60 185,82 185");animation:dio-note 16s linear infinite}
+  .diorama .d-lyr{offset-path:path("M204 168 C 300 168,340 63,440 63");animation:dio-pull 16s linear infinite}
+  .diorama .d-mood{offset-path:path("M204 185 C 300 185,340 157,440 157");animation:dio-pull 16s linear infinite;animation-delay:-15.04s}
+  .diorama .d-doom{offset-path:path("M204 202 C 300 202,340 251,440 251");animation:dio-doom 16s linear infinite}
+  .diorama .d-b{offset-path:path("M204 212 C 290 216,350 345,440 345");animation:dio-reserve 16s linear infinite}
+  .diorama .d-ret{offset-path:path("M204 212 C 290 216,350 345,440 345");animation:dio-return 16s linear infinite}
+  .diorama .d-drop{offset-path:path("M145 224 C 145 262,151 284,151 306");animation:dio-drop 16s linear infinite}
+  .diorama .hub-box{animation:dio-hub 16s linear infinite}
+  .diorama .n-lyr{animation:dio-flash 16s linear infinite}
+  .diorama .n-mood{animation:dio-flash 16s linear infinite;animation-delay:-15.04s}
+  .diorama .xmark{animation:dio-x 16s linear infinite}
+  .diorama .lease-a{animation:dio-afail 16s linear infinite}
+  .diorama .lease-b{animation:dio-lease 16s linear infinite}
+  .diorama .cover-new{transform-box:fill-box;transform-origin:center;opacity:0;animation:dio-pop 16s linear infinite}
+}
+@keyframes dio-note{0%,2%{offset-distance:0%;opacity:0}3.5%{opacity:1}9%{opacity:1}10%,100%{offset-distance:100%;opacity:0}}
+@keyframes dio-pull{0%,12%{offset-distance:0%;opacity:0}13%{opacity:1}20%{offset-distance:100%;opacity:1}21%,23%{offset-distance:100%;opacity:0}24%{offset-distance:100%;opacity:1}31%{offset-distance:0%;opacity:1}32%,100%{offset-distance:0%;opacity:0}}
+@keyframes dio-flash{0%,20%{stroke:var(--line)}21.5%,23.5%{stroke:var(--accent)}26%,100%{stroke:var(--line)}}
+@keyframes dio-doom{0%,42%{offset-distance:0%;opacity:0}43%{opacity:1}48%{offset-distance:72%;opacity:1}49.5%,100%{offset-distance:76%;opacity:0}}
+@keyframes dio-x{0%,48%{opacity:0}50%,57%{opacity:1}61%,100%{opacity:0}}
+@keyframes dio-afail{0%,47%{opacity:.15}50%,58%{opacity:1}63%,100%{opacity:.15}}
+@keyframes dio-reserve{0%,57%{offset-distance:0%;opacity:0}58%{opacity:1}66%{offset-distance:100%;opacity:1}67%,100%{offset-distance:100%;opacity:0}}
+@keyframes dio-lease{0%,66%{opacity:.15}68%,69%{opacity:1}71%{opacity:.25}73%,74%{opacity:1}76%{opacity:.25}78%,79%{opacity:1}81%,100%{opacity:.15}}
+@keyframes dio-return{0%,80%{offset-distance:100%;opacity:0}81%{opacity:1}88%{offset-distance:0%;opacity:1}89%,100%{offset-distance:0%;opacity:0}}
+@keyframes dio-drop{0%,89%{offset-distance:0%;opacity:0}90%{opacity:1}93%{offset-distance:100%;opacity:1}94%,100%{offset-distance:100%;opacity:0}}
+@keyframes dio-pop{0%,93%{opacity:0;transform:scale(.2)}96%{opacity:1;transform:scale(1.15)}98%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+@keyframes dio-hub{0%,8%{stroke:var(--line)}10.5%,13%{stroke:var(--accent)}16%,93%{stroke:var(--line)}95.5%,98%{stroke:var(--accent)}100%{stroke:var(--line)}}
+@media (max-width:480px){.diorama{padding:.55rem .45rem 0}.diorama figcaption{font-size:.68rem}}
+@media (prefers-reduced-motion:reduce){
+  .diorama *{animation:none!important}
+  .diorama .note-g{opacity:1}
+  .diorama .cover-new{opacity:1;transform:none}
+}
+</style>
+<svg viewBox="0 0 640 400" aria-hidden="true">
+  <path class="wire" d="M12 185 C 40 185,60 185,82 185"/>
+  <path class="wire" d="M204 168 C 300 168,340 63,440 63"/>
+  <path class="wire" d="M204 185 C 300 185,340 157,440 157"/>
+  <path class="wire" d="M204 202 C 300 202,340 251,440 251"/>
+  <path class="wire" d="M204 212 C 290 216,350 345,440 345"/>
+  <path class="wire" d="M145 224 C 145 262,151 284,151 306"/>
+  <text class="micro" x="12" y="170">SONG IN</text>
+  <rect class="box hub-box" x="86" y="150" width="118" height="70" rx="10"/>
+  <text class="hubname" x="145" y="181" text-anchor="middle">hedgy-hub</text>
+  <text class="sub" x="145" y="199" text-anchor="middle">queue · leases</text>
+  <rect class="box n-lyr" x="444" y="34" width="184" height="58" rx="10"/>
+  <path class="glyph" d="M456 46h11l6 6v18h-17z M467 46v6h6 M461 60h7 M461 65h7"/>
+  <text class="title" x="484" y="58">LYRICS</text>
+  <text class="sub" x="484" y="74">LRCLIB → Whisper</text>
+  <rect class="box n-mood" x="444" y="128" width="184" height="58" rx="10"/>
+  <path class="glyph" d="M456 166a11 11 0 0 1 22 0 M467 166l6-9"/>
+  <text class="title" x="484" y="152">MOOD</text>
+  <text class="sub" x="484" y="168">48 playlists</text>
+  <rect class="box" x="444" y="222" width="184" height="58" rx="10"/>
+  <rect class="box" x="558" y="215" width="46" height="14" rx="4"/>
+  <circle class="lease-dot lease-a" cx="567" cy="222" r="3"/>
+  <text class="micro" x="574" y="225">LEASE</text>
+  <text class="title" x="458" y="247">GPU WORKER · A</text>
+  <text class="sub" x="458" y="264" style="font-size:10px">covers · voices · video · 3D</text>
+  <rect class="box" x="444" y="316" width="184" height="58" rx="10"/>
+  <rect class="box" x="558" y="309" width="46" height="14" rx="4"/>
+  <circle class="lease-dot lease-b" cx="567" cy="316" r="3"/>
+  <text class="micro" x="574" y="319">LEASE</text>
+  <text class="title" x="458" y="341">GPU WORKER · B</text>
+  <text class="sub" x="458" y="358" style="font-size:10px">picks up the expired lease</text>
+  <line x1="58" y1="342" x2="250" y2="342" stroke="var(--line)" stroke-width="1.5"/>
+  <text class="micro" x="58" y="357">PLAYLISTS</text>
+  <rect class="cover c1" x="70" y="314" width="26" height="26" rx="4"/>
+  <rect class="cover c2" x="104" y="314" width="26" height="26" rx="4"/>
+  <rect class="cover c3 cover-new" x="138" y="314" width="26" height="26" rx="4"/>
+  <g class="xmark">
+    <line x1="372" y1="237" x2="384" y2="249"/>
+    <line x1="384" y1="237" x2="372" y2="249"/>
+    <text class="micro" x="378" y="264" text-anchor="middle">LEASE EXPIRED</text>
+  </g>
+  <g class="note-g">
+    <ellipse cx="-2.5" cy="4.5" rx="3.4" ry="2.5"/>
+    <path d="M0.8 4.5V-6.5 C 2.8 -5.5,4.8 -4.5,5.2 -1.8" fill="none" stroke-width="1.6"/>
+  </g>
+  <circle class="dot d-lyr" r="4.5"/>
+  <circle class="dot d-mood" r="4.5"/>
+  <circle class="dot d-doom" r="4.5"/>
+  <circle class="dot d-b" r="4.5"/>
+  <circle class="dot d-ret" r="4.5"/>
+  <circle class="dot d-drop" r="4.5"/>
+</svg>
+<figcaption>The shape of it: jobs pull, leases expire, nothing pushes.</figcaption>
+</figure>
+
+  <p>The same machinery that started with lyrics now hosts music-ML research
+  lanes, a karaoke engine, 3D asset pipelines, and agent-driven porting
+  campaigns. The timeline below is reconstructed from the git history —
+  including the honest caveat that the earliest era predates version control and
+  survives only in battle-scar comments like <code>CONFIRMED LIVE (Aug 25
+  2026)</code>.</p>
+
+  <ul class="timeline">
+    <li><span class="when">the beginning</span>Navidrome goes up: my own Spotify. The missing playlists and lyrics become the roadmap.</li>
+    <li><span class="when">then</span>The lyrics fetcher: a cron script writing .lrc sidecars. Mood analysis starts scoring the library.</li>
+    <li><span class="when">then</span>Playlist covers need a remote GPU → the first pull-worker queue. TTS, voice extraction, DJ sets follow the pattern.</li>
+    <li><span class="when">then</span>Everything enters version control. Capability heartbeats: workers advertise what they can do, probed live.</li>
+    <li><span class="when">then</span>The lane explosion: stems (feeding lyric transcription), image→3D meshes, a local coding agent, a knowledge-base wiki, a multi-agent board.</li>
+    <li><span class="when">then</span>The rename — the "lyrics fetcher" finally admits it's a hub. The GPU fleet migrates from Windows to Linux, lane by lane.</li>
+    <li><span class="when">then</span>Visualizer preset lab, karaoke with YIN pitch scoring, the Kiln image→3D object lane.</li>
+    <li><span class="when">consolidation</span>Five copied queues collapse into one lease engine, migrated diff-first. Then Postgres: event-sourced queues with latency percentiles, and a CI gate over 24 suites.</li>
+    <li><span class="when">now</span>The platform outgrows music: decomp research lanes, charting ML, and this portfolio.</li>
+  </ul>
+
+  <h2>What I took away from all this</h2>
+  <p>Constraints are where the architecture comes from. The 30-second WASM budget
+  designed the mood-playlist plugin, and the locked-down GPU backend designed the
+  pull pattern. I also learned to trust my ears over my metrics: the numbers
+  guided the charting models, but playing the charts myself caught what the
+  numbers missed. And after months of working with AI coding agents, the rule
+  that saved me the most money: when an agent fails, check the harness before
+  blaming the model. Most of what looks like model weakness is environment
+  weakness.</p>
+
+  <p><a href="index.html#featured">← Back to the projects</a></p>
+</article>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Hector Jacquez</span>
+    <a href="index.html">Home</a>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+# The Godot web export is generated, 63 MB, and fully reproducible:
+#   ~/publish/webplay/export-cat-rpg.sh
+# Keeping it out of history until deploy time; see play/cat-rpg.html for the
+# wrapper page, which IS tracked.
+play/cat-rpg/
+
+# scratch
+*.log
+.DS_Store

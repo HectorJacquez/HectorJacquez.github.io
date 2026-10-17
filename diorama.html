@@ -1,0 +1,113 @@
+<figure class="diorama" aria-label="Animated diagram of the hedgy-hub pipeline: a song enters the hub, jobs travel out to lyrics, mood analysis, and GPU workers and return; one job's lease expires mid-flight and is re-served to the second worker; a finished cover lands on the playlist shelf.">
+<style>
+.diorama{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.diorama svg{display:block;width:100%;height:auto}
+.diorama figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.diorama text{font-family:var(--mono)}
+.diorama .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.diorama .title{fill:var(--ink);font-size:13.5px;font-weight:600;letter-spacing:.06em}
+.diorama .sub{fill:var(--ink-dim);font-size:11px}
+.diorama .micro{fill:var(--ink-faint);font-size:9.2px;letter-spacing:.14em}
+.diorama .hubname{fill:var(--accent);font-size:14.5px;font-weight:700;letter-spacing:.08em}
+.diorama .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.diorama .glyph{fill:none;stroke:var(--ink-dim);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.diorama .dot{fill:var(--accent);opacity:0;filter:drop-shadow(0 0 3px var(--accent))}
+.diorama .d-ret{fill:var(--accent-2);filter:drop-shadow(0 0 3px var(--accent-2))}
+.diorama .note-g{opacity:0;stroke:var(--accent);fill:var(--accent);filter:drop-shadow(0 0 3px var(--accent))}
+.diorama .cover{stroke:var(--line);stroke-width:1}
+.diorama .c1{fill:color-mix(in srgb,var(--accent) 32%,var(--bg-raise))}
+.diorama .c2{fill:color-mix(in srgb,var(--accent-2) 32%,var(--bg-raise))}
+.diorama .c3{fill:color-mix(in srgb,var(--accent-3) 36%,var(--bg-raise))}
+.diorama .xmark{opacity:0}
+.diorama .xmark line{stroke:var(--accent-3);stroke-width:2;stroke-linecap:round}
+.diorama .xmark text{fill:var(--accent-3)}
+.diorama .lease-dot{fill:var(--accent-3);opacity:.15}
+@supports (offset-path:path("M0 0h1")){
+  .diorama .note-g{offset-path:path("M12 185 C 40 185,60 185,82 185");animation:dio-note 16s linear infinite}
+  .diorama .d-lyr{offset-path:path("M204 168 C 300 168,340 63,440 63");animation:dio-pull 16s linear infinite}
+  .diorama .d-mood{offset-path:path("M204 185 C 300 185,340 157,440 157");animation:dio-pull 16s linear infinite;animation-delay:-15.04s}
+  .diorama .d-doom{offset-path:path("M204 202 C 300 202,340 251,440 251");animation:dio-doom 16s linear infinite}
+  .diorama .d-b{offset-path:path("M204 212 C 290 216,350 345,440 345");animation:dio-reserve 16s linear infinite}
+  .diorama .d-ret{offset-path:path("M204 212 C 290 216,350 345,440 345");animation:dio-return 16s linear infinite}
+  .diorama .d-drop{offset-path:path("M145 224 C 145 262,151 284,151 306");animation:dio-drop 16s linear infinite}
+  .diorama .hub-box{animation:dio-hub 16s linear infinite}
+  .diorama .n-lyr{animation:dio-flash 16s linear infinite}
+  .diorama .n-mood{animation:dio-flash 16s linear infinite;animation-delay:-15.04s}
+  .diorama .xmark{animation:dio-x 16s linear infinite}
+  .diorama .lease-a{animation:dio-afail 16s linear infinite}
+  .diorama .lease-b{animation:dio-lease 16s linear infinite}
+  .diorama .cover-new{transform-box:fill-box;transform-origin:center;opacity:0;animation:dio-pop 16s linear infinite}
+}
+@keyframes dio-note{0%,2%{offset-distance:0%;opacity:0}3.5%{opacity:1}9%{opacity:1}10%,100%{offset-distance:100%;opacity:0}}
+@keyframes dio-pull{0%,12%{offset-distance:0%;opacity:0}13%{opacity:1}20%{offset-distance:100%;opacity:1}21%,23%{offset-distance:100%;opacity:0}24%{offset-distance:100%;opacity:1}31%{offset-distance:0%;opacity:1}32%,100%{offset-distance:0%;opacity:0}}
+@keyframes dio-flash{0%,20%{stroke:var(--line)}21.5%,23.5%{stroke:var(--accent)}26%,100%{stroke:var(--line)}}
+@keyframes dio-doom{0%,42%{offset-distance:0%;opacity:0}43%{opacity:1}48%{offset-distance:72%;opacity:1}49.5%,100%{offset-distance:76%;opacity:0}}
+@keyframes dio-x{0%,48%{opacity:0}50%,57%{opacity:1}61%,100%{opacity:0}}
+@keyframes dio-afail{0%,47%{opacity:.15}50%,58%{opacity:1}63%,100%{opacity:.15}}
+@keyframes dio-reserve{0%,57%{offset-distance:0%;opacity:0}58%{opacity:1}66%{offset-distance:100%;opacity:1}67%,100%{offset-distance:100%;opacity:0}}
+@keyframes dio-lease{0%,66%{opacity:.15}68%,69%{opacity:1}71%{opacity:.25}73%,74%{opacity:1}76%{opacity:.25}78%,79%{opacity:1}81%,100%{opacity:.15}}
+@keyframes dio-return{0%,80%{offset-distance:100%;opacity:0}81%{opacity:1}88%{offset-distance:0%;opacity:1}89%,100%{offset-distance:0%;opacity:0}}
+@keyframes dio-drop{0%,89%{offset-distance:0%;opacity:0}90%{opacity:1}93%{offset-distance:100%;opacity:1}94%,100%{offset-distance:100%;opacity:0}}
+@keyframes dio-pop{0%,93%{opacity:0;transform:scale(.2)}96%{opacity:1;transform:scale(1.15)}98%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+@keyframes dio-hub{0%,8%{stroke:var(--line)}10.5%,13%{stroke:var(--accent)}16%,93%{stroke:var(--line)}95.5%,98%{stroke:var(--accent)}100%{stroke:var(--line)}}
+@media (max-width:480px){.diorama{padding:.55rem .45rem 0}.diorama figcaption{font-size:.68rem}}
+@media (prefers-reduced-motion:reduce){
+  .diorama *{animation:none!important}
+  .diorama .note-g{opacity:1}
+  .diorama .cover-new{opacity:1;transform:none}
+}
+</style>
+<svg viewBox="0 0 640 400" aria-hidden="true">
+  <path class="wire" d="M12 185 C 40 185,60 185,82 185"/>
+  <path class="wire" d="M204 168 C 300 168,340 63,440 63"/>
+  <path class="wire" d="M204 185 C 300 185,340 157,440 157"/>
+  <path class="wire" d="M204 202 C 300 202,340 251,440 251"/>
+  <path class="wire" d="M204 212 C 290 216,350 345,440 345"/>
+  <path class="wire" d="M145 224 C 145 262,151 284,151 306"/>
+  <text class="micro" x="12" y="170">SONG IN</text>
+  <rect class="box hub-box" x="86" y="150" width="118" height="70" rx="10"/>
+  <text class="hubname" x="145" y="181" text-anchor="middle">hedgy-hub</text>
+  <text class="sub" x="145" y="199" text-anchor="middle">queue · leases</text>
+  <rect class="box n-lyr" x="444" y="34" width="184" height="58" rx="10"/>
+  <path class="glyph" d="M456 46h11l6 6v18h-17z M467 46v6h6 M461 60h7 M461 65h7"/>
+  <text class="title" x="484" y="58">LYRICS</text>
+  <text class="sub" x="484" y="74">LRCLIB → Whisper</text>
+  <rect class="box n-mood" x="444" y="128" width="184" height="58" rx="10"/>
+  <path class="glyph" d="M456 166a11 11 0 0 1 22 0 M467 166l6-9"/>
+  <text class="title" x="484" y="152">MOOD</text>
+  <text class="sub" x="484" y="168">48 playlists</text>
+  <rect class="box" x="444" y="222" width="184" height="58" rx="10"/>
+  <rect class="box" x="558" y="215" width="46" height="14" rx="4"/>
+  <circle class="lease-dot lease-a" cx="567" cy="222" r="3"/>
+  <text class="micro" x="574" y="225">LEASE</text>
+  <text class="title" x="458" y="247">GPU WORKER · A</text>
+  <text class="sub" x="458" y="264" style="font-size:10px">covers · voices · video · 3D</text>
+  <rect class="box" x="444" y="316" width="184" height="58" rx="10"/>
+  <rect class="box" x="558" y="309" width="46" height="14" rx="4"/>
+  <circle class="lease-dot lease-b" cx="567" cy="316" r="3"/>
+  <text class="micro" x="574" y="319">LEASE</text>
+  <text class="title" x="458" y="341">GPU WORKER · B</text>
+  <text class="sub" x="458" y="358" style="font-size:10px">picks up the expired lease</text>
+  <line x1="58" y1="342" x2="250" y2="342" stroke="var(--line)" stroke-width="1.5"/>
+  <text class="micro" x="58" y="357">PLAYLISTS</text>
+  <rect class="cover c1" x="70" y="314" width="26" height="26" rx="4"/>
+  <rect class="cover c2" x="104" y="314" width="26" height="26" rx="4"/>
+  <rect class="cover c3 cover-new" x="138" y="314" width="26" height="26" rx="4"/>
+  <g class="xmark">
+    <line x1="372" y1="237" x2="384" y2="249"/>
+    <line x1="384" y1="237" x2="372" y2="249"/>
+    <text class="micro" x="378" y="264" text-anchor="middle">LEASE EXPIRED</text>
+  </g>
+  <g class="note-g">
+    <ellipse cx="-2.5" cy="4.5" rx="3.4" ry="2.5"/>
+    <path d="M0.8 4.5V-6.5 C 2.8 -5.5,4.8 -4.5,5.2 -1.8" fill="none" stroke-width="1.6"/>
+  </g>
+  <circle class="dot d-lyr" r="4.5"/>
+  <circle class="dot d-mood" r="4.5"/>
+  <circle class="dot d-doom" r="4.5"/>
+  <circle class="dot d-b" r="4.5"/>
+  <circle class="dot d-ret" r="4.5"/>
+  <circle class="dot d-drop" r="4.5"/>
+</svg>
+<figcaption>The shape of it: jobs pull, leases expire, nothing pushes.</figcaption>
+</figure>

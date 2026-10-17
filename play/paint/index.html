@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paint on a Model</title>
+<link rel="stylesheet" href="../../style.css">
+<style>
+.gamewrap { max-width: 1020px; margin: 0 auto; padding: 1.6rem 1.4rem 4rem; }
+#stage {
+  position: relative; width: 100%; aspect-ratio: 4 / 3; max-height: 72vh;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: #0a0b10; overflow: hidden;
+}
+#stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+#stage .loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--ink-dim); font-family: var(--mono); font-size: 0.9rem; pointer-events: none;
+}
+.toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+.toolbar .grp {
+  display: flex; align-items: center; gap: 0.35rem;
+  background: var(--bg-card); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.3rem 0.55rem;
+}
+.toolbar button {
+  font: inherit; font-size: 0.88rem; color: var(--ink);
+  background: var(--bg-raise); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.3rem 0.8rem; cursor: pointer;
+  touch-action: manipulation;
+}
+.toolbar button:hover { border-color: var(--accent); }
+.toolbar button.on { background: var(--accent); color: #141005; border-color: transparent; font-weight: 600; }
+.toolbar input[type=range] { width: 110px; accent-color: var(--accent); }
+.toolbar .lab { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink-faint); }
+.sw {
+  width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line);
+  padding: 0; cursor: pointer; flex: none;
+}
+.sw.on { border-color: var(--ink); outline: 2px solid var(--accent); }
+.demo-note { color: var(--ink-dim); font-size: 0.95rem; margin: 0.8rem 0 0; }
+.finePrint { color: var(--ink-faint); font-size: 0.85rem; margin-top: 1.1rem; }
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="brand" href="../../index.html">Hector Jacquez</a>
+    <span class="spacer"></span>
+    <a class="item" href="../../index.html#featured">Projects</a>
+    <a class="item" href="../../essay.html">The Story</a>
+    <a class="item" href="https://hedge-at-hog.neocities.org/">The Fun Site</a>
+  </div>
+</nav>
+
+<div class="gamewrap">
+  <div class="kicker">Playable demo</div>
+  <h2 style="margin:0 0 0.3rem">Paint on a Model</h2>
+  <p class="demo-note">Draw straight onto a 3D model — mouse or touch. Drag on the
+  mushroom to paint, drag the background (or pick <b>orbit</b>) to spin it, scroll or
+  pinch to zoom. Nothing is uploaded or saved anywhere; refresh to reset. It runs on
+  the same painting core as my hub's Paint page.</p>
+
+  <div id="stage">
+    <canvas id="gl"></canvas>
+    <div class="loading" id="loading">loading model…</div>
+  </div>
+
+  <div class="toolbar">
+    <span class="grp">
+      <span class="lab">tool</span>
+      <button id="tBrush" class="on">brush</button>
+      <button id="tFill">fill face</button>
+      <button id="tOrbit">orbit</button>
+    </span>
+    <span class="grp">
+      <span class="lab">size</span>
+      <input id="size" type="range" min="4" max="64" value="20">
+    </span>
+    <span class="grp" id="palette"><span class="lab">colour</span></span>
+    <span class="grp">
+      <button id="undo">undo</button>
+      <button id="clear">clear</button>
+    </span>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Hector Jacquez</span>
+    <a href="../../index.html">Home</a>
+    <span class="finePrint" style="margin:0">This page is a scaled-down public cousin
+    of my home hub's 3D texture-painting tools — same brush engine, far fewer knobs.</span>
+  </div>
+</footer>
+
+<script src="three.min.js"></script>
+<script src="GLTFLoader.js"></script>
+<script src="OrbitControls.js"></script>
+<script src="hedgy-paint.js"></script>
+<script>
+(function () {
+  "use strict";
+  const HP = window.HedgyPaint;
+  const stage = document.getElementById("stage");
+  const canvas = document.getElementById("gl");
+  const $ = id => document.getElementById(id);
+
+  // ---- renderer / scene -------------------------------------------------
+  const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0b10);
+  const camera = new THREE.PerspectiveCamera(45, 4 / 3, 0.01, 50);
+  camera.position.set(1.3, 0.9, 1.7);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3630, 0.9));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+  sun.position.set(2, 3, 2);
+  scene.add(sun);
+
+  function resize() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    renderer.setSize(w, h, false);
+    renderer.setPixelRatio(dpr);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  // ---- state ------------------------------------------------------------
+  // The pointer handlers are registered BEFORE OrbitControls is constructed
+  // so they run first on the same target and can disable the controls for
+  // the duration of a paint stroke.
+  let tool = "brush";                       // brush | fill | orbit
+  let color = "#f2a65a";
+  let painting = false, strokePointer = null, last = null, activePC = null;
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  let root = null;                          // the loaded model
+  const pcs = [];                           // paint canvases (one per painted material)
+  const undoStack = [];                     // {pc, data: ImageData}, newest last
+  const UNDO_CAP = 20;
+
+  function castAt(ev) {
+    if (!root) return null;
+    const r = canvas.getBoundingClientRect();
+    ndc.x = ((ev.clientX - r.left) / r.width) * 2 - 1;
+    ndc.y = -((ev.clientY - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    const hits = ray.intersectObject(root, true);
+    for (const h of hits) if (h.uv && h.object.userData.pc) return h;
+    return null;
+  }
+
+  function snapshot(pc) {
+    undoStack.push({pc, data: pc.ctx.getImageData(0, 0, pc.can.width, pc.can.height)});
+    if (undoStack.length > UNDO_CAP) undoStack.shift();
+  }
+
+  function brushOpts() {
+    return {size: +$("size").value, soft: 0.25, alpha: 1, color};
+  }
+
+  function paintAt(hit) {
+    const pc = hit.object.userData.pc;
+    if (tool === "fill") HP.faceFill(pc, hit, {color, alpha: 1});
+    else last = HP.stroke(pc, last && activePC === pc ? last : null, hit.uv.x, hit.uv.y, brushOpts());
+    activePC = pc;
+  }
+
+  canvas.addEventListener("pointerdown", ev => {
+    if (tool === "orbit" || painting) return;
+    const hit = castAt(ev);
+    if (!hit) return;                       // miss: OrbitControls takes the drag
+    controls.enabled = false;               // runs before controls' own handler
+    painting = true;
+    strokePointer = ev.pointerId;
+    last = null;
+    canvas.setPointerCapture(ev.pointerId);
+    snapshot(hit.object.userData.pc);
+    paintAt(hit);
+  });
+  canvas.addEventListener("pointermove", ev => {
+    if (!painting || ev.pointerId !== strokePointer) return;
+    const hit = castAt(ev);
+    if (hit) paintAt(hit);
+    else last = null;                       // left the surface: break the stroke
+  });
+  function endStroke(ev) {
+    if (!painting || (ev && ev.pointerId !== strokePointer)) return;
+    painting = false;
+    strokePointer = null;
+    last = null;
+    controls.enabled = true;
+  }
+  canvas.addEventListener("pointerup", endStroke);
+  canvas.addEventListener("pointercancel", endStroke);
+
+  // ---- controls (constructed AFTER the paint handlers; see note above) ---
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.enablePan = false;
+  controls.minDistance = 0.6;
+  controls.maxDistance = 6;
+
+  // ---- load the model ----------------------------------------------------
+  // Each painted material gets a live canvas texture: the original (tiny,
+  // pixel-art) atlas is upscaled 64 -> 512 with smoothing off, so strokes
+  // are smooth but the base keeps its crisp texel look.
+  const PAINT_RES = 512;
+  new THREE.GLTFLoader().load("model.glb", gltf => {
+    root = gltf.scene;
+
+    // centre the model and frame the camera on it
+    const box = new THREE.Box3().setFromObject(root);
+    const c = box.getCenter(new THREE.Vector3());
+    root.position.sub(c);
+    const span = box.getSize(new THREE.Vector3()).length();
+    camera.position.setLength(span * 1.35);
+    controls.target.set(0, 0, 0);
+
+    root.traverse(o => {
+      if (!o.isMesh || !o.material) return;
+      const mat = o.material;
+      let up = null;
+      if (mat.map && mat.map.image) {
+        up = document.createElement("canvas");
+        up.width = up.height = PAINT_RES;
+        const x = up.getContext("2d");
+        x.imageSmoothingEnabled = false;
+        x.drawImage(mat.map.image, 0, 0, PAINT_RES, PAINT_RES);
+      }
+      const pc = HP.canvasFromMap(
+        up ? {image: up, encoding: mat.map.encoding, wrapS: mat.map.wrapS, wrapT: mat.map.wrapT} : null,
+        PAINT_RES, PAINT_RES, "#bfb8ab");
+      pc.original = pc.ctx.getImageData(0, 0, pc.can.width, pc.can.height);
+      mat.map = pc.tex;
+      mat.needsUpdate = true;
+      o.userData.pc = pc;
+      pcs.push(pc);
+    });
+
+    scene.add(root);
+    $("loading").remove();
+  }, undefined, err => {
+    $("loading").textContent = "could not load the model — " + (err && err.message || "sorry!");
+    console.error(err);
+  });
+
+  // ---- toolbar -----------------------------------------------------------
+  const toolBtns = {brush: $("tBrush"), fill: $("tFill"), orbit: $("tOrbit")};
+  for (const [name, btn] of Object.entries(toolBtns))
+    btn.addEventListener("click", () => {
+      tool = name;
+      for (const b of Object.values(toolBtns)) b.classList.remove("on");
+      btn.classList.add("on");
+      canvas.style.cursor = name === "orbit" ? "grab" : "crosshair";
+    });
+
+  const SWATCHES = ["#f2a65a", "#e0533d", "#e58fb1", "#9ece6a", "#4ec9b0",
+                    "#7aa2f7", "#9a6fd0", "#f2efe8", "#8a5a3b", "#1b1b1f"];
+  const pal = $("palette");
+  SWATCHES.forEach((hex, i) => {
+    const b = document.createElement("button");
+    b.className = "sw" + (i === 0 ? " on" : "");
+    b.style.background = hex;
+    b.title = hex;
+    b.addEventListener("click", () => {
+      color = hex;
+      pal.querySelectorAll(".sw").forEach(s => s.classList.remove("on"));
+      b.classList.add("on");
+    });
+    pal.appendChild(b);
+  });
+
+  $("undo").addEventListener("click", () => {
+    const u = undoStack.pop();
+    if (!u) return;
+    u.pc.ctx.putImageData(u.data, 0, 0);
+    HP.refresh(u.pc);                       // page code wrote pc.can directly
+  });
+  $("clear").addEventListener("click", () => {
+    for (const pc of pcs) {
+      snapshot(pc);                         // clear is undoable
+      pc.ctx.putImageData(pc.original, 0, 0);
+      HP.refresh(pc);
+    }
+  });
+
+  // ---- loop --------------------------------------------------------------
+  (function tick() {
+    requestAnimationFrame(tick);
+    controls.update();
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hector Jacquez — music, games & the systems that serve them</title>
+<link rel="stylesheet" href="style.css?v=green3">
+</head>
+<body>
+
+<nav class="top">
+  <div class="wrap">
+    <a class="brand" href="index.html"><svg class="brandmark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect class="eq eq1" x="2.5" y="11" width="3.6" height="8" rx="1.8"/><rect class="eq eq2" x="9.2" y="5" width="3.6" height="14" rx="1.8"/><rect class="eq eq3" x="15.9" y="8" width="3.6" height="11" rx="1.8"/></svg><span>Hector Jacquez</span></a>
+    <span class="spacer"></span>
+    <a class="item" href="#featured">Projects</a>
+    <a class="item" href="essay.html">The Story</a>
+    <a class="item" href="stats.html">Listening</a>
+    <a class="item" href="#more">More</a>
+    <a class="item external" href="https://hedge-at-hog.neocities.org/">The Fun Site</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="wave" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <h1>I wanted to get away from Spotify.<br>I ended up with a <em>distributed system</em>.</h1>
+        <p class="lede">
+          I run a home server that fetches lyrics, builds mood playlists, scores
+          karaoke, generates cover art, and charts drum songs with models I trained
+          myself. The queue and GPU infrastructure underneath grew because the music
+          kept asking for more. A lot of it was built by directing AI coding agents.
+          The harnesses, the checks, and the taste are mine.
+        </p>
+        <div class="cta-row">
+          <a class="btn primary" href="essay.html">Read the origin story</a>
+          <a class="btn" href="#featured">Featured work</a>
+          <a class="btn" href="https://github.com/GITHUB_USER" rel="me">GitHub</a>
+        </div>
+        <div class="statline">
+          <span><b>16,603</b> tracks served</span>
+          <span><b>48</b> mood playlists</span>
+          <span><b>6</b> GPU worker lanes</span>
+          <span><b>24</b> test suites</span>
+        </div>
+      </div>
+      <div class="tvwrap">
+        <div class="tv" id="tv">
+          <div class="tv-screen" id="tvscreen">
+            <div class="tv-off" id="tvoff">
+              <span class="tv-title">NICO'S<br>BIZARRE ADVENTURE</span>
+              <span class="tv-hint">&#9211; press power</span>
+            </div>
+          </div>
+          <div class="tv-panel">
+            <button class="tv-power" id="tvpower" aria-label="Power the game on or off">&#9211;</button>
+            <span class="tv-led"></span>
+            <span class="tv-brand">Hedgevision</span>
+          </div>
+        </div>
+        <div class="tv-caption">my cats' RPG, running live in the TV — <a href="play/cat-rpg.html">fullscreen + manual</a></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="featured">
+  <div class="wrap">
+    <div class="kicker">Featured</div>
+    <h2>Seven things I can talk about for hours</h2>
+    <p class="sub">Each one exists because I wanted it at home first.</p>
+    <div class="cards">
+
+      <div class="card">
+        <span class="tag">game · playable demo</span>
+        <h3>Nico's Bizarre Adventure</h3>
+        <p>An early demo of a Mario &amp; Luigi-style RPG starring my two cats,
+        built in Godot. Timed action commands, a little overworld, a boss.
+        Playable right here in your browser, controller supported.</p>
+        <div class="pills"><span class="pill">Godot 4</span><span class="pill">GDScript</span><span class="pill">web export</span></div>
+        <div class="links"><a href="play/cat-rpg.html">&#9654; play the demo</a></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">ML · audio</span>
+        <h3>AutoCharter</h3>
+        <p>Turns songs into playable Clone&nbsp;Hero drum charts. Onset models plus
+        ride/crash classifiers trained on my own corpus. The metrics help, but I'm
+        the final judge: I play every chart, and if it doesn't feel right under
+        the sticks, it isn't right.</p>
+        <div class="pills"><span class="pill">Python</span><span class="pill">PyTorch</span><span class="pill">onset CNNs</span><span class="pill">Clone Hero</span></div>
+        <div class="links"><span class="soon">demo video soon</span><span class="soon">write-up soon</span></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">DSP · realtime</span>
+        <h3>Living-Room Karaoke</h3>
+        <p>I wanted karaoke night without buying anything. Turns out my brother
+        did too. Demucs strips the vocals, a note lane scrolls, and YIN pitch
+        scoring grades whatever octave you sing in. It scores the note you
+        actually heard, because USB mics have delay and that's just reality.</p>
+        <div class="pills"><span class="pill">DSP</span><span class="pill">YIN</span><span class="pill">Demucs</span><span class="pill">browser audio</span></div>
+        <div class="links"><span class="soon">demo video soon</span></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">graphics · ports</span>
+        <h3>One Visualizer, Three Hosts</h3>
+        <p>I like Milkdrop too much to leave it in one app. My desktop player
+        already shipped the butterchurn visualizer — so I gave it multi-visualizer
+        support, then carried the visualizer into my Android client and my own
+        Godot toolkit, and built a browser editor for studying and writing
+        presets. (Milkdrop isn't mine — it's carried everywhere with its MIT
+        license and preset credits intact.)</p>
+        <div class="pills"><span class="pill">WebGL</span><span class="pill">butterchurn</span><span class="pill">Godot</span><span class="pill">Android</span></div>
+        <div class="links"><span class="soon">preset lab video soon</span></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">AI engineering</span>
+        <h3>The Agent Workshop</h3>
+        <p>After my local-model assistants proved a consumer GPU could carry
+        real jobs, I built co-hog — a coding agent on my own 12&nbsp;GB card, so
+        not every task leans on paid frontier tokens. Its harness taught me more
+        than its model: when an agent fails, check the harness first. The bigger
+        campaigns, like porting five Minecraft mods, I ran by directing frontier
+        agents — and every novel failure became a reusable diagnostic skill.</p>
+        <div class="pills"><span class="pill">llama.cpp</span><span class="pill">agent harness</span><span class="pill">12GB GPU</span></div>
+        <div class="links"><span class="soon">write-up soon</span></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">tools · PWA</span>
+        <h3>Pocket Trace Recorder</h3>
+        <p>A GBA emulator in your browser that records gameplay as replay files
+        for a decompilation project. Installs as a PWA, works on a phone, bring
+        your own ROM.</p>
+        <div class="pills"><span class="pill">PWA</span><span class="pill">gbajs2</span><span class="pill">service worker</span></div>
+        <div class="links"><span class="soon">live demo soon</span></div>
+      </div>
+
+      <div class="card">
+        <span class="tag">plugin · Go/WASM</span>
+        <h3>48 Moods</h3>
+        <p>A Navidrome plugin that keeps 48 mood playlists fresh. The ML half
+        listens to every track in my library; the plugin half runs as WASM inside
+        a 30-second execution budget. On top sits a chat harness: ask for a
+        playlist by mood and it builds one, ask it music trivia and it answers
+        from real sources — never from the model's imagination.</p>
+        <div class="pills"><span class="pill">Go</span><span class="pill">WASM</span><span class="pill">Essentia</span><span class="pill">FastAPI</span></div>
+        <div class="links"><span class="soon">repo soon</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="kicker">The Story</div>
+    <h2>How a playlist-cover generator became a distributed system</h2>
+    <div class="teaser">
+      <blockquote>
+        It started with Navidrome — my own Spotify. Then I missed the playlists
+        and the lyrics, so I built lyric fetching, transcription, and mood
+        analysis. The mood playlists wanted AI covers, and the image models
+        lived on another machine's GPU, so I built a job queue. Then voices
+        wanted the queue. Then video, 3D meshes, and a coding agent — until the
+        copies collapsed into <strong>one lease engine on an event-sourced
+        Postgres log</strong>. All because I wanted better music nights.
+      </blockquote>
+      <a class="btn primary" href="essay.html">Read the full story</a>
+    </div>
+  </div>
+</section>
+
+<section id="demos">
+  <div class="wrap">
+    <div class="kicker">Live Demos</div>
+    <h2>Things you can touch right now</h2>
+    <p class="sub">No installs, nothing saved, straight from this site.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="play/cat-rpg.html">&#9654; Cat RPG demo</a>
+      <a class="btn" href="play/paint/">&#128396; Paint on a 3D model</a>
+      <span class="btn" style="opacity:.55;cursor:default">&#127918; GBA trace recorder — soon</span>
+    </div>
+  </div>
+</section>
+
+<section id="more">
+  <div class="wrap">
+    <div class="kicker">More</div>
+    <h2>The longer shelf</h2>
+    <div class="mini-grid">
+      <div class="mini"><b><a href="play/paint/">Paint on a Model</a></b><span>the hub's real 3D texture-painting engine as a try-it demo — draw on a mushroom, nothing saves</span></div>
+      <div class="mini"><b>pullqueue</b><span>lease + event-sourced job queues, with a kill&nbsp;-9 crash-recovery demo</span></div>
+      <div class="mini"><b>gpustack</b><span>file-locked GPU arbitration for heterogeneous ML stacks</span></div>
+      <div class="mini"><b>Godot dev tools</b><span>reusable addon: panels, music analyzer, fractal sky, visualizer kit</span></div>
+      <div class="mini"><b>Feishin fork</b><span>desktop client: my playlist folders, looping video art behind albums, visualizer overlays, popout panels</span></div>
+      <div class="mini"><b>Tempo fork</b><span>Android client: my playlists + loop videos, the Hedgy chat built in, lyrics modes, stability fixes</span></div>
+      <div class="mini"><b>Fabric port fleet</b><span>five mods ported to 1.21.1 by an agent campaign + skill library</span></div>
+      <div class="mini"><b>Lyrics pipeline</b><span>LRCLIB → whisper-on-stems → romaji &amp; translation → karaoke maps</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Hector Jacquez · <span style="font-family:var(--mono);font-size:0.8em;color:var(--ink-faint)">v.1</span></span>
+    <a href="https://github.com/GITHUB_USER">GitHub</a>
+    <a href="essay.html">The Story</a>
+    <a href="https://hedge-at-hog.neocities.org/">Hedge@hog on Neocities</a>
+  </div>
+</footer>
+
+<script>
+/* console reveal: power button boots the real game inside the TV */
+(() => {
+  const tv = document.getElementById("tv");
+  const screen = document.getElementById("tvscreen");
+  const off = document.getElementById("tvoff");
+  const power = document.getElementById("tvpower");
+  let frame = null;
+  function powerOn() {
+    if (frame) return;
+    tv.classList.add("on", "boot");
+    off.style.display = "none";
+    frame = document.createElement("iframe");
+    frame.src = "play/cat-rpg/index.html";
+    frame.title = "Nico's Bizarre Adventure";
+    frame.setAttribute("allow", "autoplay; gamepad; fullscreen");
+    screen.appendChild(frame);
+    setTimeout(() => tv.classList.remove("boot"), 600);
+  }
+  function powerOff() {
+    if (!frame) return;
+    frame.remove(); frame = null;
+    tv.classList.remove("on");
+    off.style.display = "";
+  }
+  off.addEventListener("click", powerOn);
+  power.addEventListener("click", () => (frame ? powerOff() : powerOn()));
+})();
+
+/* card spotlight follows the cursor */
+document.querySelectorAll(".card").forEach(c => {
+  c.addEventListener("pointermove", e => {
+    const r = c.getBoundingClientRect();
+    c.style.setProperty("--mx", (e.clientX - r.left) + "px");
+    c.style.setProperty("--my", (e.clientY - r.top) + "px");
+  });
+});
+
+/* retro ridge: the waveform as a perspective landscape. decoration only --
+   when it goes reactive, each new row becomes a live spectrum frame. */
+const cv = document.getElementById('wave'), cx = cv.getContext('2d');
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fit() {
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  cv.width = cv.offsetWidth * dpr; cv.height = cv.offsetHeight * dpr;
+}
+fit(); addEventListener('resize', fit);
+const ROWS = 22, PTS = 72;
+function ridge(t) {
+  const w = cv.width, h = cv.height;
+  cx.clearRect(0, 0, w, h);
+  const styles = getComputedStyle(document.documentElement);
+  const near = styles.getPropertyValue('--accent').trim();
+  const far = styles.getPropertyValue('--accent-2').trim();
+  const horizon = h * 0.30;
+  const scroll = (t * 0.00006) % (1 / ROWS);   // slow drift toward the viewer
+  for (let r = ROWS - 1; r >= 0; r--) {
+    const d = r / ROWS + scroll;               // 0 = nearest, 1 = horizon
+    const depth = 1 - Math.pow(d, 0.72);       // perspective spacing
+    const y0 = horizon + (h - horizon) * depth;
+    const spread = 0.5 + 0.62 * depth;         // rows widen toward the viewer
+    const amp = (h - horizon) * 0.16 * (0.25 + 0.75 * depth);
+    const fade = 0.08 + 0.6 * depth;
+    cx.beginPath();
+    for (let i = 0; i <= PTS; i++) {
+      const u = i / PTS;
+      const x = w / 2 + (u - 0.5) * w * spread;
+      const wob = Math.sin(u * 9 + d * 14 + t * 0.0011)
+                + 0.55 * Math.sin(u * 23 - d * 9 + t * 0.0007)
+                + 0.3 * Math.sin(u * 47 + t * 0.0019);
+      // taper the ridge toward its edges so it reads as a landform
+      const env = Math.sin(u * Math.PI);
+      const y = y0 - Math.abs(wob) * amp * env * 0.55;
+      i === 0 ? cx.moveTo(x, y) : cx.lineTo(x, y);
+    }
+    cx.strokeStyle = depth > 0.55 ? near : far;
+    cx.globalAlpha = fade;
+    cx.lineWidth = 0.8 + 1.6 * depth;
+    cx.shadowColor = near; cx.shadowBlur = 10 * depth;
+    cx.stroke();
+    cx.shadowBlur = 0;
+  }
+  cx.globalAlpha = 1;
+  if (!REDUCED) requestAnimationFrame(ridge);
+}
+requestAnimationFrame(ridge);
+</script>
+
+</body>
+</html>
