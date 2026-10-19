@@ -25,7 +25,6 @@ export function Nav() {
           <a className="item" href="#work" onClick={close}>Work</a>
           <Link className="item" to="/story" onClick={close}>The Story</Link>
           <Link className="item" to="/listening" onClick={close}>Listening</Link>
-          <a className="item external" href="https://hedge-at-hog.neocities.org/" onClick={close}>The Fun Site</a>
         </div>
       </div>
     </nav>

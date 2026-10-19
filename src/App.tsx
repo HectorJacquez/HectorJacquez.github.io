@@ -13,7 +13,7 @@ function Footer() {
         <span>© 2026 Hector Jacquez · <span style={{ fontFamily: 'var(--mono)', fontSize: '0.8em', color: 'var(--ink-faint)' }}>v.1</span></span>
         <a href="https://github.com/HectorJacquez">GitHub</a>
         <Link to="/story">The Story</Link>
-        <a href="https://hedge-at-hog.neocities.org/">Hedge@hog on Neocities</a>
+        <Link to="/listening">Listening</Link>
       </div>
     </footer>
   )
