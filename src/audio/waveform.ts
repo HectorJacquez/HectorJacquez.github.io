@@ -9,13 +9,16 @@ export interface WaveFracOpts {
   boost?: number
 }
 
-/** Signed horizontal excursion of a wave point, as a fraction of canvas width. */
+/** Signed horizontal excursion of a wave point, as a fraction of canvas width.
+ *  Kept well under the ~0.28 border distance so a loud peak swings instead of
+ *  pinning flat to the edge, and energy is the dominant term so the swing size
+ *  tracks the music rather than the idle wobble. */
 export function waveFrac(wob: number, opts: WaveFracOpts): number {
-  if (!opts.live) return wob * 0.12
+  if (!opts.live) return wob * 0.02
   const energy = opts.energy ?? 0
   const mag = opts.mag ?? 0
   const boost = opts.boost ?? 1
-  return wob * (0.08 + energy * 0.6 + mag * 0.3 * boost)
+  return wob * (0.02 + energy * 0.07 + mag * 0.015 * boost)
 }
 
 /** Place a wave point horizontally, clamped inside the canvas border so a loud
