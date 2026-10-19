@@ -4,7 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Paint on a Model</title>
-<link rel="stylesheet" href="../../style.css">
+<link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16.png?v=1">
+<link rel="icon" href="../../favicon.ico?v=1" sizes="any">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=1">
+<link rel="stylesheet" href="../../style.css?v=amber7">
 <style>
 .gamewrap { max-width: 1020px; margin: 0 auto; padding: 1.6rem 1.4rem 4rem; }
 #stage {
@@ -50,7 +54,7 @@
 
 <nav class="top">
   <div class="wrap">
-    <a class="brand" href="../../index.html">Hector Jacquez</a>
+    <a class="brand" href="../../index.html"><span class="brandmark"><img class="brandimg" src="../../niko-nose-2.png?v=2" alt="" width="54" height="28"></span><span class="brandname">Hector Jacquez</span></a>
     <span class="spacer"></span>
     <a class="item" href="../../index.html#featured">Projects</a>
     <a class="item" href="../../essay.html">The Story</a>
@@ -61,10 +65,10 @@
 <div class="gamewrap">
   <div class="kicker">Playable demo</div>
   <h2 style="margin:0 0 0.3rem">Paint on a Model</h2>
-  <p class="demo-note">Draw straight onto a 3D model — mouse or touch. Drag on the
-  mushroom to paint, drag the background (or pick <b>orbit</b>) to spin it, scroll or
-  pinch to zoom. Nothing is uploaded or saved anywhere; refresh to reset. It runs on
-  the same painting core as my hub's Paint page.</p>
+  <p class="demo-note">Draw straight onto a 3D model with mouse or touch. Drag on the
+  model to paint, pick a sticker and tap to stamp it, or drag the background (or pick
+  <b>orbit</b>) to spin it; scroll or pinch to zoom. Nothing is uploaded or saved
+  anywhere; refresh to reset. It runs on the same painting core as my hub's Paint page.</p>
 
   <div id="stage">
     <canvas id="gl"></canvas>
@@ -76,6 +80,7 @@
       <span class="lab">tool</span>
       <button id="tBrush" class="on">brush</button>
       <button id="tFill">fill face</button>
+      <button id="tStamp">stamp</button>
       <button id="tOrbit">orbit</button>
     </span>
     <span class="grp">
@@ -83,6 +88,7 @@
       <input id="size" type="range" min="4" max="64" value="20">
     </span>
     <span class="grp" id="palette"><span class="lab">colour</span></span>
+    <span class="grp" id="stickers"><span class="lab">sticker</span></span>
     <span class="grp">
       <button id="undo">undo</button>
       <button id="clear">clear</button>
@@ -170,7 +176,8 @@
 
   function paintAt(hit) {
     const pc = hit.object.userData.pc;
-    if (tool === "fill") HP.faceFill(pc, hit, {color, alpha: 1});
+    if (tool === "stamp") stampSticker(pc, hit.uv.x, hit.uv.y);
+    else if (tool === "fill") HP.faceFill(pc, hit, {color, alpha: 1});
     else last = HP.stroke(pc, last && activePC === pc ? last : null, hit.uv.x, hit.uv.y, brushOpts());
     activePC = pc;
   }
@@ -189,6 +196,7 @@
   });
   canvas.addEventListener("pointermove", ev => {
     if (!painting || ev.pointerId !== strokePointer) return;
+    if (tool === "stamp") return;             // one sticker per click, no spray on drag
     const hit = castAt(ev);
     if (hit) paintAt(hit);
     else last = null;                       // left the surface: break the stroke
@@ -269,7 +277,7 @@
   });
 
   // ---- toolbar -----------------------------------------------------------
-  const toolBtns = {brush: $("tBrush"), fill: $("tFill"), orbit: $("tOrbit")};
+  const toolBtns = {brush: $("tBrush"), fill: $("tFill"), stamp: $("tStamp"), orbit: $("tOrbit")};
   for (const [name, btn] of Object.entries(toolBtns))
     btn.addEventListener("click", () => {
       tool = name;
@@ -292,6 +300,43 @@
       b.classList.add("on");
     });
     pal.appendChild(b);
+  });
+
+  // ---- stickers: pick one, then click the model to stamp it ---------------
+  const STICKERS = ["🐱", "🍄", "⭐", "❤️", "🎵", "🔥", "👾", "😎"];
+  let sticker = null;                         // selected sticker, pre-rendered to a canvas
+  function makeSticker(ch) {
+    const c = document.createElement("canvas");
+    c.width = c.height = 128;
+    const x = c.getContext("2d");
+    x.textAlign = "center"; x.textBaseline = "middle";
+    x.font = "104px sans-serif";
+    x.fillText(ch, 64, 72);
+    return c;
+  }
+  function stampSticker(pc, u, v) {
+    if (!sticker) return;
+    const S = (+$("size").value) * 3;         // stickers read bigger than the brush
+    pc.ctx.drawImage(sticker, u * pc.can.width - S / 2, v * pc.can.height - S / 2, S, S);
+    HP.refresh(pc);
+  }
+  const stickBox = $("stickers");
+  STICKERS.forEach((ch, i) => {
+    const b = document.createElement("button");
+    b.textContent = ch; b.title = "stamp " + ch;
+    b.style.fontSize = "1.15rem"; b.style.lineHeight = "1"; b.style.padding = "0.2rem 0.5rem";
+    const can = makeSticker(ch);
+    if (i === 0) sticker = can;               // sensible default
+    b.addEventListener("click", () => {
+      sticker = can;
+      tool = "stamp";                         // picking a sticker selects the stamp tool
+      for (const bb of Object.values(toolBtns)) bb.classList.remove("on");
+      toolBtns.stamp.classList.add("on");
+      canvas.style.cursor = "crosshair";
+      stickBox.querySelectorAll("button").forEach(s => s.classList.remove("on"));
+      b.classList.add("on");
+    });
+    stickBox.appendChild(b);
   });
 
   $("undo").addEventListener("click", () => {

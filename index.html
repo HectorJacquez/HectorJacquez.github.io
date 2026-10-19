@@ -39,9 +39,9 @@
     <div class="hero-text">
       <h1 class="kicker">Fullstack Software Engineer</h1>
       <p class="lede">
-        I'm a fullstack software engineer with about seven years of experience,
+        I'm a fullstack software engineer with seven years of experience,
         most of it remote. The last four years I worked fullstack in Java and
-        Sencha ExtJS along with a good amount of SQL Server, and before that three
+        Sencha ExtJS along with SQL Server, and before that three
         years in C# and .NET on banking software. I use AI coding tools carefully
         in my day to day work, and in my own time I build around the things I care
         about, mostly music, art, and games.
@@ -322,6 +322,10 @@ const VIZ = { analyser: null, data: null, playing: false };
     panes.forEach(p => { p.el.width = p.el.offsetWidth * dpr; p.el.height = p.el.offsetHeight * dpr; });
   }
   fit(); addEventListener('resize', fit);
+  // Auto-gain: the Water track is ambient and quiet, so raw band energy barely
+  // moves the line. Track a slowly-decaying peak per half and normalize against
+  // it, so the loudest recent moment reaches full swing on any track.
+  let peakL = 0.08, peakH = 0.08;
   function draw(t) {
     const styles = getComputedStyle(document.documentElement);
     const c1 = styles.getPropertyValue('--accent').trim();
@@ -334,13 +338,24 @@ const VIZ = { analyser: null, data: null, playing: false };
       if (w === 0 || h === 0) return;            // hidden (mobile) -> nothing to draw
       const base = p.dir > 0 ? w * 0.30 : w * 0.70;
       const n = live ? VIZ.data.length : 0;        // frequency bins, low -> high
-      const half = n >> 1;
+      // Split only the MUSICALLY ACTIVE range. The top octaves (roughly the upper
+      // half of the bins, >11 kHz) are near-silent on most tracks, so a naive
+      // low/high split starved the purple line. Orange takes bass/low-mid, purple
+      // takes mid/high, and the dead top is ignored so both lines actually react.
+      const B1 = Math.max(4, Math.round(n * 0.10));   // bass/low-mid cutoff (~2 kHz)
+      const B2 = Math.max(B1 + 4, Math.round(n * 0.42)); // mid/high cutoff (~9 kHz)
       const energy = (lo, hi) => {                   // 0..1 average energy of a band range
         let s = 0; for (let k = lo; k < hi; k++) s += VIZ.data[k];
         return s / ((hi - lo) * 255);
       };
-      const eLow = live ? energy(0, half) : 0;
-      const eHigh = live ? Math.min(1, energy(half, n) * 2.4) : 0; // treble rolls off, so boost it
+      const eLow  = live ? energy(0, B1) : 0;
+      const eHigh = live ? energy(B1, B2) : 0;
+      if (live) {                                    // decaying peaks for auto-gain
+        peakL = Math.max(eLow, peakL * 0.992);
+        peakH = Math.max(eHigh, peakH * 0.992);
+      }
+      const gLow  = live ? Math.min(1, eLow  / Math.max(peakL, 0.02)) : 0;  // 0..1, auto-gained
+      const gHigh = live ? Math.min(1, eHigh / Math.max(peakH, 0.02)) : 0;
       // One colored line per half of the spectrum: c1 is driven by the LOW bands,
       // c2 by the HIGH bands. Each is a travelling wave whose amplitude SWELLS with
       // its half's energy, so the WHOLE line reacts rather than just the bass end,
@@ -348,10 +363,10 @@ const VIZ = { analyser: null, data: null, playing: false };
       // frequencies so the colors weave apart instead of tracking together. The
       // excursion is a fraction of the width and clamped, so a loud band can never
       // push the line past the container border.
-      //    col  phase  spd      freq  lo    energy boost
-      [[c1, 0.0, 0.0016,  9, 0,    eLow,  1.0],
-       [c2, 2.3, 0.0012, 15, half, eHigh, 2.1]]
-        .forEach(([col, phase, spd, freq, lo, en, boost], i) => {
+      //    col  phase  spd      freq  bLo bHi  energy boost
+      [[c1, 0.0, 0.0016,  9, 0,  B1, gLow,  1.0],
+       [c2, 2.3, 0.0012, 15, B1, B2, gHigh, 1.5]]
+        .forEach(([col, phase, spd, freq, bLo, bHi, en, boost], i) => {
         cx.beginPath();
         for (let y = 0; y <= h; y += 4) {
           const u = y / h;
@@ -360,9 +375,9 @@ const VIZ = { analyser: null, data: null, playing: false };
                     + 0.3 * Math.sin(u * (freq * 4.8) + t * 0.002);
           let frac;                                 // signed excursion, fraction of width
           if (live) {
-            const band = Math.min(n - 1, lo + ((Math.pow(u, 1.25) * half) | 0));
-            const mag = (VIZ.data[band] / 255) * (0.45 + 1.7 * u); // tilt so the whole line shows spectrum
-            frac = wob * (0.09 + en * 0.34 + mag * 0.22 * boost);  // swell with energy + local detail
+            const band = Math.min(n - 1, bLo + ((Math.pow(u, 1.25) * (bHi - bLo)) | 0));
+            const mag = (VIZ.data[band] / 255) * (0.55 + 1.1 * u); // tilt so the whole line shows spectrum
+            frac = wob * (0.08 + en * 0.60 + mag * 0.30 * boost); // auto-gained swell + local detail
           } else {
             frac = wob * 0.12;                       // quiet idle shimmer
           }
