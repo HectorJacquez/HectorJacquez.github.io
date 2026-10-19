@@ -228,6 +228,11 @@
 
     root.traverse(o => {
       if (!o.isMesh || !o.material) return;
+      // Unique material per mesh: a model can share one material across several
+      // meshes (e.g. body + screen), and since each mesh gets its own paint
+      // canvas, a shared material would collapse to whichever mesh was traversed
+      // last -- so only that mesh showed paint. Cloning breaks the sharing.
+      o.material = o.material.clone();
       const mat = o.material;
       let up = null;
       if (mat.map && mat.map.image) {
