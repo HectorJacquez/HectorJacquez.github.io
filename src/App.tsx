@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Link } from 'react-router-dom'
 import { Brand } from './components/Brand'
 import { Home } from './pages/Home'
 import { MusicDot } from './components/MusicDot'
+import { Visualizer } from './components/Visualizer'
 
 function Nav() {
   return (
@@ -43,6 +44,7 @@ const Stub = ({ title }: { title: string }) => (
 export default function App() {
   return (
     <HashRouter>
+      <Visualizer />
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />

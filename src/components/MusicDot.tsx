@@ -1,18 +1,26 @@
 import { useEffect, useRef, useState } from 'react'
 import { volumeFromDrag } from '../audio/volume'
+import { vizBus, connectAnalyser } from '../audio/vizBus'
 
 /** The corner Water player: play/pause + a drag-to-set volume knob. Lives in the
  *  shell so it persists across routes. */
 export function MusicDot() {
   const audio = useRef<HTMLAudioElement>(null)
+  const ctx = useRef<AudioContext | null>(null)
   const [playing, setPlaying] = useState(false)
   const [vol, setVol] = useState(0.35)
 
   useEffect(() => { if (audio.current) audio.current.volume = vol }, [vol])
 
+  // keep the shared bus in sync so the edge visualizer swells and idles with us
+  useEffect(() => { vizBus.playing = playing }, [playing])
+
   function toggle() {
     const el = audio.current
     if (!el) { setPlaying((p) => !p); return }
+    // build the analyser graph on first play (needs a user gesture)
+    if (!ctx.current) ctx.current = connectAnalyser(el)
+    if (ctx.current && ctx.current.state === 'suspended') void ctx.current.resume()
     if (playing) { el.pause(); setPlaying(false) }
     else {
       const p = el.play() as Promise<void> | undefined
@@ -35,7 +43,7 @@ export function MusicDot() {
 
   return (
     <>
-      <div className="musicdot" title="Water, from my own album">
+      <div className={playing ? 'musicdot playing' : 'musicdot'} title="Water, from my own album">
         <button className="md-btn" aria-label={playing ? 'Pause' : 'Play Water, my own music'} onClick={toggle}>
           <span className="pbicon">{playing ? '❚❚' : '▶'}</span>
         </button>
@@ -45,7 +53,8 @@ export function MusicDot() {
           <span className="knob-ind" style={{ transform: `rotate(${vol * 270 - 135}deg)` }} />
         </div>
       </div>
-      <audio ref={audio} data-testid="music-player" src={`${import.meta.env.BASE_URL}media/water.mp3`} preload="none" />
+      <audio ref={audio} data-testid="music-player" src={`${import.meta.env.BASE_URL}media/water.mp3`}
+             preload="none" onEnded={() => setPlaying(false)} />
     </>
   )
 }

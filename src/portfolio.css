@@ -286,6 +286,8 @@ header.hero::before {
 /* keep every content block above the fixed edge canvases (but not the nav,
    whose sticky positioning must survive, nor the fixed music widget) */
 body > *:not(.sidewave):not(.top):not(.musicdot) { position: relative; z-index: 1; }
+/* React mounts everything under #root, so lift its content above the canvases too */
+#root > *:not(.sidewave):not(.top):not(.musicdot) { position: relative; z-index: 1; }
 
 /* ---------- sections ---------- */
 section { padding: 3.4rem 0; }
