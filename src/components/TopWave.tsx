@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { vizBus } from '../audio/vizBus'
 import { splitSpectrum } from '../audio/splitSpectrum'
 import { autoGain } from '../audio/autoGain'
+import { distributeDrive } from '../audio/distribute'
 import { envelopeFollower } from '../audio/envelope'
 import { waveFrac, clampX } from '../audio/waveform'
 
@@ -25,12 +26,12 @@ export function TopWave() {
     fit()
     addEventListener('resize', fit)
 
-    let peakLow = 0.08
-    let peakHigh = 0.08
+    let peak = 0.08
     let driveLow = 0
     let driveHigh = 0
-    const ATTACK = 0.06
-    const RELEASE = 0.03
+    const ATTACK = 0.2
+    const RELEASE = 0.06
+    const HIGH_BOOST = 2
     let raf = 0
 
     const draw = (t: number) => {
@@ -44,12 +45,11 @@ export function TopWave() {
       let targetHigh = 0
       if (playing) {
         const raw = splitSpectrum(vizBus.data!)
-        const gl = autoGain(raw.low, peakLow)
-        const gh = autoGain(raw.high, peakHigh)
-        peakLow = gl.peak
-        peakHigh = gh.peak
-        targetLow = gl.gain
-        targetHigh = gh.gain
+        const ag = autoGain(raw.low + raw.high, peak)
+        peak = ag.peak
+        const d = distributeDrive(raw.low, raw.high, ag.gain, HIGH_BOOST)
+        targetLow = d.low
+        targetHigh = d.high
       }
       driveLow = envelopeFollower(driveLow, targetLow, ATTACK, RELEASE)
       driveHigh = envelopeFollower(driveHigh, targetHigh, ATTACK, RELEASE)

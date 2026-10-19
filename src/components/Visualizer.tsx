@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { vizBus } from '../audio/vizBus'
 import { splitSpectrum } from '../audio/splitSpectrum'
 import { autoGain } from '../audio/autoGain'
+import { distributeDrive } from '../audio/distribute'
 import { envelopeFollower } from '../audio/envelope'
 import { waveFrac, clampX } from '../audio/waveform'
 
@@ -34,13 +35,14 @@ export function Visualizer() {
     fit()
     addEventListener('resize', fit)
 
-    // decaying peaks for auto-gain; enveloped drive per band for smooth wind-up
-    let peakLow = 0.08
-    let peakHigh = 0.08
+    // one shared auto-gain peak (so the bands keep their relative balance), the
+    // drive split between the lines by spectral content, then envelope-followed.
+    let peak = 0.08
     let driveLow = 0
     let driveHigh = 0
-    const ATTACK = 0.06 // ease in over ~0.4s
-    const RELEASE = 0.03 // ease back down more gently
+    const ATTACK = 0.2 // fast enough to show beats/transients
+    const RELEASE = 0.06 // but ease back down smoothly
+    const HIGH_BOOST = 2 // treble carries less raw energy than bass
     let raf = 0
 
     const draw = (t: number) => {
@@ -50,18 +52,18 @@ export function Visualizer() {
       const playing = vizBus.playing && !!vizBus.analyser && !!vizBus.data
       if (playing) vizBus.analyser!.getByteFrequencyData(vizBus.data!)
 
-      // target band levels (auto-gained) when playing, 0 when stopped; the
-      // envelope eases the actual drive toward them so movement is gradual.
+      // overall level normalized once, then split between the lines by spectral
+      // balance so bass drives one line and treble the other (not both tracking
+      // volume). Zero when stopped; the envelope eases the drive toward target.
       let targetLow = 0
       let targetHigh = 0
       if (playing) {
         const raw = splitSpectrum(vizBus.data!)
-        const gl = autoGain(raw.low, peakLow)
-        const gh = autoGain(raw.high, peakHigh)
-        peakLow = gl.peak
-        peakHigh = gh.peak
-        targetLow = gl.gain
-        targetHigh = gh.gain
+        const ag = autoGain(raw.low + raw.high, peak)
+        peak = ag.peak
+        const d = distributeDrive(raw.low, raw.high, ag.gain, HIGH_BOOST)
+        targetLow = d.low
+        targetHigh = d.high
       }
       driveLow = envelopeFollower(driveLow, targetLow, ATTACK, RELEASE)
       driveHigh = envelopeFollower(driveHigh, targetHigh, ATTACK, RELEASE)

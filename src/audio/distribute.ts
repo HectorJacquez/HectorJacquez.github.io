@@ -7,8 +7,12 @@ export interface BandDrive {
  *  share of the current spectrum, so the louder band of the moment drives its
  *  line harder (bass -> one line, treble -> the other) instead of both tracking
  *  overall volume. `gain` is the overall level (0..1, already normalized); the
- *  high band is boosted since treble carries less raw energy than bass.
- *  Stub — returns the overall level on both lines (what it does wrong today). */
-export function distributeDrive(_low: number, _high: number, gain: number, _highBoost = 2): BandDrive {
-  return { low: gain, high: gain }
+ *  high band is boosted since treble carries less raw energy than bass. */
+export function distributeDrive(low: number, high: number, gain: number, highBoost = 2): BandDrive {
+  const total = low + high
+  if (total <= 0) return { low: 0, high: 0 }
+  return {
+    low: Math.min(1, gain * (low / total)),
+    high: Math.min(1, gain * (high / total) * highBoost),
+  }
 }
