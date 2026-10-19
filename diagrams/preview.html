@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Project diagrams preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css?v=amber1">
+</head><body>
+<div style="max-width:760px;margin:0 auto;padding:2rem 1.4rem">
+<p class="kicker" style="font-family:var(--mono);color:var(--accent);text-transform:uppercase;letter-spacing:.14em">Preview</p>
+<h1 style="font-family:var(--display)">The four project diagrams</h1>
+<p style="color:var(--ink-dim)">Draft mechanism diagrams in the amber palette. Play the Water track from the home page first if you want to see the edge waves react; these are static figures.</p>
+<h2 style="font-family:var(--display);margin:2rem 0 .5rem">gpustack</h2>
+<figure class="projdiagram" aria-label="Diagram: several stacks share one 12 GB GPU by taking turns through a file lock. One stack holds the lock and its process dies; the next acquirer reads the recorded pid, sees it is dead, breaks the stale lock, and proceeds after the resident stack is unloaded.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:12.5px;font-weight:600;letter-spacing:.04em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:10px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.6px;letter-spacing:.11em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .wait{stroke-dasharray:4 4;opacity:.55}
+.projdiagram .g-held{stroke:var(--accent);opacity:.4;stroke-dasharray:4 4}
+.projdiagram .g-acq{stroke:var(--accent-2);stroke-width:1.6}
+.projdiagram .lockname{fill:var(--accent);font-size:12.5px;font-weight:700;letter-spacing:.05em}
+.projdiagram .padlock{fill:none;stroke:var(--accent);stroke-width:1.4;stroke-linecap:round}
+.projdiagram .g-dead{fill:var(--accent-3);font-size:10px;font-weight:600}
+.projdiagram .g-stalebadge rect{fill:none;stroke:var(--accent-3);stroke-width:1.2}
+.projdiagram .g-stalebadge text{fill:var(--accent-3);font-size:9px;letter-spacing:.08em}
+.projdiagram .g-x line{stroke:var(--accent-3);stroke-width:2;stroke-linecap:round}
+.projdiagram .g-membar{fill:none;stroke:var(--line);stroke-width:1}
+.projdiagram .g-memfill{fill:var(--accent-2);opacity:.5}
+.projdiagram .dot{filter:drop-shadow(0 0 3px var(--accent))}
+.projdiagram .g-hold{fill:var(--accent);opacity:0}
+.projdiagram .g-break{fill:var(--accent-2);opacity:0;filter:drop-shadow(0 0 3px var(--accent-2))}
+@supports (offset-path:path("M0 0h1")){
+  .projdiagram .g-hold{offset-path:path("M136 51 C 200 51,214 150,256 156");animation:pd-gpu-hold 11s linear infinite}
+  .projdiagram .g-break{offset-path:path("M136 229 C 200 229,214 184,256 176 L 392 166 L 468 166");animation:pd-gpu-break 11s linear infinite}
+}
+@keyframes pd-gpu-hold{0%{offset-distance:0%;opacity:0}3%{opacity:1}14%{offset-distance:100%;opacity:1}16%,100%{offset-distance:100%;opacity:0}}
+@keyframes pd-gpu-break{0%,42%{offset-distance:0%;opacity:0}45%{opacity:1}72%{offset-distance:100%;opacity:1}75%,100%{offset-distance:100%;opacity:0}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}}
+</style>
+<svg viewBox="0 0 640 332" aria-hidden="true">
+  <text class="micro" x="16" y="18">STACKS WANTING THE GPU</text>
+  <!-- stacks -->
+  <rect class="box" x="16" y="30" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="50">IMAGE GEN</text>
+  <text class="sub" x="26" y="65">held → died</text>
+  <g class="g-x"><line x1="112" y1="38" x2="128" y2="54"/><line x1="128" y1="38" x2="112" y2="54"/></g>
+  <rect class="box" x="16" y="88" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="108">STEM SEP</text>
+  <text class="sub" x="26" y="123">waiting</text>
+  <rect class="box" x="16" y="146" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="166">LOCAL LLM</text>
+  <text class="sub" x="26" y="181">waiting</text>
+  <rect class="box" x="16" y="208" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="228">CODING AGENT</text>
+  <text class="sub" x="26" y="243">next acquirer</text>
+  <!-- wires -->
+  <path class="wire g-held" d="M136 51 C 200 51,214 150,256 156"/>
+  <path class="wire wait" d="M136 109 C 200 109,214 158,256 162"/>
+  <path class="wire wait" d="M136 167 C 200 167,214 168,256 168"/>
+  <path class="wire g-acq" d="M136 229 C 200 229,214 184,256 176"/>
+  <path class="wire g-acq" d="M392 166 H468"/>
+  <text class="micro" x="196" y="28">ADMIT IF MEMORY PRESSURE OK</text>
+  <text class="sub" x="150" y="252" fill="var(--accent-2)" font-size="9.5px">checks pid → breaks → acquires</text>
+  <!-- lock -->
+  <rect class="box" x="256" y="118" width="136" height="96" rx="10"/>
+  <path class="padlock" d="M312 140v-5a6 6 0 0 1 12 0v5 M308 140h20v15h-20z"/>
+  <text class="lockname" x="324" y="178" text-anchor="middle">gpu.lock</text>
+  <text class="g-dead" x="324" y="194" text-anchor="middle">pid 4210 · dead</text>
+  <g class="g-stalebadge"><rect x="276" y="200" width="96" height="14" rx="4"/><text x="324" y="210" text-anchor="middle">STALE · BROKEN</text></g>
+  <!-- gpu -->
+  <rect class="box" x="468" y="118" width="156" height="96" rx="10"/>
+  <text class="lockname" x="546" y="146" text-anchor="middle" fill="var(--accent-3)">GPU · 12 GB</text>
+  <text class="sub" x="546" y="164" text-anchor="middle">one resident stack</text>
+  <rect class="g-membar" x="484" y="176" width="124" height="10" rx="3"/>
+  <rect class="g-memfill" x="486" y="178" width="78" height="6" rx="2"/>
+  <text class="micro" x="484" y="202">PUT THE OTHER AWAY FIRST</text>
+  <!-- travelers -->
+  <circle class="dot g-hold" r="4.5"/>
+  <circle class="dot g-break" r="4.5"/>
+</svg>
+<figcaption>Several stacks, one 12 GB GPU, no daemon — turns taken through a file lock; a dead holder's lock is broken by the next acquirer.</figcaption>
+</figure>
+
+<h2 style="font-family:var(--display);margin:2rem 0 .5rem">karaoke</h2>
+<figure class="projdiagram" aria-label="Diagram of YIN pitch detection: a mic waveform is windowed, then a copy is slid against itself; the lag where the wave best matches itself is one period, so frequency equals one over that period, mapped to the nearest musical note. A caption notes the octave ambiguity at double the period.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:12.5px;font-weight:600;letter-spacing:.04em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:10px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.6px;letter-spacing:.11em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .k-mic{fill:none;stroke:var(--ink-dim);stroke-width:1.4}
+.projdiagram .k-win{fill:none;stroke:var(--accent-3);stroke-width:1;stroke-dasharray:4 3}
+.projdiagram .k-orig{fill:none;stroke:var(--accent);stroke-width:1.8;filter:drop-shadow(0 0 2px var(--accent))}
+.projdiagram .k-copy{fill:none;stroke:var(--accent-2);stroke-width:1.6;stroke-dasharray:5 4;transform:translateX(0)}
+.projdiagram .k-guide{stroke:var(--accent-3);stroke-width:1;opacity:.9}
+.projdiagram .k-brace{stroke:var(--accent);stroke-width:1.2;fill:none}
+.projdiagram .k-tau{fill:var(--accent);font-size:11px;font-weight:600}
+.projdiagram .resname{fill:var(--accent);font-size:13px;font-weight:700;letter-spacing:.04em}
+@supports (transform:translateX(1px)){
+  .projdiagram .k-copy{animation:pd-yin-slide 9s ease-in-out infinite}
+  .projdiagram .k-guide{animation:pd-yin-lock 9s ease-in-out infinite}
+}
+@keyframes pd-yin-slide{0%,50%{transform:translateX(0)}66%{transform:translateX(34px)}84%,100%{transform:translateX(0)}}
+@keyframes pd-yin-lock{0%,50%{opacity:.95}64%,74%{opacity:.14}86%,100%{opacity:.95}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}.projdiagram .k-copy{transform:translateX(0)}.projdiagram .k-guide{opacity:.9}}
+</style>
+<svg viewBox="0 0 640 332" aria-hidden="true">
+  <text class="micro" x="16" y="18">MIC IN  ·  USB MIC ADDS DELAY</text>
+  <path class="k-mic" d="M30 46 Q41 37 52 46 Q63 55 74 46 Q85 37 96 46 Q107 55 118 46 Q129 37 140 46 Q151 55 162 46 Q173 37 184 46 Q195 55 206 46 Q217 37 228 46 Q239 55 250 46"/>
+  <rect class="k-win" x="72" y="28" width="116" height="36" rx="4"/>
+  <text class="micro" x="74" y="76" fill="var(--accent-3)">SHORT WINDOW</text>
+  <path class="wire" d="M130 80 V102"/>
+  <text class="micro" x="150" y="98">SLIDE A COPY OF THE WINDOW AGAINST ITSELF — IT LINES UP AT ONE PERIOD</text>
+  <!-- original vs shifted copy -->
+  <path class="k-orig" d="M80 150 Q110 136 140 150 Q170 164 200 150 Q230 136 260 150 Q290 164 320 150 Q350 136 380 150 Q410 164 440 150"/>
+  <path class="k-copy" d="M80 206 Q110 192 140 206 Q170 220 200 206 Q230 192 260 206 Q290 220 320 206 Q350 192 380 206 Q410 220 440 206"/>
+  <line class="k-guide" x1="110" y1="136" x2="110" y2="192"/>
+  <line class="k-guide" x1="230" y1="136" x2="230" y2="192"/>
+  <line class="k-guide" x1="350" y1="136" x2="350" y2="192"/>
+  <text class="sub" x="446" y="150" fill="var(--accent)">signal</text>
+  <text class="sub" x="446" y="210" fill="var(--accent-2)">copy</text>
+  <!-- tau brace between consecutive peaks -->
+  <path class="k-brace" d="M110 240 V246 H230 V240"/>
+  <text class="k-tau" x="170" y="262" text-anchor="middle">τ = ONE PERIOD</text>
+  <!-- result -->
+  <path class="wire" d="M440 170 C 470 170,470 200,500 200"/>
+  <rect class="box" x="470" y="246" width="154" height="66" rx="10"/>
+  <text class="resname" x="547" y="272" text-anchor="middle">f = 1 / τ</text>
+  <text class="sub" x="547" y="292" text-anchor="middle">262 Hz → nearest note</text>
+  <text class="title" x="547" y="306" text-anchor="middle" fill="var(--accent-3)">C4</text>
+  <text class="micro" x="16" y="300">ALSO MATCHES AT 2τ — THE OCTAVE AMBIGUITY</text>
+</svg>
+<figcaption>YIN pitch: a wave matches itself when shifted by exactly one period — it scores the note the singer actually heard, delay and all.</figcaption>
+</figure>
+
+<h2 style="font-family:var(--display);margin:2rem 0 .5rem">mood</h2>
+<figure class="projdiagram" aria-label="Diagram of the mood analyzer: a WASM plugin inside the music server has a 30-second budget so it only schedules one small task per track; the heavy ML runs in a Dockerized analyzer that turns the track into an Essentia embedding, then classifier heads produce mood scores and signal features, which 48 threshold recipes turn into playlists rebuilt weekly.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:12px;font-weight:600;letter-spacing:.04em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:9.5px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.6px;letter-spacing:.11em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .m-docker{fill:none;stroke:var(--accent-2);stroke-width:1.2;stroke-dasharray:5 4}
+.projdiagram .m-wasm{fill:none;stroke:var(--accent-3);stroke-width:1.2}
+.projdiagram .m-fp{stroke:var(--accent-2);stroke-width:2.4;stroke-linecap:round}
+.projdiagram .m-track{fill:none;stroke:var(--line);stroke-width:1}
+.projdiagram .m-fill{fill:var(--accent)}
+.projdiagram .accentname{fill:var(--accent);font-size:12px;font-weight:700;letter-spacing:.05em}
+.projdiagram .dot{fill:var(--accent-3);filter:drop-shadow(0 0 3px var(--accent-3))}
+.projdiagram .m-task{opacity:0}
+@supports (offset-path:path("M0 0h1")){
+  .projdiagram .m-task{offset-path:path("M214 70 L 320 70");animation:pd-mood-task 7s linear infinite}
+}
+@keyframes pd-mood-task{0%,18%{offset-distance:0%;opacity:0}24%{opacity:1}60%{offset-distance:100%;opacity:1}66%,100%{offset-distance:100%;opacity:0}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}}
+</style>
+<svg viewBox="0 0 640 360" aria-hidden="true">
+  <!-- track in -->
+  <text class="micro" x="16" y="30">TRACK</text>
+  <rect class="box" x="16" y="38" width="46" height="64" rx="8"/>
+  <path class="m-fp" d="M28 84 V78 M35 84 V62 M42 84 V70"/>
+  <path class="wire" d="M62 70 H80"/>
+  <!-- music server + wasm -->
+  <rect class="box" x="80" y="26" width="134" height="92" rx="10"/>
+  <text class="title" x="88" y="44">MUSIC SERVER</text>
+  <rect class="m-wasm" x="92" y="54" width="110" height="52" rx="6"/>
+  <text class="accentname" x="147" y="74" text-anchor="middle" fill="var(--accent-3)" font-size="11px">WASM PLUGIN</text>
+  <text class="sub" x="147" y="88" text-anchor="middle">30s budget</text>
+  <text class="sub" x="147" y="100" text-anchor="middle">schedules 1 task/track</text>
+  <path class="wire" d="M214 70 H320"/>
+  <text class="micro" x="236" y="62">1 TASK</text>
+  <!-- dockerized analyzer -->
+  <rect class="m-docker" x="320" y="20" width="304" height="104" rx="10"/>
+  <text class="micro" x="330" y="36" fill="var(--accent-2)">DOCKERIZED ANALYZER · HEAVY ML</text>
+  <rect class="box" x="332" y="46" width="124" height="66" rx="8"/>
+  <text class="title" x="394" y="66" text-anchor="middle">EMBEDDING</text>
+  <path class="m-fp" d="M348 100 V86 M356 100 V76 M364 100 V92 M372 100 V80 M380 100 V88 M388 100 V74 M396 100 V90 M404 100 V82 M412 100 V94 M420 100 V78 M428 100 V88 M436 100 V84"/>
+  <text class="sub" x="394" y="112" text-anchor="middle" font-size="8.5px">Essentia fingerprint</text>
+  <path class="wire" d="M456 79 H480"/>
+  <rect class="box" x="480" y="46" width="130" height="66" rx="8"/>
+  <text class="title" x="545" y="72" text-anchor="middle">CLASSIFIER</text>
+  <text class="title" x="545" y="88" text-anchor="middle">HEADS</text>
+  <text class="sub" x="545" y="104" text-anchor="middle" font-size="8.5px">one head per trait</text>
+  <path class="wire" d="M545 112 C 545 140,150 150,120 172"/>
+  <!-- scores -->
+  <text class="micro" x="20" y="164">MOOD SCORES + SIGNAL FEATURES</text>
+  <rect class="box" x="16" y="172" width="256" height="170" rx="10"/>
+  <g font-size="9.5px">
+    <text class="sub" x="28" y="196">happy</text><rect class="m-track" x="120" y="189" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="190" width="94" height="5" rx="2"/>
+    <text class="sub" x="28" y="216">relaxed</text><rect class="m-track" x="120" y="209" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="210" width="112" height="5" rx="2"/>
+    <text class="sub" x="28" y="236">energy</text><rect class="m-track" x="120" y="229" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="230" width="46" height="5" rx="2"/>
+    <text class="sub" x="28" y="256">danceability</text><rect class="m-track" x="120" y="249" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="250" width="70" height="5" rx="2"/>
+    <text class="sub" x="28" y="276">aggressive</text><rect class="m-track" x="120" y="269" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="270" width="24" height="5" rx="2"/>
+  </g>
+  <text class="sub" x="28" y="298" font-size="9.5px">voice ◁——————▷ instrumental</text>
+  <rect class="box" x="28" y="312" width="52" height="18" rx="5"/><text class="sub" x="54" y="324" text-anchor="middle" font-size="9px">BPM 104</text>
+  <rect class="box" x="90" y="312" width="52" height="18" rx="5"/><text class="sub" x="116" y="324" text-anchor="middle" font-size="9px">key Am</text>
+  <path class="wire" d="M272 250 H300"/>
+  <!-- recipes -->
+  <rect class="box" x="300" y="196" width="156" height="110" rx="10"/>
+  <text class="accentname" x="378" y="222" text-anchor="middle" font-size="11.5px">48 RECIPES</text>
+  <text class="sub" x="378" y="240" text-anchor="middle" font-size="9px">thresholds over scores</text>
+  <text class="sub" x="312" y="262" font-size="8.8px">high relaxed</text>
+  <text class="sub" x="312" y="276" font-size="8.8px">+ instrumental</text>
+  <text class="sub" x="312" y="290" font-size="8.8px">+ low energy</text>
+  <path class="wire" d="M456 250 H484"/>
+  <!-- playlists -->
+  <rect class="box" x="484" y="196" width="140" height="110" rx="10"/>
+  <text class="accentname" x="554" y="222" text-anchor="middle" fill="var(--accent-3)" font-size="11.5px">48 PLAYLISTS</text>
+  <g>
+    <rect x="500" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent) 32%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="526" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-2) 32%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="552" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-3) 34%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="578" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent) 24%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="500" y="262" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-3) 24%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="526" y="262" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-2) 24%,var(--bg-raise))" stroke="var(--line)"/>
+  </g>
+  <text class="sub" x="554" y="296" text-anchor="middle" font-size="9px">rebuilt weekly</text>
+  <circle class="dot m-task" r="4"/>
+</svg>
+<figcaption>A 30-second WASM budget forces the split: the plugin only schedules; the Dockerized analyzer does the heavy embedding and scoring.</figcaption>
+</figure>
+
+<h2 style="font-family:var(--display);margin:2rem 0 .5rem">autocharter</h2>
+<figure class="projdiagram" aria-label="Diagram of AutoCharter: audio is stem-separated to isolate the drums, onset detection finds when hits happen, a trained CNN classifies ride versus crash, and notes are placed into a playable chart. Below, evaluation is cross-validated grouped by song so no song appears in both train and test, and the final judge is Hector playing the chart.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:11px;font-weight:600;letter-spacing:.03em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:9px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.4px;letter-spacing:.1em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .c-wave{fill:none;stroke:var(--ink-dim);stroke-width:1.3}
+.projdiagram .c-drum{stroke:var(--accent);stroke-width:1.6;stroke-linecap:round}
+.projdiagram .c-base{stroke:var(--line);stroke-width:1}
+.projdiagram .c-onset{stroke:var(--accent-3);stroke-width:1.8;stroke-linecap:round}
+.projdiagram .c-crash{fill:color-mix(in srgb,var(--accent) 45%,var(--bg-raise));stroke:var(--accent);stroke-width:1}
+.projdiagram .c-ride{fill:color-mix(in srgb,var(--accent-3) 45%,var(--bg-raise));stroke:var(--accent-3);stroke-width:1}
+.projdiagram .accentname{fill:var(--accent);font-size:11px;font-weight:700;letter-spacing:.04em}
+.projdiagram .c-chip{fill:var(--bg-raise);stroke:var(--line);stroke-width:1}
+.projdiagram .c-ear{fill:none;stroke:var(--accent-2);stroke-width:1.6;stroke-linecap:round}
+.projdiagram .c-verdict{fill:var(--accent-2);font-size:11px;font-weight:700;letter-spacing:.04em}
+@supports (opacity:0){
+  .projdiagram .c-onset{animation:pd-chart-tick 6s ease-in-out infinite}
+  .projdiagram .c-onset:nth-of-type(2){animation-delay:.3s}
+  .projdiagram .c-onset:nth-of-type(3){animation-delay:.6s}
+  .projdiagram .c-onset:nth-of-type(4){animation-delay:.9s}
+}
+@keyframes pd-chart-tick{0%,40%{opacity:.3}55%,80%{opacity:1}95%,100%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}.projdiagram .c-onset{opacity:1}}
+</style>
+<svg viewBox="0 0 640 352" aria-hidden="true">
+  <!-- audio -->
+  <text class="micro" x="16" y="26">AUDIO</text>
+  <rect class="box" x="16" y="34" width="70" height="64" rx="8"/>
+  <path class="c-wave" d="M26 66 Q33 50 40 66 Q47 82 54 66 Q61 52 68 66 Q75 80 78 66"/>
+  <path class="wire" d="M86 66 H104"/>
+  <!-- stem sep -->
+  <rect class="box" x="104" y="34" width="116" height="64" rx="8"/>
+  <text class="title" x="162" y="52" text-anchor="middle">STEM SEP</text>
+  <text class="sub" x="162" y="65" text-anchor="middle">isolate drums</text>
+  <path class="c-drum" d="M116 90 V80 M126 90 V72 M136 90 V84 M146 90 V70 M156 90 V86 M166 90 V76 M176 90 V88 M186 90 V74 M196 90 V84 M206 90 V80"/>
+  <path class="wire" d="M220 66 H238"/>
+  <!-- onsets -->
+  <rect class="box" x="238" y="34" width="120" height="64" rx="8"/>
+  <text class="title" x="298" y="52" text-anchor="middle">ONSETS</text>
+  <text class="sub" x="298" y="65" text-anchor="middle">when hits happen</text>
+  <line class="c-base" x1="250" y1="86" x2="346" y2="86"/>
+  <line class="c-onset" x1="262" y1="86" x2="262" y2="74"/>
+  <line class="c-onset" x1="288" y1="86" x2="288" y2="72"/>
+  <line class="c-onset" x1="312" y1="86" x2="312" y2="76"/>
+  <line class="c-onset" x1="334" y1="86" x2="334" y2="73"/>
+  <path class="wire" d="M358 66 H376"/>
+  <!-- cnn -->
+  <rect class="box" x="376" y="34" width="110" height="64" rx="8"/>
+  <text class="title" x="431" y="52" text-anchor="middle">CNN</text>
+  <text class="sub" x="431" y="65" text-anchor="middle">ride vs crash</text>
+  <rect class="c-ride" x="390" y="74" width="40" height="16" rx="4"/><text class="sub" x="410" y="86" text-anchor="middle" font-size="8.5px">RIDE</text>
+  <rect class="c-crash" x="436" y="74" width="40" height="16" rx="4"/><text class="sub" x="456" y="86" text-anchor="middle" font-size="8.5px">CRASH</text>
+  <path class="wire" d="M486 66 H504"/>
+  <!-- chart -->
+  <rect class="box" x="504" y="34" width="120" height="64" rx="8"/>
+  <text class="title" x="564" y="50" text-anchor="middle">CHART</text>
+  <line class="c-base" x1="520" y1="60" x2="608" y2="60"/><line class="c-base" x1="520" y1="74" x2="608" y2="74"/><line class="c-base" x1="520" y1="88" x2="608" y2="88"/>
+  <rect class="c-ride" x="524" y="55" width="12" height="9" rx="2"/>
+  <rect class="c-crash" x="548" y="69" width="12" height="9" rx="2"/>
+  <rect class="c-ride" x="572" y="55" width="12" height="9" rx="2"/>
+  <rect class="c-crash" x="590" y="83" width="12" height="9" rx="2"/>
+  <!-- eval band -->
+  <text class="micro" x="16" y="134">HONEST EVALUATION</text>
+  <rect class="box" x="16" y="144" width="334" height="176" rx="10"/>
+  <text class="accentname" x="30" y="168">CROSS-VALIDATION GROUPED BY SONG</text>
+  <text class="sub" x="30" y="184">no song in both train and test</text>
+  <text class="micro" x="46" y="214" fill="var(--accent-3)">TRAIN</text>
+  <rect class="c-chip" x="40" y="222" width="70" height="20" rx="5"/><text class="sub" x="75" y="235" text-anchor="middle">song-A</text>
+  <rect class="c-chip" x="40" y="248" width="70" height="20" rx="5"/><text class="sub" x="75" y="261" text-anchor="middle">song-B</text>
+  <rect class="c-chip" x="40" y="274" width="70" height="20" rx="5"/><text class="sub" x="75" y="287" text-anchor="middle">song-C</text>
+  <line x1="190" y1="206" x2="190" y2="300" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
+  <text class="micro" x="236" y="214" fill="var(--accent)">TEST</text>
+  <rect class="c-chip" x="230" y="222" width="70" height="20" rx="5"/><text class="sub" x="265" y="235" text-anchor="middle">song-D</text>
+  <text class="sub" x="214" y="282" font-size="8.6px">whole songs,</text>
+  <text class="sub" x="214" y="294" font-size="8.6px">never split</text>
+  <!-- final judge -->
+  <path class="wire" d="M350 232 H378"/>
+  <rect class="box" x="378" y="160" width="246" height="144" rx="10"/>
+  <text class="accentname" x="394" y="186" fill="var(--accent-2)">THE FINAL JUDGE</text>
+  <path class="c-ear" d="M470 236a26 26 0 0 1 52 0"/>
+  <rect class="c-ear" x="466" y="234" width="12" height="22" rx="5"/>
+  <rect class="c-ear" x="514" y="234" width="12" height="22" rx="5"/>
+  <polygon points="491,228 491,250 509,239" fill="var(--accent-2)" opacity="0.7"/>
+  <text class="c-verdict" x="430" y="214" >HE PLAYS THE CHART</text>
+  <text class="sub" x="394" y="236">metrics guide it,</text>
+  <text class="sub" x="394" y="250">ears decide it.</text>
+  <text class="sub" x="394" y="286" font-size="8.8px">the deciding vote is a human playthrough</text>
+</svg>
+<figcaption>Audio → drums → onsets → a trained ride/crash CNN → a playable chart; metrics guide it, but ears decide it.</figcaption>
+</figure>
+
+</div></body></html>

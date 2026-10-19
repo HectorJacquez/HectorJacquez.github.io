@@ -1,0 +1,55 @@
+<figure class="projdiagram" aria-label="Diagram of YIN pitch detection: a mic waveform is windowed, then a copy is slid against itself; the lag where the wave best matches itself is one period, so frequency equals one over that period, mapped to the nearest musical note. A caption notes the octave ambiguity at double the period.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:12.5px;font-weight:600;letter-spacing:.04em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:10px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.6px;letter-spacing:.11em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .k-mic{fill:none;stroke:var(--ink-dim);stroke-width:1.4}
+.projdiagram .k-win{fill:none;stroke:var(--accent-3);stroke-width:1;stroke-dasharray:4 3}
+.projdiagram .k-orig{fill:none;stroke:var(--accent);stroke-width:1.8;filter:drop-shadow(0 0 2px var(--accent))}
+.projdiagram .k-copy{fill:none;stroke:var(--accent-2);stroke-width:1.6;stroke-dasharray:5 4;transform:translateX(0)}
+.projdiagram .k-guide{stroke:var(--accent-3);stroke-width:1;opacity:.9}
+.projdiagram .k-brace{stroke:var(--accent);stroke-width:1.2;fill:none}
+.projdiagram .k-tau{fill:var(--accent);font-size:11px;font-weight:600}
+.projdiagram .resname{fill:var(--accent);font-size:13px;font-weight:700;letter-spacing:.04em}
+@supports (transform:translateX(1px)){
+  .projdiagram .k-copy{animation:pd-yin-slide 9s ease-in-out infinite}
+  .projdiagram .k-guide{animation:pd-yin-lock 9s ease-in-out infinite}
+}
+@keyframes pd-yin-slide{0%,50%{transform:translateX(0)}66%{transform:translateX(34px)}84%,100%{transform:translateX(0)}}
+@keyframes pd-yin-lock{0%,50%{opacity:.95}64%,74%{opacity:.14}86%,100%{opacity:.95}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}.projdiagram .k-copy{transform:translateX(0)}.projdiagram .k-guide{opacity:.9}}
+</style>
+<svg viewBox="0 0 640 332" aria-hidden="true">
+  <text class="micro" x="16" y="18">MIC IN  ·  USB MIC ADDS DELAY</text>
+  <path class="k-mic" d="M30 46 Q41 37 52 46 Q63 55 74 46 Q85 37 96 46 Q107 55 118 46 Q129 37 140 46 Q151 55 162 46 Q173 37 184 46 Q195 55 206 46 Q217 37 228 46 Q239 55 250 46"/>
+  <rect class="k-win" x="72" y="28" width="116" height="36" rx="4"/>
+  <text class="micro" x="74" y="76" fill="var(--accent-3)">SHORT WINDOW</text>
+  <path class="wire" d="M130 80 V102"/>
+  <text class="micro" x="150" y="98">SLIDE A COPY OF THE WINDOW AGAINST ITSELF — IT LINES UP AT ONE PERIOD</text>
+  <!-- original vs shifted copy -->
+  <path class="k-orig" d="M80 150 Q110 136 140 150 Q170 164 200 150 Q230 136 260 150 Q290 164 320 150 Q350 136 380 150 Q410 164 440 150"/>
+  <path class="k-copy" d="M80 206 Q110 192 140 206 Q170 220 200 206 Q230 192 260 206 Q290 220 320 206 Q350 192 380 206 Q410 220 440 206"/>
+  <line class="k-guide" x1="110" y1="136" x2="110" y2="192"/>
+  <line class="k-guide" x1="230" y1="136" x2="230" y2="192"/>
+  <line class="k-guide" x1="350" y1="136" x2="350" y2="192"/>
+  <text class="sub" x="446" y="150" fill="var(--accent)">signal</text>
+  <text class="sub" x="446" y="210" fill="var(--accent-2)">copy</text>
+  <!-- tau brace between consecutive peaks -->
+  <path class="k-brace" d="M110 240 V246 H230 V240"/>
+  <text class="k-tau" x="170" y="262" text-anchor="middle">τ = ONE PERIOD</text>
+  <!-- result -->
+  <path class="wire" d="M440 170 C 470 170,470 200,500 200"/>
+  <rect class="box" x="470" y="246" width="154" height="66" rx="10"/>
+  <text class="resname" x="547" y="272" text-anchor="middle">f = 1 / τ</text>
+  <text class="sub" x="547" y="292" text-anchor="middle">262 Hz → nearest note</text>
+  <text class="title" x="547" y="306" text-anchor="middle" fill="var(--accent-3)">C4</text>
+  <text class="micro" x="16" y="300">ALSO MATCHES AT 2τ — THE OCTAVE AMBIGUITY</text>
+</svg>
+<figcaption>YIN pitch: a wave matches itself when shifted by exactly one period — it scores the note the singer actually heard, delay and all.</figcaption>
+</figure>

@@ -1,26 +1,27 @@
 /* ---------- design tokens ---------- */
 :root {
-  --bg: #0c0f10;
-  --bg-raise: #131720;
-  --bg-card: #161f18;
-  --ink: #e6e9e4;
-  --ink-dim: #96a094;
-  --ink-faint: #5a6358;
-  --accent: #8fd672;        /* leaf green — the lead */
-  --accent-2: #a78bfa;      /* hub violet — the support */
-  --accent-3: #f2a65a;      /* amber — highlights only */
-  --line: #24312a;
+  --bg: #0e0d11;
+  --bg-raise: #17151d;
+  --bg-card: #191620;
+  --ink: #e9e7ea;
+  --ink-dim: #9a95a0;
+  --ink-faint: #5f5a66;
+  --accent: #f2a65a;        /* warm amber, the lead */
+  --accent-2: #a78bfa;      /* violet, the support */
+  --accent-3: #5ec8d4;      /* teal, the pop */
+  --line: #2a2533;
   --radius: 14px;
   --maxw: 1080px;
   --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
+  --display: "Space Grotesk", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: light) {
   :root {
-    --bg: #f5f8f3; --bg-raise: #eaf0e6; --bg-card: #ffffff;
-    --ink: #1a1e19; --ink-dim: #58615a; --ink-faint: #99a399;
-    --accent: #3d8a28; --accent-2: #6d4fc4; --accent-3: #c77828;
-    --line: #dbe4d6;
+    --bg: #faf7f2; --bg-raise: #f1ece3; --bg-card: #ffffff;
+    --ink: #1c1a18; --ink-dim: #5f5a52; --ink-faint: #a09a90;
+    --accent: #c77828; --accent-2: #6d4fc4; --accent-3: #2f8a96;
+    --line: #e6e0d5;
   }
 }
 
@@ -40,12 +41,15 @@ pre {
   border-radius: var(--radius); padding: 1rem 1.2rem; overflow-x: auto;
 }
 
+h1, h2 { font-family: var(--display); }
+nav.top .brand span { font-family: var(--display); }
+
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 1.4rem; }
 
 /* ---------- nav ---------- */
 nav.top {
   position: sticky; top: 0; z-index: 10;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  background: color-mix(in srgb, var(--bg) 93%, transparent);
   backdrop-filter: blur(10px);
 }
 nav.top::after { /* gradient hairline instead of a flat border */
@@ -57,12 +61,22 @@ nav.top::after { /* gradient hairline instead of a flat border */
 }
 nav.top .wrap { display: flex; align-items: center; gap: 0.9rem; height: 58px; }
 nav.top .brand {
-  font-weight: 700; color: var(--ink); letter-spacing: 0.02em;
-  display: inline-flex; align-items: center; gap: 0.55rem; margin-right: 0.7rem;
+  display: inline-flex; align-items: center; gap: 0.6rem; margin-right: 0.7rem;
+  letter-spacing: 0.02em; transition: filter .2s ease, transform .2s ease;
 }
-nav.top .brand:hover { text-decoration: none; color: var(--accent); }
-/* equalizer-bars brandmark: static at rest, dances on hover */
-.brandmark { flex: 0 0 auto; }
+nav.top .brand .brandmark {
+  background: var(--accent); border-radius: 999px; padding: 6px 14px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+nav.top .brand .brandname {
+  color: var(--ink); font-weight: 700; font-size: 1.1rem; line-height: 1; white-space: nowrap;
+}
+nav.top .brand:hover { text-decoration: none; filter: brightness(1.05); transform: translateY(-1px); }
+nav.top .brand:hover .brandname { color: var(--accent); }
+/* niko-nose brandmark: same-size pill as the name, logo centred inside */
+.brandmark { flex: 0 0 auto; transition: transform .25s ease; }
+.brandimg { height: 28px; width: auto; display: block; }
+nav.top .brand:hover .brandmark { transform: scale(1.04) rotate(-3deg); }
 .brandmark .eq { fill: var(--accent); transform-box: fill-box; transform-origin: bottom; }
 .brandmark .eq2 { fill: var(--accent-2); }
 .brandmark .eq3 { fill: var(--accent-3); }
@@ -148,6 +162,51 @@ header.hero::before {
 /* ---------- console reveal (the one loud thing) ---------- */
 .hero-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2.4rem; align-items: center; position: relative; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+.hero-text { position: relative; max-width: 42rem; }
+.hero .kicker { font-size: clamp(0.95rem, 2vw, 1.15rem); line-height: 1.3; margin-bottom: 1rem; }
+.openwork {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.95rem; color: var(--ink-dim); margin: 0 0 1.6rem;
+}
+.openwork::before {
+  content: ""; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 8px var(--accent);
+  animation: ow-pulse 2.2s ease-in-out infinite;
+}
+@keyframes ow-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@media (prefers-reduced-motion: reduce) { .openwork::before { animation: none; } }
+
+/* music control pinned in the top-right corner: play button + a rotary knob */
+.musicdot {
+  position: fixed; top: 74px; right: 18px; z-index: 20;
+  display: flex; align-items: center; gap: 10px;
+}
+.md-btn {
+  width: 40px; height: 40px; border-radius: 50%; cursor: pointer; flex: 0 0 auto;
+  border: 1px solid var(--line); color: var(--accent); font-size: 0.8rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02) 60%), var(--bg-card);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 3px 10px rgba(0,0,0,0.3);
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), border-color .2s;
+}
+.md-btn:hover { transform: scale(1.08); border-color: var(--accent); }
+.musicdot.playing .md-btn { border-color: var(--accent); box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 12px color-mix(in srgb, var(--accent) 45%, transparent); }
+
+/* a physical-looking volume knob */
+.knob {
+  width: 38px; height: 38px; border-radius: 50%; position: relative; flex: 0 0 auto;
+  cursor: ns-resize; touch-action: none;
+  background: radial-gradient(circle at 50% 34%, #454b45, #15181a 72%);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.18), inset 0 -4px 6px rgba(0,0,0,0.55), 0 2px 6px rgba(0,0,0,0.4);
+}
+.knob:hover, .knob:focus-visible { outline: none; box-shadow: inset 0 2px 3px rgba(255,255,255,0.22), inset 0 -4px 6px rgba(0,0,0,0.55), 0 0 10px color-mix(in srgb, var(--accent) 40%, transparent); }
+.knob-ind {
+  position: absolute; left: 50%; top: 4px; width: 2.5px; height: 12px; border-radius: 2px;
+  background: var(--accent); box-shadow: 0 0 5px var(--accent);
+  transform-origin: 50% 15px; transform: translateX(-50%) rotate(var(--ang, -135deg));
+}
+@media (max-width: 1100px) { .musicdot { top: auto; bottom: 16px; right: 16px; } }
 .tvwrap { text-align: center; }
 .tv {
   border-radius: 20px; padding: 16px 16px 10px;
@@ -215,13 +274,18 @@ header.hero::before {
   .tv.boot .tv-screen, .tv-title { animation: none; }
 }
 
-#wave {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  z-index: 0; opacity: 0.4; pointer-events: none;
-  -webkit-mask-image: linear-gradient(180deg, transparent 2%, #000 30%, #000 72%, transparent 98%);
-  mask-image: linear-gradient(180deg, transparent 2%, #000 30%, #000 72%, transparent 98%);
+/* two vertical visualizers pinned to the page edges, desktop only, behind
+   all content so the center stays clean and readable */
+.sidewave {
+  position: fixed; top: 0; width: 84px; height: 100vh; display: block;
+  z-index: 0; pointer-events: none; opacity: 0.5;
 }
-header.hero .wrap { position: relative; z-index: 1; }
+.sidewave.l { left: 0; }
+.sidewave.r { right: 0; }
+@media (max-width: 1100px) { .sidewave { display: none; } }
+/* keep every content block above the fixed edge canvases (but not the nav,
+   whose sticky positioning must survive, nor the fixed music widget) */
+body > *:not(.sidewave):not(.top):not(.musicdot) { position: relative; z-index: 1; }
 
 /* ---------- sections ---------- */
 section { padding: 3.4rem 0; }

@@ -3,16 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How a Playlist Cover Generator Became a Distributed System</title>
-<link rel="stylesheet" href="style.css?v=green3">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>How wanting my own Spotify turned into all of this</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=1">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=1">
+<link rel="icon" href="favicon.ico?v=1" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
+<link rel="stylesheet" href="style.css?v=amber7">
 </head>
 <body>
 
 <nav class="top">
   <div class="wrap">
-    <a class="brand" href="index.html"><svg class="brandmark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect class="eq eq1" x="2.5" y="11" width="3.6" height="8" rx="1.8"/><rect class="eq eq2" x="9.2" y="5" width="3.6" height="14" rx="1.8"/><rect class="eq eq3" x="15.9" y="8" width="3.6" height="11" rx="1.8"/></svg><span>Hector Jacquez</span></a>
+    <a class="brand" href="index.html"><span class="brandmark"><img class="brandimg" src="niko-nose-2.png?v=2" alt="" width="54" height="28"></span><span class="brandname">Hector Jacquez</span></a>
     <span class="spacer"></span>
-    <a class="item" href="index.html#featured">Projects</a>
+    <a class="item" href="index.html#music">Music</a>
+    <a class="item" href="index.html#games">Games</a>
+    <a class="item" href="index.html#work">Work</a>
     <a class="item" href="essay.html" aria-current="page">The Story</a>
     <a class="item" href="stats.html">Listening</a>
     <a class="item external" href="https://hedge-at-hog.neocities.org/">The Fun Site</a>
@@ -20,87 +32,88 @@
 </nav>
 
 <article class="essay">
-  <div class="kicker">The Story · ~6 min</div>
-  <h1>How a Playlist Cover Generator Became a Distributed System</h1>
-  <p class="dek">One home server, a music collection that kept asking for more,
-  and the textbook monolith-to-distributed-to-consolidation arc — except it
-  happened in my living room.</p>
+  <div class="kicker">The long version · ~6 min</div>
+  <h1>How wanting my own Spotify turned into all of this</h1>
+  <p class="dek">It started as a way to stream my own music instead of Spotify,
+  and keeping it the way I wanted kept adding pieces until it was a home server
+  with a job queue and a few machines doing the work behind it.</p>
 
   <h2>It started with wanting my own Spotify</h2>
-  <p>I left Spotify and set up Navidrome on a home server to stream my own
-  library. Ownership felt great for about a week, and then I started missing
-  two things: the playlists and the lyrics. Chasing those two itches built
-  everything else on this site.</p>
+  <p>I left Spotify because I didn't like how much their algorithm steered what I
+  listened to, and I missed curating my own library. So I set up Navidrome on a
+  home server to stream my own music, and having my own copy of everything was good
+  for about a week before I started missing two things, the playlists and the
+  lyrics. Going after those two is what built everything else on this site.</p>
 
-  <p>Lyrics came first. A cron script fetched synced lyrics from LRCLIB and
-  wrote <code>.lrc</code> sidecars into the library so players would scroll
-  them. Polite rate limiting, a cache for misses, a nightly timer. For the
-  tracks nobody had ever transcribed, I eventually pointed stem separation and
-  Whisper at my own files, and added romaji and translation for the Japanese
-  half of my collection. The playlists itch became mood analysis: a Navidrome
-  plugin with an audio-ML sidecar scoring every track, feeding 48 generated
-  mood playlists — and later a chat harness that builds a playlist for whatever
-  mood I ask for, and answers music trivia from real sources instead of a
-  model's imagination.</p>
+  <p>Lyrics came first. A cron script fetched synced lyrics from LRCLIB, an
+  open-source lyric library that keeps growing, and wrote <code>.lrc</code>
+  sidecars into the library so the players would scroll them. I run it on a nightly
+  timer for two reasons: so any new music I add gets its lyrics on its own, and
+  because LRCLIB keeps growing, so a track that had nothing last time might have
+  lyrics the next time it runs. It also has polite rate limiting and a cache for the
+  misses. For the tracks nobody had ever transcribed, I eventually pointed stem
+  separation and Whisper at my own files, and I added romaji and translation for
+  the Japanese half of my collection. The playlists turned into mood analysis,
+  which is a Navidrome plugin with an audio-ML sidecar that scores every track and
+  feeds 48 generated mood playlists, and later a chat harness that builds a
+  playlist for whatever mood I ask for and answers music trivia from real sources
+  instead of from a model's imagination.</p>
 
-  <p>And the mood playlists led to the pictures: I wanted AI-painted covers for
-  them, and the image models lived on a different machine's GPU. That forced the first real architecture
-  decision, and everything since has inherited it: <b>the GPU machine pulls jobs,
-  and the server never reaches into it.</b> The image backend only listens on
-  loopback and has no auth, on purpose, so the worker polls a queue, renders, and
-  streams results back. Results come back per model, because SD-Turbo finishes in
-  20 seconds and FLUX takes eleven minutes, and nobody wants to wait on the slow
-  painter to see the fast one.</p>
+  <p>The mood playlists then led to the pictures, because I wanted to create covers
+  for the playlists, but the good image models needed to run on my stronger machine.
+  That forced the first real architecture decision, and everything since has
+  inherited it, which is that <b>the GPU machine pulls jobs, and the server never
+  reaches into it.</b> The worker polls a queue, renders, and sends the results back,
+  and because different models finish at very different speeds, each one shows up as
+  soon as it is done rather than waiting on the slowest.</p>
 
-  <blockquote>The day a second machine started polling the first, the hobby
-  became a distributed system, whether I'd admitted it yet or not.</blockquote>
+  <blockquote>The day a second machine started polling the first, the hobby had
+  turned into a distributed system.</blockquote>
 
-  <h2>The pattern gets copied — a lot</h2>
-  <p>Once a pull-queue existed, every new want became a lane on it. Voice cloning
-  for a daily listening brief. Stem separation, which promptly fed back into the
-  origin lane by transcribing lyrics LRCLIB didn't have. One commit from that week
-  I still like: <i>"don't pay demucs to prove a track has no vocals."</i> Looping
-  canvas videos for album art, after probing the official source, hitting a wall,
-  and committing the dead end as documentation so nobody retries it. Image-to-3D
-  meshes. And a local coding agent — because after building my chat assistants
-  on a small local model, I'd learned that models optimized for a consumer
-  graphics card can carry real jobs, and I didn't want every task leaning on
-  paid frontier tokens. Each lane copied the same queue-and-lease
-  mechanics. Workers advertise what they can do through a capability heartbeat
-  that probes everything live at beat time, a rule written after a stale venv
-  spent four days advertising a capability it didn't have.</p>
+  <h2>The pattern gets copied over and over</h2>
+  <p>Once a pull-queue existed, every new thing I wanted became another lane on it.
+  Voice cloning went on for a daily listening brief, and stem separation went on and
+  promptly fed back into the original lane by transcribing lyrics LRCLIB didn't have,
+  which is where one of the commit messages from that stretch came from,
+  <i>"don't pay demucs to prove a track has no vocals."</i> Looping canvas videos for
+  album art went on after I probed the official source and hit a wall, and then came
+  image-to-3D meshes and a local coding agent, which I added because building my chat assistants
+  on a small local model had already shown me that models tuned for a consumer
+  graphics card can carry real work, and I didn't want every task leaning on paid
+  frontier tokens. Each lane copied the same queue-and-lease mechanics, and the
+  workers advertise what they can do through a capability heartbeat that probes
+  everything live at beat time, a rule I wrote after a stale venv spent four days
+  advertising a capability it didn't actually have.</p>
 
-  <p>At the busiest stretch it was two machines and multiple AI coding agents
-  coordinating through a shared board, with a knowledge-base wiki so that
-  anything learned twice only had to be learned once.</p>
+  <p>At the busiest stretch it was two machines and several AI coding agents
+  coordinating through a shared board, along with a knowledge-base wiki where I wrote
+  things down so I wouldn't have to work them out a second time.</p>
 
-  <h2>One GPU, many hungry stacks</h2>
+  <h2>One GPU shared by many stacks</h2>
   <p>A single 12&nbsp;GB consumer card serves image generation, stem separation,
-  several local LLMs, and a coding agent. They take turns through a file lock
-  rather than a daemon, because the kernel mediates a lock file and there is
-  nothing to deploy, restart, or crash. If a process dies holding the lock, the
-  next one checks the pid and breaks it. Admission is gated on memory pressure
-  instead of free-VRAM math, and the resident stack gets put away before the next
-  one loads. Hoping two models fit is not a memory strategy.</p>
+  several local LLMs, and a coding agent, and they take turns through a file lock
+  rather than a daemon, because the kernel already mediates a lock file and that
+  leaves nothing extra to deploy or restart. If a process dies while holding the
+  lock, the next one checks the pid and breaks it. Admission is gated on memory
+  pressure rather than on free-VRAM arithmetic, and the resident stack gets unloaded
+  before the next one loads, because I didn't want the system relying on two models
+  happening to fit at the same time.</p>
 
-  <h2>Consolidation: five queues become one, then become a log</h2>
-  <p>By October the copies had drifted enough to hurt, so I collapsed them into a
-  single lease engine. The migration ran diff-first: tests green on the old
-  implementation, then green and unchanged on the new one. Two weeks later the
-  queues went event-sourced on Postgres. Instead of a status table that
-  overwrites itself, every state change is an append to an event log, and current
-  state is derived from the log. That one change answered two old complaints at
-  once: "why did this job fail last Tuesday" became answerable, and claim-to-done
-  latency percentiles per lane came basically for free. Claims are optimistic
-  appends arbitrated by a unique constraint, and when the database is down the
-  hub limps instead of dying. A load test found the first real inefficiency
-  within hours. The fix landed the next commit.</p>
+  <h2>Pulling it back together</h2>
+  <p>After building a few of these queues by copying the same pattern each time, I
+  realized it was only going to keep growing, so I pulled them back into a single
+  shared engine. I did the refactor carefully: I wrote tests against the old versions
+  first, then made sure they stayed green on the new one, so I could prove the
+  behavior had not changed. Later I moved the whole thing onto a real database and had
+  it keep an append-only history of every job instead of overwriting state, which
+  means I can actually answer what happened to any job after the fact, and it keeps
+  limping along instead of falling over when the database is unavailable.</p>
 
   <h2>What the system is now</h2>
-  <p>The "my own Spotify" goal eventually reached the players themselves: I
-  forked my desktop and Android music clients so the home-grown features show
-  up on every screen — my playlist folders, the looping video art the server
-  generates for albums (yes, inspired by Spotify's version), and on the phone,
+  <p>The "my own Spotify" goal eventually reached the players themselves, so I
+  forked my desktop and Android music clients to make the home-grown features show
+  up on every screen, including my playlist folders, the looping video art the server
+  generates for albums (which was inspired by Spotify's version), and, on the phone,
   the chat assistant built right into the player.</p>
 
 <figure class="diorama" aria-label="Animated diagram of the hedgy-hub pipeline: a song enters the hub, jobs travel out to lyrics, mood analysis, and GPU workers and return; one job's lease expires mid-flight and is re-served to the second worker; a finished cover lands on the playlist shelf.">
@@ -214,39 +227,36 @@
   <circle class="dot d-ret" r="4.5"/>
   <circle class="dot d-drop" r="4.5"/>
 </svg>
-<figcaption>The shape of it: jobs pull, leases expire, nothing pushes.</figcaption>
+<figcaption>The gist of it is that jobs get pulled, leases expire, and nothing is ever pushed.</figcaption>
 </figure>
 
   <p>The same machinery that started with lyrics now hosts music-ML research
-  lanes, a karaoke engine, 3D asset pipelines, and agent-driven porting
-  campaigns. The timeline below is reconstructed from the git history —
-  including the honest caveat that the earliest era predates version control and
-  survives only in battle-scar comments like <code>CONFIRMED LIVE (Aug 25
-  2026)</code>.</p>
+  lanes, a karaoke engine, 3D asset pipelines, and agent-driven porting campaigns.
+  The timeline below is roughly how it grew.</p>
 
   <ul class="timeline">
-    <li><span class="when">the beginning</span>Navidrome goes up: my own Spotify. The missing playlists and lyrics become the roadmap.</li>
-    <li><span class="when">then</span>The lyrics fetcher: a cron script writing .lrc sidecars. Mood analysis starts scoring the library.</li>
-    <li><span class="when">then</span>Playlist covers need a remote GPU → the first pull-worker queue. TTS, voice extraction, DJ sets follow the pattern.</li>
-    <li><span class="when">then</span>Everything enters version control. Capability heartbeats: workers advertise what they can do, probed live.</li>
-    <li><span class="when">then</span>The lane explosion: stems (feeding lyric transcription), image→3D meshes, a local coding agent, a knowledge-base wiki, a multi-agent board.</li>
-    <li><span class="when">then</span>The rename — the "lyrics fetcher" finally admits it's a hub. The GPU fleet migrates from Windows to Linux, lane by lane.</li>
-    <li><span class="when">then</span>Visualizer preset lab, karaoke with YIN pitch scoring, the Kiln image→3D object lane.</li>
-    <li><span class="when">consolidation</span>Five copied queues collapse into one lease engine, migrated diff-first. Then Postgres: event-sourced queues with latency percentiles, and a CI gate over 24 suites.</li>
-    <li><span class="when">now</span>The platform outgrows music: decomp research lanes, charting ML, and this portfolio.</li>
+    <li><span class="when">the beginning</span>Navidrome goes up, my own Spotify, and the missing playlists and lyrics are what everything else follows from.</li>
+    <li><span class="when">then</span>The lyrics fetcher, a cron script writing .lrc sidecars, and mood analysis starts scoring the library.</li>
+    <li><span class="when">then</span>Playlist covers need a remote GPU, so the first pull-worker queue gets built, and TTS, voice extraction, and DJ sets follow the same pattern.</li>
+    <li><span class="when">then</span>Everything enters version control, and capability heartbeats arrive, where workers advertise what they can do and it gets probed live.</li>
+    <li><span class="when">then</span>More lanes get added, including stems (which feed lyric transcription), image→3D meshes, a local coding agent, a knowledge-base wiki, and a multi-agent board.</li>
+    <li><span class="when">then</span>The rename, where the "lyrics fetcher" becomes a hub, and the GPU fleet migrates from Windows to Linux, lane by lane.</li>
+    <li><span class="when">then</span>Visualizer preset lab, karaoke with YIN pitch scoring, and the Kiln image→3D object lane.</li>
+    <li><span class="when">consolidation</span>The copied queues get pulled back into one shared engine, carefully tested so the behavior stays the same, and later moved onto a real database that keeps a full history of every job.</li>
+    <li><span class="when">now</span>The platform grows past music into decomp research lanes, charting ML, and this portfolio.</li>
   </ul>
 
   <h2>What I took away from all this</h2>
-  <p>Constraints are where the architecture comes from. The 30-second WASM budget
-  designed the mood-playlist plugin, and the locked-down GPU backend designed the
-  pull pattern. I also learned to trust my ears over my metrics: the numbers
-  guided the charting models, but playing the charts myself caught what the
-  numbers missed. And after months of working with AI coding agents, the rule
-  that saved me the most money: when an agent fails, check the harness before
-  blaming the model. Most of what looks like model weakness is environment
-  weakness.</p>
+  <p>A lot of the architecture here came straight out of the constraints. The
+  30-second limit on the plugin is what shaped the mood-playlist design, and the
+  image models living on a separate machine is what shaped the pull pattern. I also
+  learned to trust my ears over my metrics, because the numbers guided the charting
+  models but playing the charts myself caught the things the numbers missed. And
+  after a while working with AI coding agents, the habit I keep coming back to is to
+  check the harness before blaming the model when an agent fails, because most of
+  what looks like a weak model turns out to be a weak environment around it.</p>
 
-  <p><a href="index.html#featured">← Back to the projects</a></p>
+  <p><a href="index.html#music">← Back to the projects</a></p>
 </article>
 
 <footer>

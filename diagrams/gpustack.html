@@ -1,0 +1,76 @@
+<figure class="projdiagram" aria-label="Diagram: several stacks share one 12 GB GPU by taking turns through a file lock. One stack holds the lock and its process dies; the next acquirer reads the recorded pid, sees it is dead, breaks the stale lock, and proceeds after the resident stack is unloaded.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:12.5px;font-weight:600;letter-spacing:.04em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:10px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.6px;letter-spacing:.11em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .wait{stroke-dasharray:4 4;opacity:.55}
+.projdiagram .g-held{stroke:var(--accent);opacity:.4;stroke-dasharray:4 4}
+.projdiagram .g-acq{stroke:var(--accent-2);stroke-width:1.6}
+.projdiagram .lockname{fill:var(--accent);font-size:12.5px;font-weight:700;letter-spacing:.05em}
+.projdiagram .padlock{fill:none;stroke:var(--accent);stroke-width:1.4;stroke-linecap:round}
+.projdiagram .g-dead{fill:var(--accent-3);font-size:10px;font-weight:600}
+.projdiagram .g-stalebadge rect{fill:none;stroke:var(--accent-3);stroke-width:1.2}
+.projdiagram .g-stalebadge text{fill:var(--accent-3);font-size:9px;letter-spacing:.08em}
+.projdiagram .g-x line{stroke:var(--accent-3);stroke-width:2;stroke-linecap:round}
+.projdiagram .g-membar{fill:none;stroke:var(--line);stroke-width:1}
+.projdiagram .g-memfill{fill:var(--accent-2);opacity:.5}
+.projdiagram .dot{filter:drop-shadow(0 0 3px var(--accent))}
+.projdiagram .g-hold{fill:var(--accent);opacity:0}
+.projdiagram .g-break{fill:var(--accent-2);opacity:0;filter:drop-shadow(0 0 3px var(--accent-2))}
+@supports (offset-path:path("M0 0h1")){
+  .projdiagram .g-hold{offset-path:path("M136 51 C 200 51,214 150,256 156");animation:pd-gpu-hold 11s linear infinite}
+  .projdiagram .g-break{offset-path:path("M136 229 C 200 229,214 184,256 176 L 392 166 L 468 166");animation:pd-gpu-break 11s linear infinite}
+}
+@keyframes pd-gpu-hold{0%{offset-distance:0%;opacity:0}3%{opacity:1}14%{offset-distance:100%;opacity:1}16%,100%{offset-distance:100%;opacity:0}}
+@keyframes pd-gpu-break{0%,42%{offset-distance:0%;opacity:0}45%{opacity:1}72%{offset-distance:100%;opacity:1}75%,100%{offset-distance:100%;opacity:0}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}}
+</style>
+<svg viewBox="0 0 640 332" aria-hidden="true">
+  <text class="micro" x="16" y="18">STACKS WANTING THE GPU</text>
+  <!-- stacks -->
+  <rect class="box" x="16" y="30" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="50">IMAGE GEN</text>
+  <text class="sub" x="26" y="65">held → died</text>
+  <g class="g-x"><line x1="112" y1="38" x2="128" y2="54"/><line x1="128" y1="38" x2="112" y2="54"/></g>
+  <rect class="box" x="16" y="88" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="108">STEM SEP</text>
+  <text class="sub" x="26" y="123">waiting</text>
+  <rect class="box" x="16" y="146" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="166">LOCAL LLM</text>
+  <text class="sub" x="26" y="181">waiting</text>
+  <rect class="box" x="16" y="208" width="120" height="42" rx="8"/>
+  <text class="title" x="26" y="228">CODING AGENT</text>
+  <text class="sub" x="26" y="243">next acquirer</text>
+  <!-- wires -->
+  <path class="wire g-held" d="M136 51 C 200 51,214 150,256 156"/>
+  <path class="wire wait" d="M136 109 C 200 109,214 158,256 162"/>
+  <path class="wire wait" d="M136 167 C 200 167,214 168,256 168"/>
+  <path class="wire g-acq" d="M136 229 C 200 229,214 184,256 176"/>
+  <path class="wire g-acq" d="M392 166 H468"/>
+  <text class="micro" x="196" y="28">ADMIT IF MEMORY PRESSURE OK</text>
+  <text class="sub" x="150" y="252" fill="var(--accent-2)" font-size="9.5px">checks pid → breaks → acquires</text>
+  <!-- lock -->
+  <rect class="box" x="256" y="118" width="136" height="96" rx="10"/>
+  <path class="padlock" d="M312 140v-5a6 6 0 0 1 12 0v5 M308 140h20v15h-20z"/>
+  <text class="lockname" x="324" y="178" text-anchor="middle">gpu.lock</text>
+  <text class="g-dead" x="324" y="194" text-anchor="middle">pid 4210 · dead</text>
+  <g class="g-stalebadge"><rect x="276" y="200" width="96" height="14" rx="4"/><text x="324" y="210" text-anchor="middle">STALE · BROKEN</text></g>
+  <!-- gpu -->
+  <rect class="box" x="468" y="118" width="156" height="96" rx="10"/>
+  <text class="lockname" x="546" y="146" text-anchor="middle" fill="var(--accent-3)">GPU · 12 GB</text>
+  <text class="sub" x="546" y="164" text-anchor="middle">one resident stack</text>
+  <rect class="g-membar" x="484" y="176" width="124" height="10" rx="3"/>
+  <rect class="g-memfill" x="486" y="178" width="78" height="6" rx="2"/>
+  <text class="micro" x="484" y="202">PUT THE OTHER AWAY FIRST</text>
+  <!-- travelers -->
+  <circle class="dot g-hold" r="4.5"/>
+  <circle class="dot g-break" r="4.5"/>
+</svg>
+<figcaption>Several stacks, one 12 GB GPU, no daemon — turns taken through a file lock; a dead holder's lock is broken by the next acquirer.</figcaption>
+</figure>

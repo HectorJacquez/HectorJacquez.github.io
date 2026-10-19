@@ -1,0 +1,96 @@
+<figure class="projdiagram" aria-label="Diagram of AutoCharter: audio is stem-separated to isolate the drums, onset detection finds when hits happen, a trained CNN classifies ride versus crash, and notes are placed into a playable chart. Below, evaluation is cross-validated grouped by song so no song appears in both train and test, and the final judge is Hector playing the chart.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:11px;font-weight:600;letter-spacing:.03em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:9px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.4px;letter-spacing:.1em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .c-wave{fill:none;stroke:var(--ink-dim);stroke-width:1.3}
+.projdiagram .c-drum{stroke:var(--accent);stroke-width:1.6;stroke-linecap:round}
+.projdiagram .c-base{stroke:var(--line);stroke-width:1}
+.projdiagram .c-onset{stroke:var(--accent-3);stroke-width:1.8;stroke-linecap:round}
+.projdiagram .c-crash{fill:color-mix(in srgb,var(--accent) 45%,var(--bg-raise));stroke:var(--accent);stroke-width:1}
+.projdiagram .c-ride{fill:color-mix(in srgb,var(--accent-3) 45%,var(--bg-raise));stroke:var(--accent-3);stroke-width:1}
+.projdiagram .accentname{fill:var(--accent);font-size:11px;font-weight:700;letter-spacing:.04em}
+.projdiagram .c-chip{fill:var(--bg-raise);stroke:var(--line);stroke-width:1}
+.projdiagram .c-ear{fill:none;stroke:var(--accent-2);stroke-width:1.6;stroke-linecap:round}
+.projdiagram .c-verdict{fill:var(--accent-2);font-size:11px;font-weight:700;letter-spacing:.04em}
+@supports (opacity:0){
+  .projdiagram .c-onset{animation:pd-chart-tick 6s ease-in-out infinite}
+  .projdiagram .c-onset:nth-of-type(2){animation-delay:.3s}
+  .projdiagram .c-onset:nth-of-type(3){animation-delay:.6s}
+  .projdiagram .c-onset:nth-of-type(4){animation-delay:.9s}
+}
+@keyframes pd-chart-tick{0%,40%{opacity:.3}55%,80%{opacity:1}95%,100%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}.projdiagram .c-onset{opacity:1}}
+</style>
+<svg viewBox="0 0 640 352" aria-hidden="true">
+  <!-- audio -->
+  <text class="micro" x="16" y="26">AUDIO</text>
+  <rect class="box" x="16" y="34" width="70" height="64" rx="8"/>
+  <path class="c-wave" d="M26 66 Q33 50 40 66 Q47 82 54 66 Q61 52 68 66 Q75 80 78 66"/>
+  <path class="wire" d="M86 66 H104"/>
+  <!-- stem sep -->
+  <rect class="box" x="104" y="34" width="116" height="64" rx="8"/>
+  <text class="title" x="162" y="52" text-anchor="middle">STEM SEP</text>
+  <text class="sub" x="162" y="65" text-anchor="middle">isolate drums</text>
+  <path class="c-drum" d="M116 90 V80 M126 90 V72 M136 90 V84 M146 90 V70 M156 90 V86 M166 90 V76 M176 90 V88 M186 90 V74 M196 90 V84 M206 90 V80"/>
+  <path class="wire" d="M220 66 H238"/>
+  <!-- onsets -->
+  <rect class="box" x="238" y="34" width="120" height="64" rx="8"/>
+  <text class="title" x="298" y="52" text-anchor="middle">ONSETS</text>
+  <text class="sub" x="298" y="65" text-anchor="middle">when hits happen</text>
+  <line class="c-base" x1="250" y1="86" x2="346" y2="86"/>
+  <line class="c-onset" x1="262" y1="86" x2="262" y2="74"/>
+  <line class="c-onset" x1="288" y1="86" x2="288" y2="72"/>
+  <line class="c-onset" x1="312" y1="86" x2="312" y2="76"/>
+  <line class="c-onset" x1="334" y1="86" x2="334" y2="73"/>
+  <path class="wire" d="M358 66 H376"/>
+  <!-- cnn -->
+  <rect class="box" x="376" y="34" width="110" height="64" rx="8"/>
+  <text class="title" x="431" y="52" text-anchor="middle">CNN</text>
+  <text class="sub" x="431" y="65" text-anchor="middle">ride vs crash</text>
+  <rect class="c-ride" x="390" y="74" width="40" height="16" rx="4"/><text class="sub" x="410" y="86" text-anchor="middle" font-size="8.5px">RIDE</text>
+  <rect class="c-crash" x="436" y="74" width="40" height="16" rx="4"/><text class="sub" x="456" y="86" text-anchor="middle" font-size="8.5px">CRASH</text>
+  <path class="wire" d="M486 66 H504"/>
+  <!-- chart -->
+  <rect class="box" x="504" y="34" width="120" height="64" rx="8"/>
+  <text class="title" x="564" y="50" text-anchor="middle">CHART</text>
+  <line class="c-base" x1="520" y1="60" x2="608" y2="60"/><line class="c-base" x1="520" y1="74" x2="608" y2="74"/><line class="c-base" x1="520" y1="88" x2="608" y2="88"/>
+  <rect class="c-ride" x="524" y="55" width="12" height="9" rx="2"/>
+  <rect class="c-crash" x="548" y="69" width="12" height="9" rx="2"/>
+  <rect class="c-ride" x="572" y="55" width="12" height="9" rx="2"/>
+  <rect class="c-crash" x="590" y="83" width="12" height="9" rx="2"/>
+  <!-- eval band -->
+  <text class="micro" x="16" y="134">HONEST EVALUATION</text>
+  <rect class="box" x="16" y="144" width="334" height="176" rx="10"/>
+  <text class="accentname" x="30" y="168">CROSS-VALIDATION GROUPED BY SONG</text>
+  <text class="sub" x="30" y="184">no song in both train and test</text>
+  <text class="micro" x="46" y="214" fill="var(--accent-3)">TRAIN</text>
+  <rect class="c-chip" x="40" y="222" width="70" height="20" rx="5"/><text class="sub" x="75" y="235" text-anchor="middle">song-A</text>
+  <rect class="c-chip" x="40" y="248" width="70" height="20" rx="5"/><text class="sub" x="75" y="261" text-anchor="middle">song-B</text>
+  <rect class="c-chip" x="40" y="274" width="70" height="20" rx="5"/><text class="sub" x="75" y="287" text-anchor="middle">song-C</text>
+  <line x1="190" y1="206" x2="190" y2="300" stroke="var(--line)" stroke-width="1" stroke-dasharray="4 4"/>
+  <text class="micro" x="236" y="214" fill="var(--accent)">TEST</text>
+  <rect class="c-chip" x="230" y="222" width="70" height="20" rx="5"/><text class="sub" x="265" y="235" text-anchor="middle">song-D</text>
+  <text class="sub" x="214" y="282" font-size="8.6px">whole songs,</text>
+  <text class="sub" x="214" y="294" font-size="8.6px">never split</text>
+  <!-- final judge -->
+  <path class="wire" d="M350 232 H378"/>
+  <rect class="box" x="378" y="160" width="246" height="144" rx="10"/>
+  <text class="accentname" x="394" y="186" fill="var(--accent-2)">THE FINAL JUDGE</text>
+  <path class="c-ear" d="M470 236a26 26 0 0 1 52 0"/>
+  <rect class="c-ear" x="466" y="234" width="12" height="22" rx="5"/>
+  <rect class="c-ear" x="514" y="234" width="12" height="22" rx="5"/>
+  <polygon points="491,228 491,250 509,239" fill="var(--accent-2)" opacity="0.7"/>
+  <text class="c-verdict" x="430" y="214" >HE PLAYS THE CHART</text>
+  <text class="sub" x="394" y="236">metrics guide it,</text>
+  <text class="sub" x="394" y="250">ears decide it.</text>
+  <text class="sub" x="394" y="286" font-size="8.8px">the deciding vote is a human playthrough</text>
+</svg>
+<figcaption>Audio → drums → onsets → a trained ride/crash CNN → a playable chart; metrics guide it, but ears decide it.</figcaption>
+</figure>

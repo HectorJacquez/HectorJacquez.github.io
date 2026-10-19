@@ -1,0 +1,91 @@
+<figure class="projdiagram" aria-label="Diagram of the mood analyzer: a WASM plugin inside the music server has a 30-second budget so it only schedules one small task per track; the heavy ML runs in a Dockerized analyzer that turns the track into an Essentia embedding, then classifier heads produce mood scores and signal features, which 48 threshold recipes turn into playlists rebuilt weekly.">
+<style>
+.projdiagram{margin:2.4rem 0;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-card);padding:1.1rem 1.1rem .3rem}
+.projdiagram svg{display:block;width:100%;height:auto}
+.projdiagram figcaption{font-family:var(--mono);font-size:.76rem;letter-spacing:.05em;color:var(--ink-dim);text-align:center;padding:.65rem 0 .8rem}
+.projdiagram text{font-family:var(--mono)}
+.projdiagram .box{fill:var(--bg-raise);stroke:var(--line);stroke-width:1.2}
+.projdiagram .title{fill:var(--ink);font-size:12px;font-weight:600;letter-spacing:.04em}
+.projdiagram .sub{fill:var(--ink-dim);font-size:9.5px}
+.projdiagram .micro{fill:var(--ink-faint);font-size:8.6px;letter-spacing:.11em}
+.projdiagram .wire{fill:none;stroke:var(--line);stroke-width:1.2}
+.projdiagram .m-docker{fill:none;stroke:var(--accent-2);stroke-width:1.2;stroke-dasharray:5 4}
+.projdiagram .m-wasm{fill:none;stroke:var(--accent-3);stroke-width:1.2}
+.projdiagram .m-fp{stroke:var(--accent-2);stroke-width:2.4;stroke-linecap:round}
+.projdiagram .m-track{fill:none;stroke:var(--line);stroke-width:1}
+.projdiagram .m-fill{fill:var(--accent)}
+.projdiagram .accentname{fill:var(--accent);font-size:12px;font-weight:700;letter-spacing:.05em}
+.projdiagram .dot{fill:var(--accent-3);filter:drop-shadow(0 0 3px var(--accent-3))}
+.projdiagram .m-task{opacity:0}
+@supports (offset-path:path("M0 0h1")){
+  .projdiagram .m-task{offset-path:path("M214 70 L 320 70");animation:pd-mood-task 7s linear infinite}
+}
+@keyframes pd-mood-task{0%,18%{offset-distance:0%;opacity:0}24%{opacity:1}60%{offset-distance:100%;opacity:1}66%,100%{offset-distance:100%;opacity:0}}
+@media (prefers-reduced-motion:reduce){.projdiagram *{animation:none!important}}
+</style>
+<svg viewBox="0 0 640 360" aria-hidden="true">
+  <!-- track in -->
+  <text class="micro" x="16" y="30">TRACK</text>
+  <rect class="box" x="16" y="38" width="46" height="64" rx="8"/>
+  <path class="m-fp" d="M28 84 V78 M35 84 V62 M42 84 V70"/>
+  <path class="wire" d="M62 70 H80"/>
+  <!-- music server + wasm -->
+  <rect class="box" x="80" y="26" width="134" height="92" rx="10"/>
+  <text class="title" x="88" y="44">MUSIC SERVER</text>
+  <rect class="m-wasm" x="92" y="54" width="110" height="52" rx="6"/>
+  <text class="accentname" x="147" y="74" text-anchor="middle" fill="var(--accent-3)" font-size="11px">WASM PLUGIN</text>
+  <text class="sub" x="147" y="88" text-anchor="middle">30s budget</text>
+  <text class="sub" x="147" y="100" text-anchor="middle">schedules 1 task/track</text>
+  <path class="wire" d="M214 70 H320"/>
+  <text class="micro" x="236" y="62">1 TASK</text>
+  <!-- dockerized analyzer -->
+  <rect class="m-docker" x="320" y="20" width="304" height="104" rx="10"/>
+  <text class="micro" x="330" y="36" fill="var(--accent-2)">DOCKERIZED ANALYZER · HEAVY ML</text>
+  <rect class="box" x="332" y="46" width="124" height="66" rx="8"/>
+  <text class="title" x="394" y="66" text-anchor="middle">EMBEDDING</text>
+  <path class="m-fp" d="M348 100 V86 M356 100 V76 M364 100 V92 M372 100 V80 M380 100 V88 M388 100 V74 M396 100 V90 M404 100 V82 M412 100 V94 M420 100 V78 M428 100 V88 M436 100 V84"/>
+  <text class="sub" x="394" y="112" text-anchor="middle" font-size="8.5px">Essentia fingerprint</text>
+  <path class="wire" d="M456 79 H480"/>
+  <rect class="box" x="480" y="46" width="130" height="66" rx="8"/>
+  <text class="title" x="545" y="72" text-anchor="middle">CLASSIFIER</text>
+  <text class="title" x="545" y="88" text-anchor="middle">HEADS</text>
+  <text class="sub" x="545" y="104" text-anchor="middle" font-size="8.5px">one head per trait</text>
+  <path class="wire" d="M545 112 C 545 140,150 150,120 172"/>
+  <!-- scores -->
+  <text class="micro" x="20" y="164">MOOD SCORES + SIGNAL FEATURES</text>
+  <rect class="box" x="16" y="172" width="256" height="170" rx="10"/>
+  <g font-size="9.5px">
+    <text class="sub" x="28" y="196">happy</text><rect class="m-track" x="120" y="189" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="190" width="94" height="5" rx="2"/>
+    <text class="sub" x="28" y="216">relaxed</text><rect class="m-track" x="120" y="209" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="210" width="112" height="5" rx="2"/>
+    <text class="sub" x="28" y="236">energy</text><rect class="m-track" x="120" y="229" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="230" width="46" height="5" rx="2"/>
+    <text class="sub" x="28" y="256">danceability</text><rect class="m-track" x="120" y="249" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="250" width="70" height="5" rx="2"/>
+    <text class="sub" x="28" y="276">aggressive</text><rect class="m-track" x="120" y="269" width="130" height="7" rx="3"/><rect class="m-fill" x="121" y="270" width="24" height="5" rx="2"/>
+  </g>
+  <text class="sub" x="28" y="298" font-size="9.5px">voice ◁——————▷ instrumental</text>
+  <rect class="box" x="28" y="312" width="52" height="18" rx="5"/><text class="sub" x="54" y="324" text-anchor="middle" font-size="9px">BPM 104</text>
+  <rect class="box" x="90" y="312" width="52" height="18" rx="5"/><text class="sub" x="116" y="324" text-anchor="middle" font-size="9px">key Am</text>
+  <path class="wire" d="M272 250 H300"/>
+  <!-- recipes -->
+  <rect class="box" x="300" y="196" width="156" height="110" rx="10"/>
+  <text class="accentname" x="378" y="222" text-anchor="middle" font-size="11.5px">48 RECIPES</text>
+  <text class="sub" x="378" y="240" text-anchor="middle" font-size="9px">thresholds over scores</text>
+  <text class="sub" x="312" y="262" font-size="8.8px">high relaxed</text>
+  <text class="sub" x="312" y="276" font-size="8.8px">+ instrumental</text>
+  <text class="sub" x="312" y="290" font-size="8.8px">+ low energy</text>
+  <path class="wire" d="M456 250 H484"/>
+  <!-- playlists -->
+  <rect class="box" x="484" y="196" width="140" height="110" rx="10"/>
+  <text class="accentname" x="554" y="222" text-anchor="middle" fill="var(--accent-3)" font-size="11.5px">48 PLAYLISTS</text>
+  <g>
+    <rect x="500" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent) 32%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="526" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-2) 32%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="552" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-3) 34%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="578" y="236" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent) 24%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="500" y="262" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-3) 24%,var(--bg-raise))" stroke="var(--line)"/>
+    <rect x="526" y="262" width="20" height="20" rx="3" fill="color-mix(in srgb,var(--accent-2) 24%,var(--bg-raise))" stroke="var(--line)"/>
+  </g>
+  <text class="sub" x="554" y="296" text-anchor="middle" font-size="9px">rebuilt weekly</text>
+  <circle class="dot m-task" r="4"/>
+</svg>
+<figcaption>A 30-second WASM budget forces the split: the plugin only schedules; the Dockerized analyzer does the heavy embedding and scoring.</figcaption>
+</figure>
