@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# The cat-rpg Godot web export (~63MB) is kept out of history; force-add it at
+# deploy time (git add -f public/play/cat-rpg/), same as the static site did.
+public/play/cat-rpg/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
