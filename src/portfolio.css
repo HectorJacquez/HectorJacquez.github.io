@@ -151,13 +151,15 @@ nav.top .nav-toggle[aria-expanded="true"] .bars::after { transform: translateY(-
   nav.top .nav-toggle .bars, nav.top .nav-toggle .bars::before, nav.top .nav-toggle .bars::after { transition: none; }
 }
 
-/* ---------- hero ---------- */
-header.hero { position: relative; padding: 5.5rem 0 3.5rem; overflow: hidden; }
-header.hero::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
+/* ---------- hero + ambient glow ---------- */
+header.hero { position: relative; padding: 5.5rem 0 3.5rem; }
+/* ambient glow that drifts behind the hero AND content sections */
+#root::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background:
-    radial-gradient(60% 50% at 75% 10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
-    radial-gradient(50% 40% at 15% 90%, color-mix(in srgb, var(--accent-2) 12%, transparent), transparent 70%);
+    radial-gradient(55% 35% at 80% 6%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    radial-gradient(45% 30% at 10% 55%, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent 70%),
+    radial-gradient(40% 25% at 70% 85%, color-mix(in srgb, var(--accent-3) 6%, transparent), transparent 70%);
 }
 .hero h1 {
   font-size: clamp(2.1rem, 5.5vw, 3.6rem); line-height: 1.12;

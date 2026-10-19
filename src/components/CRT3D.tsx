@@ -24,10 +24,9 @@ function CRTModel({ onClick }: { onClick: () => void }) {
     })
   }, [gltf])
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     if (!ref.current) return
-    ref.current.rotation.y += delta * 0.3
-    ref.current.position.y = Math.sin(Date.now() * 0.001) * 0.08
+    ref.current.position.y = Math.sin(Date.now() * 0.0008) * 0.06
   })
 
   const scale = Math.min(viewport.width * 0.28, 2.2)
@@ -51,7 +50,7 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
     >
       <Canvas
         gl={{ antialias: true, alpha: true }}
-        camera={{ position: [0, 0.5, 3.5], fov: 40 }}
+        camera={{ position: [0, 0.3, 3.2], fov: 36 }}
         onCreated={({ gl: renderer }) => {
           renderer.setClearColor(0x000000, 0)
         }}

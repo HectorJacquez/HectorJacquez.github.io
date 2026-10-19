@@ -21,6 +21,10 @@ export const musicMinis: Mini[] = [
   { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes' },
   { title: 'Lyrics pipeline', note: 'LRCLIB first, then whisper on separated stems for the rest, plus romaji and translation for the Japanese half' },
 ]
+export const workMinis: Mini[] = [
+  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays' },
+  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes' },
+]
 export const workCards: Project[] = [
   { tag: 'distributed systems', title: 'pullqueue',
     body: "This is the queue that runs the GPU job lanes on my home server, the stem separation and cover art and voice and mesh jobs behind the music and 3D work above. Workers poll for jobs, a lease expires when a worker dies so the job gets served to the next one, and completion is arbitrated so it only happens once. It is packaged here as a standalone library, with a kill -9 crash-recovery demo and tests in CI. A lease-based version runs on a plain JSON file; an event-sourced version runs on Postgres when the history has to survive the process.",

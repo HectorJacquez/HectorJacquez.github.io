@@ -8,7 +8,46 @@
 <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16.png?v=1">
 <link rel="icon" href="../../favicon.ico?v=1" sizes="any">
 <link rel="apple-touch-icon" href="../../apple-touch-icon.png?v=1">
-<link rel="stylesheet" href="../../style.css?v=amber7">
+<style>
+/* design tokens from portfolio.css, inlined so this standalone page gets the theme */
+:root {
+  --bg: #0e0d11; --bg-raise: #17151d; --bg-card: #191620;
+  --ink: #e9e7ea; --ink-dim: #9a95a0; --ink-faint: #5f5a66;
+  --accent: #f2a65a; --accent-2: #a78bfa; --accent-3: #5ec8d4;
+  --line: #2a2533; --radius: 14px;
+  --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Inter", sans-serif;
+  --display: "Space Grotesk", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #faf7f2; --bg-raise: #f1ece3; --bg-card: #ffffff;
+    --ink: #1c1a18; --ink-dim: #5f5a52; --ink-faint: #a09a90;
+    --accent: #c77828; --accent-2: #6d4fc4; --accent-3: #2f8a96;
+    --line: #e6e0d5;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; font-size: 17px; }
+a { color: var(--accent-2); text-decoration: none; }
+a:hover { text-decoration: underline; }
+nav.top {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--bg) 93%, transparent);
+  backdrop-filter: blur(10px);
+}
+nav.top .wrap { display: flex; align-items: center; gap: 0.9rem; height: 58px; max-width: 1080px; margin: 0 auto; padding: 0 1.4rem; }
+nav.top .brand { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--ink); font-weight: 700; font-size: 1.1rem; }
+nav.top .brand:hover { text-decoration: none; color: var(--accent); }
+nav.top .brandimg { height: 28px; width: auto; display: block; }
+nav.top .brandmark { background: var(--accent); border-radius: 999px; padding: 6px 14px; display: inline-flex; align-items: center; justify-content: center; }
+nav.top .spacer { flex: 1; }
+nav.top .item { color: var(--ink-dim); font-size: 0.9rem; padding: 0.38rem 0.85rem; border-radius: 999px; border: 1px solid var(--line); }
+nav.top .item:hover { color: var(--ink); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); text-decoration: none; }
+footer { border-top: 1px solid var(--line); padding: 2.2rem 0 3rem; color: var(--ink-faint); font-size: 0.9rem; }
+footer .wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; max-width: 1080px; margin: 0 auto; padding: 0 1.4rem; }
+.kicker { font-family: var(--mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 0.5rem; }
+</style>
 <style>
 .gamewrap { max-width: 1020px; margin: 0 auto; padding: 1.6rem 1.4rem 4rem; }
 #stage {
@@ -56,9 +95,8 @@
   <div class="wrap">
     <a class="brand" href="../../index.html"><span class="brandmark"><img class="brandimg" src="../../niko-nose-2.png?v=2" alt="" width="54" height="28"></span><span class="brandname">Hector Jacquez</span></a>
     <span class="spacer"></span>
-    <a class="item" href="../../index.html#featured">Projects</a>
-    <a class="item" href="../../essay.html">The Story</a>
-    <a class="item" href="https://hedge-at-hog.neocities.org/">The Fun Site</a>
+    <a class="item" href="../../index.html#/story">Server Story</a>
+    <a class="item" href="../../index.html#/listening">Listening</a>
   </div>
 </nav>
 
@@ -99,7 +137,7 @@
 <footer>
   <div class="wrap">
     <span>© 2026 Hector Jacquez</span>
-    <a href="../../index.html">Home</a>
+    <a href="../../index.html">Back to portfolio</a>
     <span class="finePrint" style="margin:0">This page is a scaled-down public cousin
     of my home hub's 3D texture-painting tools — same brush engine, far fewer knobs.</span>
   </div>
@@ -123,7 +161,7 @@
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0b10);
   const camera = new THREE.PerspectiveCamera(45, 4 / 3, 0.01, 50);
-  camera.position.set(1.3, 0.9, 1.7);
+  camera.position.set(0, 0.4, 2.2);
   scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3630, 0.9));
   const sun = new THREE.DirectionalLight(0xffffff, 0.8);
   sun.position.set(2, 3, 2);

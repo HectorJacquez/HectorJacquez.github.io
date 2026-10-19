@@ -5,7 +5,7 @@ import { TopWave } from '../components/TopWave'
 import { CRT3D } from '../components/CRT3D'
 import { GameOverlay } from '../components/GameOverlay'
 import { useSectionLink } from '../components/useSectionLink'
-import { musicCards, musicMinis, workCards, gameCards, gameMinis, type Mini } from '../data/projects'
+import { musicCards, musicMinis, workCards, workMinis, gameCards, gameMinis, type Mini } from '../data/projects'
 
 function Minis({ items }: { items: Mini[] }) {
   return (
@@ -18,7 +18,7 @@ function Minis({ items }: { items: Mini[] }) {
 }
 
 export function Home() {
-  const toMusic = useSectionLink()('music')
+  const toWork = useSectionLink()('work')
   const [gameOpen, setGameOpen] = useState(false)
   return (
     <>
@@ -37,7 +37,7 @@ export function Home() {
               </p>
               <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
               <div className="cta-row">
-                <a className="btn primary" href="#music" onClick={toMusic}>See my work</a>
+                <a className="btn primary" href="#work" onClick={toWork}>See my work</a>
                 <Link className="btn" to="/story">Server story</Link>
                 <a className="btn" href="mailto:hector.jacquez@outlook.com">Email me</a>
                 <a className="btn" href="https://www.linkedin.com/in/hector-jacquez-a13829141">LinkedIn</a>
@@ -50,19 +50,20 @@ export function Home() {
       </header>
       {gameOpen && <GameOverlay onClose={() => setGameOpen(false)} />}
 
+      <section id="work"><div className="wrap">
+        <div className="kicker">Engineering</div>
+        <h2>Systems and tools</h2>
+        <p className="sub">The engine room under the rest of this page. The music pipeline, the album art, and the 3D tooling all run on these; they are the parts you do not see, but everything else leans on them.</p>
+        <div className="cards">{workCards.map((p) => <Card key={p.title} p={p} />)}</div>
+        <Minis items={workMinis} />
+      </div></section>
+
       <section id="music"><div className="wrap">
         <div className="kicker">Music</div>
         <h2>Music</h2>
         <p className="sub">Most of what I've built for my server started with wanting something for my own music or attempts at game projects.</p>
         <div className="cards">{musicCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <Minis items={musicMinis} />
-      </div></section>
-
-      <section id="work"><div className="wrap">
-        <div className="kicker">Engineering</div>
-        <h2>Systems and tools</h2>
-        <p className="sub">The engine room under the rest of this page. The music pipeline, the album art, and the 3D tooling all run on these; they are the parts you do not see, but everything else leans on them.</p>
-        <div className="cards">{workCards.map((p) => <Card key={p.title} p={p} />)}</div>
       </div></section>
 
       <section id="games"><div className="wrap">
