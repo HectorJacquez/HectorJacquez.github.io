@@ -1,5 +1,7 @@
 import { HashRouter, Routes, Route, Link } from 'react-router-dom'
 import { Home } from './pages/Home'
+import { Story } from './pages/Story'
+import { Listening } from './pages/Listening'
 import { MusicDot } from './components/MusicDot'
 import { Visualizer } from './components/Visualizer'
 import { Nav } from './components/Nav'
@@ -17,13 +19,6 @@ function Footer() {
   )
 }
 
-const Stub = ({ title }: { title: string }) => (
-  <main className="wrap" style={{ padding: '3rem 1.4rem' }}>
-    <h1>{title}</h1>
-    <p>Coming to the React rebuild soon.</p>
-  </main>
-)
-
 export default function App() {
   return (
     <HashRouter>
@@ -31,8 +26,8 @@ export default function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/story" element={<Stub title="The Story" />} />
-        <Route path="/listening" element={<Stub title="Listening" />} />
+        <Route path="/story" element={<Story />} />
+        <Route path="/listening" element={<Listening />} />
       </Routes>
       <Footer />
       <MusicDot />
