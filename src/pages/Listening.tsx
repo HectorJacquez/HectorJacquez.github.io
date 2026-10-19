@@ -44,7 +44,7 @@ export function Listening() {
 
       <Chart
         title="Every month since 2014"
-        note="The play log, month by month. The quiet opening isn't silence, it's the years my desktop players kept no log; streaming history picks up in earnest in 2017, and 2018 is the loudest year on record. 2026 runs through mid-September, when this snapshot was taken."
+        note="The play log, month by month. The quiet opening isn't silence, it's the years my desktop players kept no log; streaming history picks up in earnest in 2017, and 2018 is the loudest year on record. The 2026 fade is real, not missing data: that's when I moved my day-to-day listening onto my own server and stopped using Spotify for much beyond saving new songs, so the dated record winds down as my own library took over."
         table={
           <table>
             <thead><tr><th>Year</th>{MONTHS.map((m) => <th key={m}>{m}</th>)}<th>Total</th></tr></thead>
