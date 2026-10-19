@@ -65,6 +65,41 @@ def _tally(played_ms_iter):
     return monthly, hourly, stamped
 
 
+def navidrome_monthly(live_start=(2026, 8)):
+    """Dated live-Navidrome plays per month, from the mood plugin's weekly
+    buckets (each a list of {track, unix-ts} play events). Only the live-scrobble
+    era counts: the buckets ramp from ~1/month to >1000 at 2026-08 when live
+    logging began, so earlier sparse entries are pre-logging noise and excluded.
+    Navidrome's all-time play_count already merges the Spotify + MusicBee imports,
+    so this is the ONE window where self-hosted listening is separable."""
+    import subprocess
+    script = (
+        "import sqlite3,json;"
+        "con=sqlite3.connect('file:/kv/kvstore.db?mode=ro&immutable=1',uri=True);"
+        "print(json.dumps([(v.decode() if isinstance(v,bytes) else v) for (v,) in con.execute("
+        "\"select value from kvstore where key like 'plays:wk%'\")]))"
+    )
+    monthly = collections.defaultdict(lambda: [0] * 12)
+    out = subprocess.run(
+        ["docker", "run", "--rm", "-v", "/var/lib/navidrome/plugins/mood-playlists:/kv:ro",
+         "python:3-alpine", "python", "-c", script],
+        capture_output=True, text=True, timeout=120)
+    if out.returncode != 0:
+        print(f"  WARNING: could not read Navidrome weekly buckets ({out.stderr[:120]}); "
+              "the handoff chart will show no Navidrome data.")
+        return monthly
+    for blob in json.loads(out.stdout):
+        for p in json.loads(blob):
+            t = p.get("t")
+            if not t:
+                continue
+            dt = datetime.datetime.fromtimestamp(t, datetime.timezone.utc).astimezone(TZ)
+            if (dt.year, dt.month) < live_start:
+                continue  # before live scrobbling began
+            monthly[dt.year][dt.month - 1] += 1
+    return monthly
+
+
 def parse_dated():
     """month-by-year grid + hour-of-day counts from the dated Spotify plays.
 
@@ -129,22 +164,26 @@ def ts_array(items, fmt):
     return "\n".join("  " + fmt(x) + "," for x in items)
 
 
-def build_ts(cache, monthly, hourly, stamped, moods, mood_total) -> str:
+def build_ts(cache, monthly, nav, hourly, stamped, moods, mood_total) -> str:
     u = cache["unified"]
     totals = cache["totals"]
     days = round(u["time"]["total_days"])
     dark = sum(hourly[h] for h in DARK_HOURS)
     dark_pct = round(100 * dark / max(stamped, 1))
-    years = sorted(monthly)
+    years = sorted(set(monthly) | set(nav))
     top = u["top_artists"][:10]
     hours_labels = [datetime.time(h).strftime("%-I%p").lower() for h in range(24)]
+    nav_total = sum(sum(v) for v in nav.values())
 
     def artist_line(a):
         name = a["artist"].replace("\\", "\\\\").replace("'", "\\'")
         return f"{{ name: '{name}', plays: {a['plays']} }}"
 
     def month_line(y):
-        return f"{{ year: {y}, months: [{', '.join(str(v) for v in monthly[y])}] }}"
+        sp = monthly.get(y, [0] * 12)
+        nv = nav.get(y, [0] * 12)
+        return (f"{{ year: {y}, spotify: [{', '.join(map(str, sp))}],"
+                f" navidrome: [{', '.join(map(str, nv))}] }}")
 
     def hour_line(h):
         return f"{{ hour: '{hours_labels[h]}', plays: {hourly[h]} }}"
@@ -156,8 +195,9 @@ def build_ts(cache, monthly, hourly, stamped, moods, mood_total) -> str:
     return f"""// My listening history, regenerated from the live music server by
 // scripts/sync-listening-stats.py on {stamp}. Do not hand-edit: rerun the script.
 // Plays/top-artists/days/library come from the hub's merged-play-store stats
-// (Navidrome + non-library Spotify, de-duplicated); the dated month grid and the
-// hour clock come from the Spotify export (the only source with timestamps).
+// (Navidrome already folds in the imported Spotify + MusicBee history); the dated
+// grids come from the Spotify archive (through Aug 2026) and the live Navidrome
+// scrobble log (Aug 2026 on) -- the one window where the two are separable.
 
 export const kpis = [
   {{ value: '{commas(u['total_plays'])}', label: 'plays, all-time' }},
@@ -168,8 +208,11 @@ export const kpis = [
 
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-/** Plays per month. Each row is a calendar year of 12 months. */
-export const monthly: {{ year: number; months: number[] }}[] = [
+/** Plays per month, split by source. `spotify` is the dated Spotify archive
+ *  (2014 - Aug 2026); `navidrome` is the live self-hosted scrobble log, which
+ *  only begins Aug 2026 (the handoff). Charts read the sum for totals and the
+ *  split to show the migration. {commas(nav_total)} dated Navidrome plays so far. */
+export const monthly: {{ year: number; spotify: number[]; navidrome: number[] }}[] = [
 {ts_array(years, month_line)}
 ]
 
@@ -197,8 +240,9 @@ def main() -> int:
         refresh_cache()
     cache = read_cache()
     monthly, hourly, stamped = parse_dated()
+    nav = navidrome_monthly()
     moods, mood_total = mood_quadrants(cache)
-    ts = build_ts(cache, monthly, hourly, stamped, moods, mood_total)
+    ts = build_ts(cache, monthly, nav, hourly, stamped, moods, mood_total)
     with open(os.path.normpath(OUT), "w") as f:
         f.write(ts)
     u = cache["unified"]

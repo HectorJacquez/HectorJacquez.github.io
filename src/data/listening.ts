@@ -1,8 +1,9 @@
 // My listening history, regenerated from the live music server by
 // scripts/sync-listening-stats.py on 2026-10-19. Do not hand-edit: rerun the script.
 // Plays/top-artists/days/library come from the hub's merged-play-store stats
-// (Navidrome + non-library Spotify, de-duplicated); the dated month grid and the
-// hour clock come from the Spotify export (the only source with timestamps).
+// (Navidrome already folds in the imported Spotify + MusicBee history); the dated
+// grids come from the Spotify archive (through Aug 2026) and the live Navidrome
+// scrobble log (Aug 2026 on) -- the one window where the two are separable.
 
 export const kpis = [
   { value: '231,854', label: 'plays, all-time' },
@@ -13,21 +14,24 @@ export const kpis = [
 
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-/** Plays per month. Each row is a calendar year of 12 months. */
-export const monthly: { year: number; months: number[] }[] = [
-  { year: 2014, months: [0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0] },
-  { year: 2015, months: [0, 3, 0, 75, 0, 0, 0, 0, 0, 0, 0, 349] },
-  { year: 2016, months: [492, 295, 83, 27, 0, 0, 0, 58, 101, 178, 365, 424] },
-  { year: 2017, months: [470, 554, 1627, 538, 896, 753, 855, 1267, 2864, 5269, 5103, 5912] },
-  { year: 2018, months: [4112, 5250, 3398, 2146, 1422, 1403, 2249, 1752, 1705, 1831, 2661, 3269] },
-  { year: 2019, months: [2380, 3027, 2751, 1890, 1767, 1884, 2272, 2012, 383, 538, 793, 328] },
-  { year: 2020, months: [813, 977, 1198, 1751, 2343, 2029, 1826, 1612, 1733, 1626, 1523, 1716] },
-  { year: 2021, months: [1702, 1170, 1897, 2444, 1813, 2104, 1906, 2326, 2088, 2844, 1887, 2125] },
-  { year: 2022, months: [2673, 1758, 1825, 1859, 1728, 2105, 1749, 1575, 2057, 2376, 2305, 1856] },
-  { year: 2023, months: [1960, 2962, 2449, 2675, 2265, 1993, 1657, 1805, 1208, 2355, 2592, 2611] },
-  { year: 2024, months: [2648, 1785, 2259, 1259, 1306, 1342, 1849, 2136, 1677, 1204, 814, 2475] },
-  { year: 2025, months: [2773, 606, 737, 1499, 1590, 729, 586, 626, 627, 332, 599, 551] },
-  { year: 2026, months: [247, 37, 598, 983, 345, 821, 703, 129, 0, 0, 0, 0] },
+/** Plays per month, split by source. `spotify` is the dated Spotify archive
+ *  (2014 - Aug 2026); `navidrome` is the live self-hosted scrobble log, which
+ *  only begins Aug 2026 (the handoff). Charts read the sum for totals and the
+ *  split to show the migration. 5,420 dated Navidrome plays so far. */
+export const monthly: { year: number; spotify: number[]; navidrome: number[] }[] = [
+  { year: 2014, spotify: [0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2015, spotify: [0, 3, 0, 75, 0, 0, 0, 0, 0, 0, 0, 349], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2016, spotify: [492, 295, 83, 27, 0, 0, 0, 58, 101, 178, 365, 424], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2017, spotify: [470, 554, 1627, 538, 896, 753, 855, 1267, 2864, 5269, 5103, 5912], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2018, spotify: [4112, 5250, 3398, 2146, 1422, 1403, 2249, 1752, 1705, 1831, 2661, 3269], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2019, spotify: [2380, 3027, 2751, 1890, 1767, 1884, 2272, 2012, 383, 538, 793, 328], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2020, spotify: [813, 977, 1198, 1751, 2343, 2029, 1826, 1612, 1733, 1626, 1523, 1716], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2021, spotify: [1702, 1170, 1897, 2444, 1813, 2104, 1906, 2326, 2088, 2844, 1887, 2125], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2022, spotify: [2673, 1758, 1825, 1859, 1728, 2105, 1749, 1575, 2057, 2376, 2305, 1856], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2023, spotify: [1960, 2962, 2449, 2675, 2265, 1993, 1657, 1805, 1208, 2355, 2592, 2611], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2024, spotify: [2648, 1785, 2259, 1259, 1306, 1342, 1849, 2136, 1677, 1204, 814, 2475], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2025, spotify: [2773, 606, 737, 1499, 1590, 729, 586, 626, 627, 332, 599, 551], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+  { year: 2026, spotify: [247, 37, 598, 983, 345, 821, 703, 129, 0, 0, 0, 0], navidrome: [0, 0, 0, 0, 0, 0, 0, 1368, 2590, 1462, 0, 0] },
 ]
 
 /** All-time top ten artists. */

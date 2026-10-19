@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { kpis, monthly, MONTHS, topArtists, hourly } from '../data/listening'
 import { MonthlyHeatmap } from '../charts/MonthlyHeatmap'
+import { HandoffChart } from '../charts/HandoffChart'
 import { TopArtists } from '../charts/TopArtists'
 import { ListeningClock } from '../charts/ListeningClock'
 // MoodQuadrants is held until the analyzer finishes the full library (see below).
@@ -44,23 +45,45 @@ export function Listening() {
 
       <Chart
         title="Every month since 2014"
-        note="The play log, month by month. The quiet opening isn't silence, it's the years my desktop players kept no log; streaming history picks up in earnest in 2017, and 2018 is the loudest year on record. The 2026 fade is real, not missing data: that's when I moved my day-to-day listening onto my own server and stopped using Spotify for much beyond saving new songs, so the dated record winds down as my own library took over."
+        note="The play log, month by month. The quiet opening isn't silence, it's the years my desktop players kept no log; streaming history picks up in earnest in 2017, and 2018 is the loudest year on record. Orange months come from my Spotify archive; purple months are my own server, which starts logging in August 2026 when I moved my listening onto it and mostly stopped streaming. The colour flip is the migration."
         table={
           <table>
             <thead><tr><th>Year</th>{MONTHS.map((m) => <th key={m}>{m}</th>)}<th>Total</th></tr></thead>
             <tbody>
-              {monthly.map((r) => (
-                <tr key={r.year}>
-                  <th>{r.year}</th>
-                  {r.months.map((v, i) => <td key={i}>{n(v)}</td>)}
-                  <td>{n(r.months.reduce((a, b) => a + b, 0))}</td>
-                </tr>
-              ))}
+              {monthly.map((r) => {
+                const tot = MONTHS.map((_, i) => r.spotify[i] + r.navidrome[i])
+                return (
+                  <tr key={r.year}>
+                    <th>{r.year}</th>
+                    {tot.map((v, i) => <td key={i}>{n(v)}</td>)}
+                    <td>{n(tot.reduce((a, b) => a + b, 0))}</td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         }
       >
         <MonthlyHeatmap />
+      </Chart>
+
+      <Chart
+        title="Leaving Spotify, in one chart"
+        note="2026, month by month, split by where the plays came from. Spotify (orange) trails off through the summer; my own server (purple) picks up from August, when I made it my daily player and kept Spotify only for saving new songs to the wishlist. Before August my server kept no dated log, so this is the first stretch where the two are separable."
+        table={
+          <table>
+            <thead><tr><th>Month</th><th>Spotify</th><th>My server</th></tr></thead>
+            <tbody>
+              {MONTHS.map((m, i) => {
+                const r = monthly.find((x) => x.year === 2026)
+                if (!r || (r.spotify[i] === 0 && r.navidrome[i] === 0)) return null
+                return <tr key={m}><td>{m} 2026</td><td>{n(r.spotify[i])}</td><td>{n(r.navidrome[i])}</td></tr>
+              })}
+            </tbody>
+          </table>
+        }
+      >
+        <HandoffChart />
       </Chart>
 
       <Chart
