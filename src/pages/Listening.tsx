@@ -1,9 +1,9 @@
 import { useEffect, type ReactNode } from 'react'
-import { kpis, monthly, MONTHS, topArtists, moodQuadrants, hourly } from '../data/listening'
+import { kpis, monthly, MONTHS, topArtists, hourly } from '../data/listening'
 import { MonthlyHeatmap } from '../charts/MonthlyHeatmap'
 import { TopArtists } from '../charts/TopArtists'
-import { MoodQuadrants } from '../charts/MoodQuadrants'
 import { ListeningClock } from '../charts/ListeningClock'
+// MoodQuadrants is held until the analyzer finishes the full library (see below).
 
 const n = (v: number) => v.toLocaleString()
 
@@ -80,22 +80,10 @@ export function Listening() {
         <TopArtists />
       </Chart>
 
-      <Chart
-        title="The shape of my library"
-        note="The 4,533 tracks in my collection with real mood scores from my local audio-ML pipeline, binned in mood space: how happy a track sounds against how hard it goes. The brighter the quadrant, the more of my library lives there. 51% of what I own sits in the sad-and-calm quadrant, with a long arm reaching up into happy chaos."
-        table={
-          <table>
-            <thead><tr><th>Mood quadrant</th><th>Tracks</th><th>Share</th></tr></thead>
-            <tbody>
-              {moodQuadrants.map((q) => (
-                <tr key={q.label}><td>{q.label}</td><td>{n(q.tracks)}</td><td>{q.share}</td></tr>
-              ))}
-            </tbody>
-          </table>
-        }
-      >
-        <MoodQuadrants />
-      </Chart>
+      {/* The mood "shape of my library" chart is held until the analyzer finishes
+          the full library: only ~5.5k of 17k tracks are scored so far (and climbing),
+          so the quadrant shares aren't representative yet. MoodQuadrants + moodQuadrants
+          data are kept in the repo; the sync re-enables this once coverage is complete. */}
 
       <Chart
         title="The listening clock"
