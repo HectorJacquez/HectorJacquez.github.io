@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
+import { TopWave } from '../components/TopWave'
 import { musicCards, musicMinis, workCards, gameCards, gameMinis, type Mini } from '../data/projects'
 
 function Minis({ items }: { items: Mini[] }) {
@@ -17,6 +18,7 @@ export function Home() {
     <>
       <header className="hero">
         <div className="wrap">
+          <TopWave />
           <div className="hero-text">
             <h1 className="kicker">Fullstack Software Engineer</h1>
             <p className="lede">
