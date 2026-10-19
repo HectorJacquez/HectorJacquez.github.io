@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
 import { TopWave } from '../components/TopWave'
 import { CRT3D } from '../components/CRT3D'
-import { GameOverlay } from '../components/GameOverlay'
+import { GameTV } from '../components/GameTV'
 import { useSectionLink } from '../components/useSectionLink'
 import { musicCards, musicMinis, workCards, workMinis, gameCards, gameMinis, type Mini } from '../data/projects'
 
@@ -19,7 +18,6 @@ function Minis({ items }: { items: Mini[] }) {
 
 export function Home() {
   const toWork = useSectionLink()('work')
-  const [gameOpen, setGameOpen] = useState(false)
   return (
     <>
       <header className="hero">
@@ -44,11 +42,10 @@ export function Home() {
                 <a className="btn" href="https://github.com/HectorJacquez">GitHub</a>
               </div>
             </div>
-            <CRT3D onActivate={() => setGameOpen(true)} />
+            <CRT3D onActivate={() => { window.location.href = `${import.meta.env.BASE_URL}play/paint/` }} />
           </div>
         </div>
       </header>
-      {gameOpen && <GameOverlay onClose={() => setGameOpen(false)} />}
 
       <section id="work"><div className="wrap">
         <div className="kicker">Engineering</div>
@@ -70,6 +67,7 @@ export function Home() {
         <div className="kicker">Games &amp; game dev</div>
         <h2>Games and game dev</h2>
         <p className="sub">Most of what I've made here is unfinished, but these two you can play with right now.</p>
+        <GameTV />
         <div className="cards">{gameCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <p className="sub" style={{ marginTop: '1.6rem' }}>Not shown here yet, and still in progress: a 3D graybox runner, a music-venue scene, and Nintendo 64 homebrew demos built with my own asset pipeline.</p>
         <Minis items={gameMinis} />

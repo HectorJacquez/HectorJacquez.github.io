@@ -26,13 +26,16 @@ function CRTModel({ onClick }: { onClick: () => void }) {
 
   useFrame(() => {
     if (!ref.current) return
-    ref.current.position.y = Math.sin(Date.now() * 0.0008) * 0.06
+    const t = Date.now() * 0.001
+    ref.current.position.y = Math.sin(t * 0.8) * 0.06
+    ref.current.rotation.x = Math.sin(t * 0.5) * 0.04
+    ref.current.rotation.y = -Math.PI / 2 + Math.sin(t * 0.3) * 0.06
   })
 
   const scale = Math.min(viewport.width * 0.28, 2.2)
 
   return (
-    <group ref={ref} onClick={onClick} scale={scale} rotation={[0, -Math.PI / 2, 0]}>
+    <group ref={ref} onClick={onClick} scale={scale}>
       <primitive object={gltf.scene.clone()} />
     </group>
   )
@@ -46,7 +49,7 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
   return (
     <div className="crt-3d" onClick={onActivate} role="button" tabIndex={0}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onActivate() }}
-      aria-label="Power on the CRT to play the game"
+      aria-label="Open the texture painter"
     >
       <Canvas
         gl={{ antialias: true, alpha: true }}
@@ -63,7 +66,7 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
           <CRTModel onClick={onActivate} />
         </Suspense>
       </Canvas>
-      <span className="crt-hint">click to play</span>
+      <span className="crt-hint">click to paint</span>
     </div>
   )
 }
