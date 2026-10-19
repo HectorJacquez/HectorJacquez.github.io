@@ -59,9 +59,9 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
         }}
         onError={() => setGl(false)}
       >
-        <ambientLight intensity={0.6} />
-        <pointLight position={[3, 3, 3]} intensity={1.2} />
-        <pointLight position={[-2, 1, 2]} intensity={0.4} color="#a78bfa" />
+        <ambientLight intensity={0.35} />
+        <pointLight position={[3, 3, 3]} intensity={0.7} />
+        <pointLight position={[-2, 1, 2]} intensity={0.25} color="#a78bfa" />
         <Suspense fallback={null}>
           <CRTModel onClick={onActivate} />
         </Suspense>

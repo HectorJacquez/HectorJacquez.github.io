@@ -162,8 +162,8 @@ footer .wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; max-width: 1080px; m
   scene.background = new THREE.Color(0x0a0b10);
   const camera = new THREE.PerspectiveCamera(45, 4 / 3, 0.01, 50);
   camera.position.set(0, 0.4, 2.2);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3630, 0.9));
-  const sun = new THREE.DirectionalLight(0xffffff, 0.8);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3630, 0.55));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.45);
   sun.position.set(2, 3, 2);
   scene.add(sun);
 
