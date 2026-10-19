@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Link } from 'react-router-dom'
 import { Brand } from './components/Brand'
+import { Home } from './pages/Home'
 
 function MusicPlayer() {
   return <audio data-testid="music-player" src={`${import.meta.env.BASE_URL}media/water.mp3`} preload="none" />
@@ -22,30 +23,16 @@ function Nav() {
   )
 }
 
-function Home() {
+function Footer() {
   return (
-    <header className="hero">
+    <footer>
       <div className="wrap">
-        <div className="hero-text">
-          <h1 className="kicker">Fullstack Software Engineer</h1>
-          <p className="lede">
-            I'm a fullstack software engineer with seven years of experience, most of
-            it remote. The last four years I worked fullstack in Java and Sencha ExtJS
-            along with SQL Server, and before that three years in C# and .NET on banking
-            software. I use AI coding tools carefully in my day to day work, and in my
-            own time I build around the things I care about, mostly music, art, and games.
-          </p>
-          <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
-          <div className="cta-row">
-            <a className="btn primary" href="#music">See my work</a>
-            <Link className="btn" to="/story">The story</Link>
-            <a className="btn" href="mailto:hector.jacquez@outlook.com">Email me</a>
-            <a className="btn" href="https://www.linkedin.com/in/hector-jacquez-a13829141">LinkedIn</a>
-            <a className="btn" href="https://github.com/HectorJacquez">GitHub</a>
-          </div>
-        </div>
+        <span>© 2026 Hector Jacquez · <span style={{ fontFamily: 'var(--mono)', fontSize: '0.8em', color: 'var(--ink-faint)' }}>v.1</span></span>
+        <a href="https://github.com/HectorJacquez">GitHub</a>
+        <Link to="/story">The Story</Link>
+        <a href="https://hedge-at-hog.neocities.org/">Hedge@hog on Neocities</a>
       </div>
-    </header>
+    </footer>
   )
 }
 
@@ -65,6 +52,7 @@ export default function App() {
         <Route path="/story" element={<Stub title="The Story" />} />
         <Route path="/listening" element={<Stub title="Listening" />} />
       </Routes>
+      <Footer />
       <MusicPlayer />
     </HashRouter>
   )

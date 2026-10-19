@@ -1,0 +1,101 @@
+import { Link } from 'react-router-dom'
+import { Card } from '../components/Card'
+import { musicCards, musicMinis, workCards, gameCards, gameMinis, type Mini } from '../data/projects'
+
+function Minis({ items }: { items: Mini[] }) {
+  return (
+    <div className="mini-grid" style={{ marginTop: '1.1rem' }}>
+      {items.map((m) => (
+        <div key={m.title} className="mini"><b>{m.title}</b><span>{m.note}</span></div>
+      ))}
+    </div>
+  )
+}
+
+export function Home() {
+  return (
+    <>
+      <header className="hero">
+        <div className="wrap">
+          <div className="hero-text">
+            <h1 className="kicker">Fullstack Software Engineer</h1>
+            <p className="lede">
+              I'm a fullstack software engineer with seven years of experience, most of
+              it remote. The last four years I worked fullstack in Java and Sencha ExtJS
+              along with SQL Server, and before that three years in C# and .NET on banking
+              software. I use AI coding tools carefully in my day to day work, and in my
+              own time I build around the things I care about, mostly music, art, and games.
+            </p>
+            <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
+            <div className="cta-row">
+              <a className="btn primary" href="#music">See my work</a>
+              <Link className="btn" to="/story">The story</Link>
+              <a className="btn" href="mailto:hector.jacquez@outlook.com">Email me</a>
+              <a className="btn" href="https://www.linkedin.com/in/hector-jacquez-a13829141">LinkedIn</a>
+              <a className="btn" href="https://github.com/HectorJacquez">GitHub</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section id="music"><div className="wrap">
+        <div className="kicker">Music</div>
+        <h2>Music</h2>
+        <p className="sub">Most of what I've built for my server started with wanting something for my own music or attempts at game projects.</p>
+        <div className="cards">{musicCards.map((p) => <Card key={p.title} p={p} />)}</div>
+        <Minis items={musicMinis} />
+      </div></section>
+
+      <section id="work"><div className="wrap">
+        <div className="kicker">Engineering</div>
+        <h2>Systems and tools</h2>
+        <p className="sub">The engine room under the rest of this page. The music pipeline, the album art, and the 3D tooling all run on these; they are the parts you do not see, but everything else leans on them.</p>
+        <div className="cards">{workCards.map((p) => <Card key={p.title} p={p} />)}</div>
+      </div></section>
+
+      <section id="games"><div className="wrap">
+        <div className="kicker">Games &amp; game dev</div>
+        <h2>Games and game dev</h2>
+        <p className="sub">Most of what I've made here is unfinished, but these two you can play with right now.</p>
+        <div className="tvwrap" style={{ maxWidth: 520, margin: '0.6rem auto 2.2rem' }}>
+          <div className="tv">
+            <div className="tv-screen">
+              <div className="tv-off">
+                <span className="tv-title">NICO'S<br />BIZARRE ADVENTURE</span>
+                <span className="tv-hint">⏻ press power</span>
+              </div>
+            </div>
+            <div className="tv-panel">
+              <button className="tv-power" aria-label="Power the game on or off">⏻</button>
+              <span className="tv-led"></span>
+              <span className="tv-brand">Hedgevision</span>
+            </div>
+          </div>
+          <div className="tv-caption">my cats' RPG, running live in the TV (<a href="/play/cat-rpg.html">fullscreen + manual</a>)</div>
+        </div>
+        <div className="cards">{gameCards.map((p) => <Card key={p.title} p={p} />)}</div>
+        <p className="sub" style={{ marginTop: '1.6rem' }}>Not shown here yet, and still in progress: a 3D graybox runner, a music-venue scene, and Nintendo 64 homebrew demos built with my own asset pipeline.</p>
+        <Minis items={gameMinis} />
+      </div></section>
+
+      <section><div className="wrap">
+        <div className="kicker">The Story</div>
+        <h2>How wanting my own Spotify turned into all of this</h2>
+        <p className="sub">I just wanted my own music instead of Spotify, and it got a little out of hand.</p>
+        <div className="teaser">
+          <blockquote>
+            It started with setting up Navidrome, an open-source music server, to replace
+            Spotify, and then I missed the playlists and the lyrics, so I built lyric
+            fetching, transcription, and mood analysis. The mood playlists needed AI covers,
+            and the image models lived on another machine's GPU, so I built a job queue, and
+            after that the voices went on the queue, then the video, the 3D meshes, and a
+            coding agent, until all the copies of it collapsed into <strong>one lease engine
+            on an event-sourced Postgres log</strong>. It grew that far out of wanting the
+            music nights at home to keep getting better.
+          </blockquote>
+          <Link className="btn primary" to="/story">Read the full story</Link>
+        </div>
+      </div></section>
+    </>
+  )
+}
