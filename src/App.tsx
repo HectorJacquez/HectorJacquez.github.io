@@ -1,10 +1,7 @@
 import { HashRouter, Routes, Route, Link } from 'react-router-dom'
 import { Brand } from './components/Brand'
 import { Home } from './pages/Home'
-
-function MusicPlayer() {
-  return <audio data-testid="music-player" src={`${import.meta.env.BASE_URL}media/water.mp3`} preload="none" />
-}
+import { MusicDot } from './components/MusicDot'
 
 function Nav() {
   return (
@@ -53,7 +50,7 @@ export default function App() {
         <Route path="/listening" element={<Stub title="Listening" />} />
       </Routes>
       <Footer />
-      <MusicPlayer />
+      <MusicDot />
     </HashRouter>
   )
 }
