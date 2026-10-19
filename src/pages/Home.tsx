@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
 import { TopWave } from '../components/TopWave'
-import { GameTV } from '../components/GameTV'
+import { CRT3D } from '../components/CRT3D'
+import { GameOverlay } from '../components/GameOverlay'
 import { useSectionLink } from '../components/useSectionLink'
 import { musicCards, musicMinis, workCards, gameCards, gameMinis, type Mini } from '../data/projects'
 
@@ -17,31 +19,36 @@ function Minis({ items }: { items: Mini[] }) {
 
 export function Home() {
   const toMusic = useSectionLink()('music')
+  const [gameOpen, setGameOpen] = useState(false)
   return (
     <>
       <header className="hero">
         <div className="wrap">
           <TopWave />
-          <div className="hero-text">
-            <h1 className="kicker">Fullstack Software Engineer</h1>
-            <p className="lede">
-              I'm a fullstack software engineer with seven years of experience, most of
-              it remote. The last four years I worked fullstack in Java and Sencha ExtJS
-              along with SQL Server, and before that three years in C# and .NET on banking
-              software. I use AI coding tools carefully in my day to day work, and in my
-              own time I build around the things I care about, mostly music, art, and games.
-            </p>
-            <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
-            <div className="cta-row">
-              <a className="btn primary" href="#music" onClick={toMusic}>See my work</a>
-              <Link className="btn" to="/story">Server story</Link>
-              <a className="btn" href="mailto:hector.jacquez@outlook.com">Email me</a>
-              <a className="btn" href="https://www.linkedin.com/in/hector-jacquez-a13829141">LinkedIn</a>
-              <a className="btn" href="https://github.com/HectorJacquez">GitHub</a>
+          <div className="hero-grid">
+            <div className="hero-text">
+              <h1 className="kicker">Fullstack Software Engineer</h1>
+              <p className="lede">
+                I'm a fullstack software engineer with seven years of experience, most of
+                it remote. The last four years I worked fullstack in Java and Sencha ExtJS
+                along with SQL Server, and before that three years in C# and .NET on banking
+                software. I use AI coding tools carefully in my day to day work, and in my
+                own time I build around the things I care about, mostly music, art, and games.
+              </p>
+              <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
+              <div className="cta-row">
+                <a className="btn primary" href="#music" onClick={toMusic}>See my work</a>
+                <Link className="btn" to="/story">Server story</Link>
+                <a className="btn" href="mailto:hector.jacquez@outlook.com">Email me</a>
+                <a className="btn" href="https://www.linkedin.com/in/hector-jacquez-a13829141">LinkedIn</a>
+                <a className="btn" href="https://github.com/HectorJacquez">GitHub</a>
+              </div>
             </div>
+            <CRT3D onActivate={() => setGameOpen(true)} />
           </div>
         </div>
       </header>
+      {gameOpen && <GameOverlay onClose={() => setGameOpen(false)} />}
 
       <section id="music"><div className="wrap">
         <div className="kicker">Music</div>
@@ -62,7 +69,6 @@ export function Home() {
         <div className="kicker">Games &amp; game dev</div>
         <h2>Games and game dev</h2>
         <p className="sub">Most of what I've made here is unfinished, but these two you can play with right now.</p>
-        <GameTV />
         <div className="cards">{gameCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <p className="sub" style={{ marginTop: '1.6rem' }}>Not shown here yet, and still in progress: a 3D graybox runner, a music-venue scene, and Nintendo 64 homebrew demos built with my own asset pipeline.</p>
         <Minis items={gameMinis} />

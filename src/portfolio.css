@@ -309,6 +309,58 @@ header.hero::before {
   .tv.boot .tv-screen, .tv-title { animation: none; }
 }
 
+/* ---------- 3D CRT ---------- */
+.crt-3d {
+  position: relative; cursor: pointer;
+  width: 100%; aspect-ratio: 1;
+  max-width: 380px; margin: 0 auto;
+}
+.crt-3d canvas { width: 100% !important; height: 100% !important; display: block; }
+.crt-hint {
+  position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink-faint);
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.crt-3d:hover .crt-hint { opacity: 1; }
+@media (max-width: 860px) {
+  .crt-3d { max-width: 260px; margin-top: 1rem; }
+}
+
+/* ---------- game overlay ---------- */
+.game-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.game-overlay-inner {
+  position: relative; width: 90vw; max-width: 860px;
+}
+.game-overlay-close {
+  position: absolute; top: -40px; right: 0;
+  background: transparent; border: 1px solid var(--line);
+  color: var(--ink); font-size: 1.2rem; cursor: pointer;
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s;
+}
+.game-overlay-close:hover { border-color: var(--accent); color: var(--accent); }
+.game-overlay-screen {
+  aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden;
+  background: #040705;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.6), 0 0 20px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+.game-overlay-screen iframe {
+  width: 100%; height: 100%; border: 0;
+}
+.game-overlay-caption {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 0.7rem; font-size: 0.85rem; color: var(--ink-dim);
+}
+.game-overlay-caption a { font-size: 0.8rem; }
+
 /* two vertical visualizers pinned to the page edges, desktop only, behind
    all content so the center stays clean and readable */
 .sidewave {
