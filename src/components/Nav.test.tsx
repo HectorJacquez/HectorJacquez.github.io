@@ -26,4 +26,13 @@ describe('Nav', () => {
     await userEvent.click(screen.getByRole('link', { name: 'Music' }))
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
   })
+
+  it('closes the menu when clicking outside it', async () => {
+    render(<MemoryRouter><Nav /><div data-testid="outside">elsewhere</div></MemoryRouter>)
+    const toggle = screen.getByRole('button', { name: /menu/i })
+    await userEvent.click(toggle)
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    await userEvent.click(screen.getByTestId('outside'))
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  })
 })

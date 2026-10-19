@@ -6,6 +6,11 @@ import { cleanup } from '@testing-library/react'
 // Unmount between tests ourselves, or repeated renders stack in the DOM.
 afterEach(() => cleanup())
 
+// jsdom doesn't implement scrollIntoView; the section nav calls it.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn()
+}
+
 // jsdom ships no matchMedia; the shell's visualizer reads it on mount.
 if (!window.matchMedia) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
