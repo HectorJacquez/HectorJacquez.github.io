@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
 import { TopWave } from '../components/TopWave'
 import { GameTV } from '../components/GameTV'
+import { useSectionLink } from '../components/useSectionLink'
 import { musicCards, musicMinis, workCards, gameCards, gameMinis, type Mini } from '../data/projects'
 
 function Minis({ items }: { items: Mini[] }) {
@@ -15,6 +16,7 @@ function Minis({ items }: { items: Mini[] }) {
 }
 
 export function Home() {
+  const toMusic = useSectionLink()('music')
   return (
     <>
       <header className="hero">
@@ -31,7 +33,7 @@ export function Home() {
             </p>
             <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
             <div className="cta-row">
-              <a className="btn primary" href="#music">See my work</a>
+              <a className="btn primary" href="#music" onClick={toMusic}>See my work</a>
               <Link className="btn" to="/story">The story</Link>
               <a className="btn" href="mailto:hector.jacquez@outlook.com">Email me</a>
               <a className="btn" href="https://www.linkedin.com/in/hector-jacquez-a13829141">LinkedIn</a>
