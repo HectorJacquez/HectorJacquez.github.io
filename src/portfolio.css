@@ -472,3 +472,41 @@ footer {
   color: var(--ink-faint); font-size: 0.9rem;
 }
 footer .wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; }
+
+/* ---------- listening / stats page ---------- */
+.stats-head { padding: 3rem 0 0.6rem; }
+.stats-head h1 { font-size: clamp(1.9rem, 4.5vw, 2.6rem); line-height: 1.15;
+  letter-spacing: -0.015em; margin: 0 0 0.6rem; }
+.stats-head h1 em { font-style: normal; color: var(--accent); }
+.stats-head .dek { color: var(--ink-dim); font-size: 1.08rem; max-width: 46rem; margin: 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.9rem; margin: 2rem 0 0.6rem; }
+.kpi { background: var(--bg-card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1rem 1.15rem; }
+.kpi b { display: block; font-size: 1.65rem; font-weight: 650; letter-spacing: -0.01em; }
+.kpi span { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--ink-dim); }
+.chart { background: var(--bg-card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1.3rem 1.4rem 1.1rem; margin: 1.4rem 0; }
+.chart h2 { font-size: 1.15rem; margin: 0 0 0.25rem; }
+.chart .note { color: var(--ink-dim); font-size: 0.9rem; margin: 0 0 1rem; max-width: 56rem; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart svg .ax { font: 11px var(--mono); fill: var(--ink-faint); }
+.chart svg .axd { font: 11px var(--mono); fill: var(--ink-dim); }
+.chart svg .lbl { font: 13px var(--sans); fill: var(--ink); }
+.chart svg .grid { stroke: var(--line); stroke-width: 1; }
+.chart svg .axis { stroke: color-mix(in srgb, var(--ink-faint) 50%, var(--line)); stroke-width: 1; }
+.chart svg .zero { fill: var(--bg-raise); }
+.chart details { margin-top: 0.8rem; }
+.chart summary { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-faint); cursor: pointer; }
+.chart summary:hover { color: var(--accent-2); }
+.chart .tblwrap { overflow-x: auto; margin-top: 0.6rem; }
+.chart table { border-collapse: collapse; font-size: 0.8rem; font-family: var(--mono);
+  color: var(--ink-dim); min-width: 100%; }
+.chart th, .chart td { padding: 0.25rem 0.6rem; text-align: right; border-bottom: 1px solid var(--line);
+  font-variant-numeric: tabular-nums; white-space: nowrap; }
+.chart th { color: var(--ink); font-weight: 600; }
+.chart th:first-child, .chart td:first-child { text-align: left; }
+.provenance { font-family: var(--mono); font-size: 0.78rem; color: var(--ink-faint);
+  margin: 2rem 0 0.5rem; line-height: 1.8; }
