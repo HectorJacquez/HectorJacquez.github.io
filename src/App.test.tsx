@@ -7,8 +7,8 @@ describe('App shell', () => {
   it('keeps the music player mounted across a route change', async () => {
     render(<App />)
     const before = screen.getByTestId('music-player')
-    await userEvent.click(screen.getByRole('link', { name: /work/i }))
-    screen.getByRole('heading', { name: /work/i })          // route content did change
-    expect(screen.getByTestId('music-player')).toBe(before) // but the player is the SAME node
+    await userEvent.click(screen.getAllByRole('link', { name: /the story/i })[0])
+    screen.getByRole('heading', { name: /the story/i })      // route content changed
+    expect(screen.getByTestId('music-player')).toBe(before)  // but the player persisted
   })
 })
