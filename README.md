@@ -14,9 +14,9 @@ green rather than only ever green.
 
 ## Pages
 
-- **Home**: hero, work sections (Music / Engineering / Games), embedded
-  cat-rpg TV, and a teaser linking to the full story.
-- **The Story**: how replacing Spotify turned into a self-hosted platform.
+- **Home**: Summary, work sections (Music / Engineering / Games), embedded
+  cat-rpg TV, and a teaser linking to the server story.
+- **Server Story**: how replacing Spotify turned into a self-hosted platform.
 - **Listening**: monthly heatmap, Spotify-to-Navidrome handoff chart, top
   artists, and listening clock, all regenerated from live server stats.
 

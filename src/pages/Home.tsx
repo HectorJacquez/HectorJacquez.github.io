@@ -34,7 +34,7 @@ export function Home() {
             <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
             <div className="cta-row">
               <a className="btn primary" href="#music" onClick={toMusic}>See my work</a>
-              <Link className="btn" to="/story">The story</Link>
+              <Link className="btn" to="/story">Server story</Link>
               <a className="btn" href="mailto:hector.jacquez@outlook.com">Email me</a>
               <a className="btn" href="https://www.linkedin.com/in/hector-jacquez-a13829141">LinkedIn</a>
               <a className="btn" href="https://github.com/HectorJacquez">GitHub</a>
@@ -69,7 +69,7 @@ export function Home() {
       </div></section>
 
       <section><div className="wrap">
-        <div className="kicker">The Story</div>
+        <div className="kicker">Server Story</div>
         <h2>How wanting my own Spotify turned into all of this</h2>
         <p className="sub">I just wanted my own music instead of Spotify, and it got a little out of hand.</p>
         <div className="teaser">
