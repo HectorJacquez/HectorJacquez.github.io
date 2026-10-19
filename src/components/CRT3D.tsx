@@ -32,7 +32,7 @@ function CRTModel({ onClick }: { onClick: () => void }) {
   const scale = Math.min(viewport.width * 0.28, 2.2)
 
   return (
-    <group ref={ref} onClick={onClick} scale={scale}>
+    <group ref={ref} onClick={onClick} scale={scale} rotation={[0, -Math.PI / 2, 0]}>
       <primitive object={gltf.scene.clone()} />
     </group>
   )

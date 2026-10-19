@@ -314,7 +314,7 @@ header.hero { position: relative; padding: 5.5rem 0 3.5rem; }
 /* ---------- 3D CRT ---------- */
 .crt-3d {
   position: relative; cursor: pointer;
-  width: 100%; aspect-ratio: 1;
+  width: 100%; aspect-ratio: 3 / 4;
   max-width: 380px; margin: 0 auto;
 }
 .crt-3d canvas { width: 100% !important; height: 100% !important; display: block; }
