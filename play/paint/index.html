@@ -242,6 +242,15 @@
         PAINT_RES, PAINT_RES, "#bfb8ab");
       pc.original = pc.ctx.getImageData(0, 0, pc.can.width, pc.can.height);
       mat.map = pc.tex;
+      // A paint subject should be a plain diffuse surface however the source
+      // model was authored: force it non-metallic (a metal shows albedo only as
+      // a reflection tint and goes dark with no env map, so paint "vanishes"),
+      // fully opaque (so strokes are not rendered see-through), and untinted, so
+      // any imported glTF paints correctly without per-file material surgery.
+      if ("metalness" in mat) mat.metalness = 0;
+      if ("roughness" in mat) mat.roughness = 0.75;
+      mat.transparent = false; mat.alphaTest = 0; mat.depthWrite = true;
+      if (mat.color) mat.color.set(0xffffff);
       mat.needsUpdate = true;
       o.userData.pc = pc;
       pcs.push(pc);
