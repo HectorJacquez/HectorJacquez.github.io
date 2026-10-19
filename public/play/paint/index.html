@@ -162,8 +162,8 @@ footer .wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; max-width: 1080px; m
   scene.background = new THREE.Color(0x0a0b10);
   const camera = new THREE.PerspectiveCamera(45, 4 / 3, 0.01, 50);
   camera.position.set(0, 0.4, 2.2);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3630, 0.55));
-  const sun = new THREE.DirectionalLight(0xffffff, 0.45);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3630, 0.5));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.7);
   sun.position.set(2, 3, 2);
   scene.add(sun);
 
@@ -261,7 +261,8 @@ footer .wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; max-width: 1080px; m
   // pixel-art) atlas is upscaled 64 -> 512 with smoothing off, so strokes
   // are smooth but the base keeps its crisp texel look.
   const PAINT_RES = 512;
-  new THREE.GLTFLoader().load("model.glb", gltf => {
+  renderer.toneMapping = THREE.NoToneMapping;
+  new THREE.GLTFLoader().load("model.glb?v=3", gltf => {
     root = gltf.scene;
 
     // centre the model and frame the camera on it
@@ -300,7 +301,7 @@ footer .wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; max-width: 1080px; m
       // fully opaque (so strokes are not rendered see-through), and untinted, so
       // any imported glTF paints correctly without per-file material surgery.
       if ("metalness" in mat) mat.metalness = 0;
-      if ("roughness" in mat) mat.roughness = 0.75;
+      if ("roughness" in mat) mat.roughness = 1;
       mat.transparent = false; mat.alphaTest = 0; mat.depthWrite = true;
       if (mat.color) mat.color.set(0xffffff);
       mat.needsUpdate = true;

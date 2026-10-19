@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
-const MODEL = `${import.meta.env.BASE_URL}models/CRT.glb`
+const MODEL = `${import.meta.env.BASE_URL}models/CRT.glb?v=3`
 
 function CRTModel({ onClick }: { onClick: () => void }) {
   const gltf = useGLTF(MODEL)
@@ -56,12 +56,13 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
         camera={{ position: [0, 0.3, 3.2], fov: 36 }}
         onCreated={({ gl: renderer }) => {
           renderer.setClearColor(0x000000, 0)
+          renderer.toneMapping = THREE.NoToneMapping
         }}
         onError={() => setGl(false)}
       >
-        <ambientLight intensity={0.35} />
-        <pointLight position={[3, 3, 3]} intensity={0.7} />
-        <pointLight position={[-2, 1, 2]} intensity={0.25} color="#a78bfa" />
+        <ambientLight intensity={0.55} />
+        <directionalLight position={[3, 3, 3]} intensity={0.9} />
+        <pointLight position={[-2, 1, 2]} intensity={0.3} color="#a78bfa" />
         <Suspense fallback={null}>
           <CRTModel onClick={onActivate} />
         </Suspense>
