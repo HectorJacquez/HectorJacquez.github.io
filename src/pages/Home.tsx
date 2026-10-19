@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Card } from '../components/Card'
 import { TopWave } from '../components/TopWave'
+import { GameTV } from '../components/GameTV'
 import { musicCards, musicMinis, workCards, gameCards, gameMinis, type Mini } from '../data/projects'
 
 function Minis({ items }: { items: Mini[] }) {
@@ -59,22 +60,7 @@ export function Home() {
         <div className="kicker">Games &amp; game dev</div>
         <h2>Games and game dev</h2>
         <p className="sub">Most of what I've made here is unfinished, but these two you can play with right now.</p>
-        <div className="tvwrap" style={{ maxWidth: 520, margin: '0.6rem auto 2.2rem' }}>
-          <div className="tv">
-            <div className="tv-screen">
-              <div className="tv-off">
-                <span className="tv-title">NICO'S<br />BIZARRE ADVENTURE</span>
-                <span className="tv-hint">⏻ press power</span>
-              </div>
-            </div>
-            <div className="tv-panel">
-              <button className="tv-power" aria-label="Power the game on or off">⏻</button>
-              <span className="tv-led"></span>
-              <span className="tv-brand">Hedgevision</span>
-            </div>
-          </div>
-          <div className="tv-caption">my cats' RPG, running live in the TV (<a href="/play/cat-rpg.html">fullscreen + manual</a>)</div>
-        </div>
+        <GameTV />
         <div className="cards">{gameCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <p className="sub" style={{ marginTop: '1.6rem' }}>Not shown here yet, and still in progress: a 3D graybox runner, a music-venue scene, and Nintendo 64 homebrew demos built with my own asset pipeline.</p>
         <Minis items={gameMinis} />
