@@ -21,7 +21,7 @@ describe('niceStep', () => {
   it('picks a 1/2/5 x 10^k step sized to the target gridline count', () => {
     expect(niceStep(14608, 3)).toBe(5000)
     expect(niceStep(1000, 2)).toBe(500)
-    expect(niceStep(3345, 3)).toBe(1000)
+    expect(niceStep(3345, 3)).toBe(2000) // rounds the step up, so at most `target` gridlines
   })
 })
 
