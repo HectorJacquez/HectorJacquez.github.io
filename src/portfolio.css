@@ -111,9 +111,44 @@ nav.top a.item.external::after {
   content: "\2197"; font-size: 0.8em; margin-left: 0.28em; opacity: 0.65;
 }
 nav.top .spacer { flex: 1; }
+nav.top .nav-links { display: flex; align-items: center; gap: 0.9rem; }
+/* hamburger: hidden on desktop, becomes an X when the menu is open */
+nav.top .nav-toggle {
+  display: none; background: transparent; border: 0; cursor: pointer;
+  padding: 10px; border-radius: 10px; color: var(--ink); line-height: 0;
+}
+nav.top .nav-toggle:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+nav.top .nav-toggle .bars { position: relative; display: block; width: 20px; height: 2px; }
+nav.top .nav-toggle .bars,
+nav.top .nav-toggle .bars::before,
+nav.top .nav-toggle .bars::after {
+  background: currentColor; border-radius: 2px;
+  transition: transform .2s ease, opacity .2s ease, background .2s ease;
+}
+nav.top .nav-toggle .bars::before,
+nav.top .nav-toggle .bars::after { content: ""; position: absolute; left: 0; width: 20px; height: 2px; }
+nav.top .nav-toggle .bars::before { top: -6px; }
+nav.top .nav-toggle .bars::after { top: 6px; }
+nav.top .nav-toggle[aria-expanded="true"] .bars { background: transparent; }
+nav.top .nav-toggle[aria-expanded="true"] .bars::before { transform: translateY(6px) rotate(45deg); }
+nav.top .nav-toggle[aria-expanded="true"] .bars::after { transform: translateY(-6px) rotate(-45deg); }
+@media (max-width: 760px) {
+  nav.top .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
+  nav.top .nav-links {
+    display: none; position: absolute; top: 58px; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0.4rem;
+    padding: 0.7rem 1.4rem 1rem;
+    background: color-mix(in srgb, var(--bg) 96%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  nav.top .nav-links.open { display: flex; }
+  nav.top .nav-links .item { width: 100%; text-align: center; padding: 0.62rem 0.8rem; }
+}
 @media (prefers-reduced-motion: reduce) {
   nav.top a.item:hover, nav.top a.item:active { transform: none; }
   nav.top .brand:hover .brandmark .eq { animation: none; }
+  nav.top .nav-toggle .bars, nav.top .nav-toggle .bars::before, nav.top .nav-toggle .bars::after { transition: none; }
 }
 
 /* ---------- hero ---------- */

@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom/vitest'
-import { vi } from 'vitest'
+import { afterEach, vi } from 'vitest'
+import { cleanup } from '@testing-library/react'
+
+// We don't enable Vitest globals, so RTL's auto-cleanup doesn't register.
+// Unmount between tests ourselves, or repeated renders stack in the DOM.
+afterEach(() => cleanup())
 
 // jsdom ships no matchMedia; the shell's visualizer reads it on mount.
 if (!window.matchMedia) {

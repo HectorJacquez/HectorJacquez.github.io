@@ -1,25 +1,8 @@
 import { HashRouter, Routes, Route, Link } from 'react-router-dom'
-import { Brand } from './components/Brand'
 import { Home } from './pages/Home'
 import { MusicDot } from './components/MusicDot'
 import { Visualizer } from './components/Visualizer'
-
-function Nav() {
-  return (
-    <nav className="top">
-      <div className="wrap">
-        <Brand />
-        <span className="spacer" />
-        <a className="item" href="#music">Music</a>
-        <a className="item" href="#games">Games</a>
-        <a className="item" href="#work">Work</a>
-        <Link className="item" to="/story">The Story</Link>
-        <Link className="item" to="/listening">Listening</Link>
-        <a className="item" href="https://hedge-at-hog.neocities.org/">The Fun Site</a>
-      </div>
-    </nav>
-  )
-}
+import { Nav } from './components/Nav'
 
 function Footer() {
   return (
