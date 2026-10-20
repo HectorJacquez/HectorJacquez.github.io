@@ -70,10 +70,13 @@ export function Paint() {
       scene.background = new THREE.Color(0x0a0b10)
       const camera = new THREE.PerspectiveCamera(45, 4 / 3, 0.01, 50)
       camera.position.set(0, 0.4, 2.2)
-      scene.add(new THREE.HemisphereLight(0xffffff, 0x3a3630, 0.5))
-      const sun = new THREE.DirectionalLight(0xffffff, 0.7)
-      sun.position.set(2, 3, 2)
+      scene.add(new THREE.AmbientLight(0xffffff, 0.55))
+      const sun = new THREE.DirectionalLight(0xffffff, 0.9)
+      sun.position.set(3, 3, 3)
       scene.add(sun)
+      const fill = new THREE.PointLight(0xa78bfa, 0.3)
+      fill.position.set(-2, 1, 2)
+      scene.add(fill)
 
       const S: SceneState = {
         renderer, scene, camera, controls: null as any, root: null, pcs: [],
