@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card } from '../components/Card'
 import { TopWave } from '../components/TopWave'
 import { CRT3D } from '../components/CRT3D'
@@ -18,6 +18,7 @@ function Minis({ items }: { items: Mini[] }) {
 
 export function Home() {
   const toWork = useSectionLink()('work')
+  const navigate = useNavigate()
   return (
     <>
       <header className="hero">
@@ -42,7 +43,7 @@ export function Home() {
                 <a className="btn" href="https://github.com/HectorJacquez">GitHub</a>
               </div>
             </div>
-            <CRT3D onActivate={() => { window.location.href = `${import.meta.env.BASE_URL}play/paint/` }} />
+            <CRT3D onActivate={() => navigate('/paint')} />
           </div>
         </div>
       </header>
@@ -50,7 +51,7 @@ export function Home() {
       <section id="work"><div className="wrap">
         <div className="kicker">Engineering</div>
         <h2>Systems and tools</h2>
-        <p className="sub">The engine room under the rest of this page. The music pipeline, the album art, and the 3D tooling all run on these; they are the parts you do not see, but everything else leans on them.</p>
+        <p className="sub">The infrastructure behind the rest of this page. Everything above runs on these.</p>
         <div className="cards">{workCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <Minis items={workMinis} />
       </div></section>
@@ -58,7 +59,7 @@ export function Home() {
       <section id="music"><div className="wrap">
         <div className="kicker">Music</div>
         <h2>Music</h2>
-        <p className="sub">Most of what I've built for my server started with wanting something for my own music or attempts at game projects.</p>
+        <p className="sub">Most of what I've built started with wanting something for my own music.</p>
         <div className="cards">{musicCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <Minis items={musicMinis} />
       </div></section>
@@ -66,7 +67,7 @@ export function Home() {
       <section id="games"><div className="wrap">
         <div className="kicker">Games &amp; game dev</div>
         <h2>Games and game dev</h2>
-        <p className="sub">Most of what I've made here is unfinished, but these two you can play with right now.</p>
+        <p className="sub">These two you can play with right now.</p>
         <GameTV />
         <div className="cards">{gameCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <p className="sub" style={{ marginTop: '1.6rem' }}>Not shown here yet, and still in progress: a 3D graybox runner, a music-venue scene, and Nintendo 64 homebrew demos built with my own asset pipeline.</p>
@@ -76,17 +77,13 @@ export function Home() {
       <section><div className="wrap">
         <div className="kicker">Server Story</div>
         <h2>How wanting my own Spotify turned into all of this</h2>
-        <p className="sub">I just wanted my own music instead of Spotify, and it got a little out of hand.</p>
         <div className="teaser">
           <blockquote>
-            It started with setting up Navidrome, an open-source music server, to replace
-            Spotify, and then I missed the playlists and the lyrics, so I built lyric
-            fetching, transcription, and mood analysis. The mood playlists needed AI covers,
-            and the image models lived on another machine's GPU, so I built a job queue, and
-            after that the voices went on the queue, then the video, the 3D meshes, and a
-            coding agent, until all the copies of it collapsed into <strong>one lease engine
-            on an event-sourced Postgres log</strong>. It grew that far out of wanting the
-            music nights at home to keep getting better.
+            I set up Navidrome to replace Spotify, then missed playlists and lyrics, so
+            I built those. The mood playlists needed AI covers on another machine's GPU,
+            so I built a job queue. Then voices went on the queue, then video, then 3D
+            meshes, then a coding agent, until it all collapsed into{' '}
+            <strong>one lease engine on an event-sourced Postgres log</strong>.
           </blockquote>
           <Link className="btn primary" to="/story">Read the full story</Link>
         </div>

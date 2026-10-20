@@ -2,6 +2,7 @@ import { HashRouter, Routes, Route, Link } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { Story } from './pages/Story'
 import { Listening } from './pages/Listening'
+import { Paint } from './pages/Paint'
 import { MusicDot } from './components/MusicDot'
 import { Visualizer } from './components/Visualizer'
 import { Nav } from './components/Nav'
@@ -26,6 +27,7 @@ export default function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/paint" element={<Paint />} />
         <Route path="/story" element={<Story />} />
         <Route path="/listening" element={<Listening />} />
       </Routes>
