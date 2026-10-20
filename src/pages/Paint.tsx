@@ -12,7 +12,15 @@ const SWATCHES = ['#f2a65a', '#e0533d', '#e58fb1', '#9ece6a', '#4ec9b0',
 const STICKER_CHARS = ['🐱', '🍄', '⭐', '❤️', '🎵', '🔥', '👾', '😎']
 
 type Tool = 'brush' | 'fill' | 'stamp' | 'orbit'
-interface PaintCanvas { can: HTMLCanvasElement; ctx: CanvasRenderingContext2D; tex: THREE.CanvasTexture; view: HTMLCanvasElement; original: ImageData; stencil: null }
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+interface SceneState {
+  renderer: THREE.WebGLRenderer; scene: THREE.Scene; camera: THREE.PerspectiveCamera
+  controls: OrbitControls; root: THREE.Object3D | null; pcs: any[]
+  undoStack: { pc: any; data: ImageData }[]; sticker: HTMLCanvasElement
+  HP: any; painting: boolean; strokePointer: number | null; last: any; activePC: any
+  tool: Tool; color: string; brushSize: number; animId: number
+}
 
 function makeSticker(ch: string) {
   const c = document.createElement('canvas')
@@ -33,13 +41,7 @@ export function Paint() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const sceneRef = useRef<{
-    renderer: THREE.WebGLRenderer; scene: THREE.Scene; camera: THREE.PerspectiveCamera
-    controls: OrbitControls; root: THREE.Object3D | null; pcs: PaintCanvas[]
-    undoStack: { pc: PaintCanvas; data: ImageData }[]; sticker: HTMLCanvasElement
-    HP: any; painting: boolean; strokePointer: number | null; last: any; activePC: PaintCanvas | null
-    tool: Tool; color: string; brushSize: number; animId: number
-  } | null>(null)
+  const sceneRef = useRef<SceneState | null>(null)
 
   const toolRef = useRef(tool)
   const colorRef = useRef(color)
@@ -73,12 +75,13 @@ export function Paint() {
       sun.position.set(2, 3, 2)
       scene.add(sun)
 
-      const S = sceneRef.current = {
-        renderer, scene, camera, controls: null!, root: null, pcs: [],
+      const S: SceneState = {
+        renderer, scene, camera, controls: null as any, root: null, pcs: [],
         undoStack: [], sticker: makeSticker('🐱'), HP,
         painting: false, strokePointer: null, last: null, activePC: null,
         tool: 'brush', color: '#f2a65a', brushSize: 20, animId: 0
       }
+      sceneRef.current = S
 
       function resize() {
         const w = stage.clientWidth, h = stage.clientHeight
@@ -105,13 +108,13 @@ export function Paint() {
         return null
       }
 
-      function snapshot(pc: PaintCanvas) {
+      function snapshot(pc: any) {
         S.undoStack.push({ pc, data: pc.ctx.getImageData(0, 0, pc.can.width, pc.can.height) })
         if (S.undoStack.length > UNDO_CAP) S.undoStack.shift()
       }
 
       function paintAt(hit: THREE.Intersection) {
-        const pc = (hit.object as any).userData.pc as PaintCanvas
+        const pc = (hit.object as any).userData.pc
         const t = toolRef.current
         if (t === 'stamp') {
           if (!S.sticker) return
@@ -164,16 +167,17 @@ export function Paint() {
       S.controls = controls
 
       new GLTFLoader().load(MODEL, (gltf) => {
-        S.root = gltf.scene
-        const box = new THREE.Box3().setFromObject(S.root)
+        const root = gltf.scene
+        S.root = root
+        const box = new THREE.Box3().setFromObject(root)
         const c = box.getCenter(new THREE.Vector3())
-        S.root.position.sub(c)
-        S.root.rotation.y = -Math.PI / 2
+        root.position.sub(c)
+        root.rotation.y = -Math.PI / 2
         const span = box.getSize(new THREE.Vector3()).length()
         camera.position.setLength(span * 1.35)
         controls.target.set(0, 0, 0)
 
-        S.root.traverse((o: any) => {
+        root.traverse((o: any) => {
           if (!o.isMesh || !o.material) return
           o.material = o.material.clone()
           const mat = o.material as THREE.MeshStandardMaterial
@@ -183,7 +187,7 @@ export function Paint() {
             up.width = up.height = PAINT_RES
             const x = up.getContext('2d')!
             x.imageSmoothingEnabled = false
-            x.drawImage(mat.map.image, 0, 0, PAINT_RES, PAINT_RES)
+            x.drawImage(mat.map.image as CanvasImageSource, 0, 0, PAINT_RES, PAINT_RES)
           }
           const pc = HP.canvasFromMap(
             up ? { image: up, encoding: (mat.map as any).encoding, wrapS: mat.map!.wrapS, wrapT: mat.map!.wrapT } : null,
@@ -200,7 +204,7 @@ export function Paint() {
           S.pcs.push(pc)
         })
 
-        scene.add(S.root)
+        scene.add(root)
         setLoading(false)
       }, undefined, (err: any) => {
         setError('could not load the model')
