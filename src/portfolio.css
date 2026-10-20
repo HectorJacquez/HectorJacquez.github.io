@@ -468,6 +468,7 @@ section p.sub { color: var(--ink-dim); margin: 0 0 2rem; max-width: 46rem; }
   background: var(--bg-card); font-size: 0.92rem;
 }
 .mini b { display: block; font-size: 0.98rem; margin-bottom: 0.15rem; }
+.mini b a::after { content: ' \2197'; font-weight: 400; font-size: 0.85em; opacity: 0.7; }
 .mini span { color: var(--ink-dim); }
 
 /* ---------- essay page ---------- */

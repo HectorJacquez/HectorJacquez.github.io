@@ -34,7 +34,7 @@ export const workCards: Project[] = [
     pills: ['Python', 'GPU', 'file locking', 'ML infra'], links: [{ soon: 'repo soon' }] },
   { tag: 'AI engineering', title: 'The Agent Workshop',
     body: "co-hog is a coding agent that runs on my own 12 GB GPU so not every task needs paid tokens. The harness mattered more than the model: the thing it taught me was to check the harness first when an agent fails. Bigger campaigns like porting five Minecraft mods ran on frontier agents, and each new failure mode became a reusable diagnostic skill.",
-    pills: ['llama.cpp', 'agent harness', '12GB GPU'], links: [{ soon: 'write-up soon' }] },
+    pills: ['llama.cpp', 'agent harness', 'diagnostic skills'], links: [{ soon: 'write-up soon' }] },
   { tag: 'tools · browser', title: 'Pocket Trace Recorder',
     body: "A GBA emulator that runs in your browser and records gameplay as replay files for a decompilation project. You can add it to your phone's home screen and use it offline.",
     pills: ['browser app', 'gbajs2', 'service worker'], links: [{ soon: 'live demo soon' }] },
