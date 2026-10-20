@@ -31,11 +31,10 @@ export function Home() {
             <div className="hero-text">
               <h1 className="kicker">Fullstack Software Engineer</h1>
               <p className="lede">
-                I'm a fullstack software engineer with seven years of experience, most of
-                it remote. The last four years I worked fullstack in Java and Sencha ExtJS
-                along with SQL Server, and before that three years in C# and .NET on banking
-                software. I use AI coding tools carefully in my day to day work, and in my
-                own time I build around the things I care about, mostly music, art, and games.
+                Seven years of fullstack experience, mostly remote. Four years in Java and
+                Sencha ExtJS with SQL Server, three before that in C# and .NET on banking
+                software. I use AI coding tools in my day-to-day work. In my own time I
+                build around music, art, and games.
               </p>
               <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
               <div className="cta-row">
