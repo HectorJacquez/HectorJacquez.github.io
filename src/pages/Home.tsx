@@ -10,7 +10,10 @@ function Minis({ items }: { items: Mini[] }) {
   return (
     <div className="mini-grid" style={{ marginTop: '1.1rem' }}>
       {items.map((m) => (
-        <div key={m.title} className="mini"><b>{m.title}</b><span>{m.note}</span></div>
+        <div key={m.title} className="mini">
+          <b>{m.link ? <a href={m.link} target="_blank" rel="noopener noreferrer">{m.title}</a> : m.title}</b>
+          <span>{m.note}</span>
+        </div>
       ))}
     </div>
   )

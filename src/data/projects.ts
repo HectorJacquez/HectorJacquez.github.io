@@ -1,6 +1,6 @@
 export type CardLink = { text: string; href: string } | { soon: string }
 export interface Project { tag: string; title: string; body: string; pills: string[]; links: CardLink[] }
-export interface Mini { title: string; note: string }
+export interface Mini { title: string; note: string; link?: string }
 
 export const musicCards: Project[] = [
   { tag: 'ML · audio', title: 'AutoCharter',
@@ -17,13 +17,13 @@ export const musicCards: Project[] = [
     pills: ['Go', 'WASM', 'Essentia', 'FastAPI'], links: [{ soon: 'repo soon' }] },
 ]
 export const musicMinis: Mini[] = [
-  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays' },
-  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes' },
+  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
+  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
   { title: 'Lyrics pipeline', note: 'LRCLIB first, then whisper on separated stems for the rest, plus romaji and translation for the Japanese half' },
 ]
 export const workMinis: Mini[] = [
-  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays' },
-  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes' },
+  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
+  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
 ]
 export const workCards: Project[] = [
   { tag: 'distributed systems', title: 'pullqueue',
