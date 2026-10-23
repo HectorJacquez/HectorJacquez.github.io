@@ -1,49 +1,222 @@
-import { useRef, useState, useEffect, Suspense } from 'react'
+import { useRef, useState, useEffect, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import { sfx } from '../sfx'
 
 const MODEL = `${import.meta.env.BASE_URL}models/CRT.glb?v=3`
+const PHOTO = `${import.meta.env.BASE_URL}face.png`
 
-function CRTModel({ onClick }: { onClick: () => void }) {
+// reveal timing (seconds)
+const FIRST_DELAY = 5   // drawn face holds this long before the first switch
+const IDLE_GAP = 5      // drawn face hold between reveals
+const SPIN_DUR = 1.3    // one full 360 turn
+const SHOW_DUR = 10     // how long the real portrait stays up
+
+// the screen glass inside the 256x256 texture atlas (top-left tile)
+const G = { x: 8, y: 9, w: 50, h: 50 }
+
+// sparkle palette: green / purple / orange
+const SPARK_COLORS = ['#9ece6a', '#a78bfa', '#f2a65a', '#e0b84a', '#7ee0b0']
+
+const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2)
+
+/** Draw the pixel-art atlas at 4x, then composite the photo onto the screen glass
+ *  with light scanlines and a gentle vignette so it reads as a picture on the CRT. */
+function buildPhotoAtlas(atlas: CanvasImageSource, photo: HTMLImageElement): HTMLCanvasElement {
+  const S = 4, N = 256 * S
+  const c = document.createElement('canvas')
+  c.width = c.height = N
+  const g = c.getContext('2d')!
+  g.imageSmoothingEnabled = false
+  g.drawImage(atlas, 0, 0, N, N)
+
+  const gx = G.x * S, gy = G.y * S, gw = G.w * S, gh = G.h * S
+  g.save()
+  g.beginPath(); g.rect(gx, gy, gw, gh); g.clip()
+  g.imageSmoothingEnabled = true
+  const s = Math.max(gw / photo.width, gh / photo.height) // cover-fit, centered
+  const pw = photo.width * s, ph = photo.height * s
+  g.drawImage(photo, gx + (gw - pw) / 2, gy + (gh - ph) / 2, pw, ph)
+  g.restore()
+  return c
+}
+
+/** A soft round sparkle sprite (tinted per-particle via vertex colors). */
+function buildSparkle(): THREE.Texture {
+  const n = 64
+  const c = document.createElement('canvas')
+  c.width = c.height = n
+  const g = c.getContext('2d')!
+  const grd = g.createRadialGradient(n / 2, n / 2, 0, n / 2, n / 2, n / 2)
+  grd.addColorStop(0, 'rgba(255,255,255,1)')
+  grd.addColorStop(0.35, 'rgba(255,255,255,0.55)')
+  grd.addColorStop(1, 'rgba(255,255,255,0)')
+  g.fillStyle = grd; g.fillRect(0, 0, n, n)
+  g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineWidth = 2
+  g.beginPath(); g.moveTo(n / 2, 8); g.lineTo(n / 2, n - 8)
+  g.moveTo(8, n / 2); g.lineTo(n - 8, n / 2); g.stroke()
+  const t = new THREE.CanvasTexture(c)
+  t.colorSpace = THREE.SRGBColorSpace
+  return t
+}
+
+function Sparkles({ apiRef }: { apiRef: React.MutableRefObject<{ set: (v: number) => void } | null> }) {
+  const ref = useRef<THREE.Points>(null)
+  const sprite = useMemo(buildSparkle, [])
+  const geo = useMemo(() => {
+    const COUNT = 70
+    const pos = new Float32Array(COUNT * 3)
+    const col = new Float32Array(COUNT * 3)
+    const col3 = new THREE.Color()
+    for (let i = 0; i < COUNT; i++) {
+      const u = Math.random(), v = Math.random()
+      const th = u * Math.PI * 2, ph = Math.acos(2 * v - 1)
+      const r = 0.55 + Math.random() * 0.8
+      pos[i * 3] = r * Math.sin(ph) * Math.cos(th)
+      pos[i * 3 + 1] = r * Math.cos(ph) * 0.95 + 0.45
+      pos[i * 3 + 2] = r * Math.sin(ph) * Math.sin(th)
+      col3.set(SPARK_COLORS[(Math.random() * SPARK_COLORS.length) | 0])
+      col[i * 3] = col3.r; col[i * 3 + 1] = col3.g; col[i * 3 + 2] = col3.b
+    }
+    const bg = new THREE.BufferGeometry()
+    bg.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    bg.setAttribute('color', new THREE.BufferAttribute(col, 3))
+    return bg
+  }, [])
+
+  useEffect(() => {
+    apiRef.current = {
+      set: (val: number) => {
+        const m = ref.current?.material as THREE.PointsMaterial | undefined
+        if (m) m.opacity = val
+      },
+    }
+  }, [apiRef])
+
+  useFrame((_, dt) => { if (ref.current) ref.current.rotation.y += dt * 1.4 })
+
+  return (
+    <points ref={ref} geometry={geo}>
+      <pointsMaterial
+        map={sprite} size={0.18} sizeAttenuation vertexColors transparent opacity={0}
+        depthWrite={false} blending={THREE.AdditiveBlending}
+      />
+    </points>
+  )
+}
+
+function CRTModel({ onClick, reduced }: { onClick: () => void; reduced: boolean }) {
   const gltf = useGLTF(MODEL)
   const ref = useRef<THREE.Group>(null)
   const { viewport } = useThree()
+  const scene = useMemo(() => gltf.scene.clone(true), [gltf])
+
+  const mat = useRef<THREE.MeshStandardMaterial | null>(null)
+  const origMap = useRef<THREE.Texture | null>(null)
+  const photoMap = useRef<THREE.Texture | null>(null)
+  const sparkApi = useRef<{ set: (v: number) => void } | null>(null)
+  const rev = useRef({
+    phase: 'idle' as 'idle' | 'spinOut' | 'show' | 'spinBack',
+    start: 0, nextAt: FIRST_DELAY, swapped: false,
+  })
 
   useEffect(() => {
-    gltf.scene.traverse((child) => {
-      if ((child as THREE.Mesh).isMesh) {
-        const mesh = child as THREE.Mesh
-        const mat = mesh.material as THREE.MeshStandardMaterial
-        if (mat.map) {
-          mat.map.magFilter = THREE.NearestFilter
-          mat.map.minFilter = THREE.NearestFilter
-          mat.map.needsUpdate = true
-        }
+    let screenMat: THREE.MeshStandardMaterial | null = null
+    scene.traverse((child) => {
+      const mesh = child as THREE.Mesh
+      if (!mesh.isMesh) return
+      mesh.material = (mesh.material as THREE.MeshStandardMaterial).clone()
+      const m = mesh.material as THREE.MeshStandardMaterial
+      if (m.map) {
+        m.map.magFilter = THREE.NearestFilter
+        m.map.minFilter = THREE.NearestFilter
+        m.map.needsUpdate = true
+        screenMat = m
       }
     })
-  }, [gltf])
+    if (!screenMat) return
+    mat.current = screenMat
+    origMap.current = (screenMat as THREE.MeshStandardMaterial).map
 
-  useFrame(() => {
-    if (!ref.current) return
-    const t = Date.now() * 0.001
-    ref.current.position.y = Math.sin(t * 0.8) * 0.06
-    ref.current.rotation.x = Math.sin(t * 0.5) * 0.04
-    ref.current.rotation.y = -Math.PI / 2 + Math.sin(t * 0.3) * 0.06
+    if (reduced) return
+    const atlas = (screenMat as THREE.MeshStandardMaterial).map?.image as CanvasImageSource | undefined
+    if (!atlas) return
+    const img = new Image()
+    img.src = PHOTO
+    img.onload = () => {
+      const canvas = buildPhotoAtlas(atlas, img)
+      const tex = new THREE.CanvasTexture(canvas)
+      tex.flipY = origMap.current!.flipY
+      tex.colorSpace = THREE.SRGBColorSpace
+      tex.wrapS = origMap.current!.wrapS
+      tex.wrapT = origMap.current!.wrapT
+      tex.magFilter = THREE.LinearFilter
+      tex.minFilter = THREE.LinearMipmapLinearFilter
+      tex.generateMipmaps = true
+      tex.needsUpdate = true
+      photoMap.current = tex
+    }
+  }, [scene, reduced])
+
+  useFrame((state) => {
+    const g = ref.current
+    if (!g) return
+    const t = state.clock.elapsedTime
+    const bob = Math.sin(t * 0.8) * 0.06
+    const sway = Math.sin(t * 0.3) * 0.06
+    const r = rev.current
+    let intensity = 0
+
+    if (reduced || r.phase === 'idle' || r.phase === 'show') {
+      g.rotation.x = Math.sin(t * 0.5) * 0.04
+      g.rotation.y = -Math.PI / 2 + sway
+      g.position.y = bob
+      if (!reduced && r.phase === 'idle' && t >= r.nextAt && photoMap.current) {
+        r.phase = 'spinOut'; r.start = t; r.swapped = false
+        sfx.miniHover()
+      }
+      if (r.phase === 'show' && t - r.start > SHOW_DUR) {
+        r.phase = 'spinBack'; r.start = t; r.swapped = false
+        sfx.miniHover()
+      }
+    } else {
+      const p = Math.min(1, (t - r.start) / SPIN_DUR)
+      intensity = Math.sin(p * Math.PI)
+      g.rotation.x = Math.sin(t * 0.5) * 0.04
+      g.rotation.y = -Math.PI / 2 + easeInOut(p) * Math.PI * 2
+      g.position.y = bob + intensity * 0.05
+      if (!r.swapped && p >= 0.5 && mat.current) {
+        r.swapped = true
+        mat.current.map = r.phase === 'spinOut' ? photoMap.current : origMap.current
+        mat.current.needsUpdate = true
+      }
+      if (p >= 1) {
+        g.rotation.y = -Math.PI / 2
+        if (r.phase === 'spinOut') { r.phase = 'show'; r.start = t }
+        else { r.phase = 'idle'; r.nextAt = t + IDLE_GAP }
+      }
+    }
+
+    sparkApi.current?.set(intensity)
   })
 
   const scale = Math.min(viewport.width * 0.28, 2.2)
 
   return (
     <group ref={ref} onClick={onClick} scale={scale}>
-      <primitive object={gltf.scene.clone()} />
+      <primitive object={scene} />
+      {!reduced && <Sparkles apiRef={sparkApi} />}
     </group>
   )
 }
 
 export function CRT3D({ onActivate }: { onActivate: () => void }) {
   const [gl, setGl] = useState(true)
+  const reduced = useMemo(() => {
+    try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false }
+  }, [])
 
   if (!gl) return null
 
@@ -65,7 +238,7 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
         <directionalLight position={[3, 3, 3]} intensity={0.9} />
         <pointLight position={[-2, 1, 2]} intensity={0.3} color="#a78bfa" />
         <Suspense fallback={null}>
-          <CRTModel onClick={onActivate} />
+          <CRTModel onClick={onActivate} reduced={reduced} />
         </Suspense>
         <EffectComposer>
           <Bloom luminanceThreshold={0.6} luminanceSmoothing={0.4} intensity={0.35} mipmapBlur />

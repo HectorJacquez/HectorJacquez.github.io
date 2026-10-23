@@ -60,7 +60,7 @@ function preload() {
   if (preloaded) return
   preloaded = true
   const b = import.meta.env.BASE_URL + 'sfx/'
-  ;['chime-hover.ogg', 'chime-click.ogg', 'chime-nav.ogg', 'chime-mini.ogg', 'chime-crt.ogg', 'paint-loop.ogg', 'paint-stamp.ogg']
+  ;['chime-hover.ogg', 'chime-click.ogg', 'chime-nav.ogg', 'chime-mini.ogg', 'crt-switch.ogg', 'paint-loop.ogg', 'paint-stamp.ogg']
     .forEach((f) => load(b + f))
   document.removeEventListener('pointerdown', preload)
   document.removeEventListener('keydown', preload)
@@ -78,7 +78,7 @@ export const sfx = {
   cardHover: () => play(base() + 'chime-hover.ogg', 0.45, true),
   miniHover: () => play(base() + 'chime-mini.ogg', 0.45, true),
   navClick:  () => play(base() + 'chime-nav.ogg', 0.55, true),
-  crtClick:  () => play(base() + 'chime-crt.ogg', 0.55),
+  crtClick:  () => play(base() + 'crt-switch.ogg', 0.7),
   paintStart: () => {
     if (muted || paintLoop) return
     const ac = getCtx()

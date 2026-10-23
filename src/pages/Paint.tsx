@@ -38,7 +38,7 @@ export function Paint() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [tool, setTool] = useState<Tool>('brush')
   const [color, setColor] = useState('#f2a65a')
-  const [brushSize, setBrushSize] = useState(20)
+  const [brushSize, setBrushSize] = useState(10)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -83,7 +83,7 @@ export function Paint() {
         renderer, scene, camera, controls: null as any, root: null, pcs: [],
         undoStack: [], sticker: makeSticker('🐱'), HP,
         painting: false, strokePointer: null, last: null, activePC: null,
-        tool: 'brush', color: '#f2a65a', brushSize: 20, animId: 0
+        tool: 'brush', color: '#f2a65a', brushSize: 10, animId: 0
       }
       sceneRef.current = S
 

@@ -164,6 +164,11 @@ nav.top .nav-toggle[aria-expanded="true"] .bars::after { transform: translateY(-
 }
 
 /* ---------- hero + ambient glow ---------- */
+/* clear the sticky 58px nav when jumping to a section */
+section[id] { scroll-margin-top: 74px; }
+/* keep the social icons together so GitHub never wraps to its own line */
+.cta-row .social-row { display: inline-flex; gap: 0.8rem; }
+
 header.hero { position: relative; padding: 5.5rem 0 3.5rem; overflow-x: clip; }
 /* ambient glow that drifts behind the hero AND content sections */
 #root::before {
@@ -325,6 +330,7 @@ header.hero { position: relative; padding: 5.5rem 0 3.5rem; overflow-x: clip; }
 .tv-panel { display: flex; align-items: center; gap: 0.7rem; padding: 10px 6px 4px; }
 .tv-power {
   width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid var(--line); color: var(--ink-dim); font-size: 1rem;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.03) 50%, rgba(0,0,0,0.2)),
@@ -790,7 +796,7 @@ footer .wrap { display: flex; gap: 1.4rem; flex-wrap: wrap; }
 }
 .paint-page .toolbar button:hover { border-color: var(--accent); }
 .paint-page .toolbar button.on { background: var(--accent); color: #141005; border-color: transparent; font-weight: 600; }
-.paint-page .toolbar input[type=range] { width: 110px; accent-color: var(--accent); }
+.paint-page .toolbar input[type=range] { width: 70px; accent-color: var(--accent); }
 .paint-page .toolbar .lab { font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase;
   letter-spacing: 0.08em; color: var(--ink-faint); }
 .paint-page .toolbar .sw {
