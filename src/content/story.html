@@ -1,12 +1,9 @@
 <article class="essay">
   <div class="kicker">The long version · ~6 min</div>
-  <h1>How wanting my own Spotify turned into all of this</h1>
-  <p class="dek">It started as a way to stream my own music instead of Spotify,
-  and keeping it the way I wanted kept adding pieces until it was a home server
-  with a job queue and a few machines doing the work behind it.</p>
+  <h1>How wanting starting my music server turned into a huge learning experience</h1>
 
-  <h2>It started with wanting my own Spotify</h2>
-  <p>I left Spotify because I didn't like how their algorithm steered me into the
+  <h2>It started with wanting features similar to spotify</h2>
+  <p>I left spotify because I didn't like how their algorithm steered me into the
   same music over and over, and I missed curating my own library. So I set up Navidrome on a
   home server to stream my own music, and having my own copy of everything was good
   for about a week before I started missing two things, the playlists and the
@@ -17,10 +14,9 @@
   sidecars into the library so the players would scroll them. I run it on a nightly
   timer for two reasons: so any new music I add gets its lyrics on its own, and
   because LRCLIB keeps growing, so a track that had nothing last time might have
-  lyrics the next time it runs. It also has polite rate limiting and a cache for the
-  misses. For the tracks nobody had ever transcribed, I eventually pointed stem
-  separation and Whisper at my own files, and I added romaji and translation for
-  the Japanese half of my collection. The playlists turned into mood analysis,
+  lyrics the next time it runs. For the tracks nobody had ever transcribed, I eventually pointed stem
+  separation and Whisper at my own files, and I added translation for all languages besides English and Spanish
+  and romaji translation for the Japanese portions of my collection. The playlists turned into mood analysis,
   which is a Navidrome plugin with an audio-ML sidecar that scores every track and
   feeds 48 generated mood playlists, and later a chat harness that builds a
   playlist for whatever mood I ask for and answers music trivia from real sources
@@ -39,18 +35,13 @@
 
   <h2>The pattern gets copied over and over</h2>
   <p>Once a pull-queue existed, every new thing I wanted became another lane on it.
-  Voice cloning went on for a daily listening brief, and stem separation went on and
-  promptly fed back into the original lane by transcribing lyrics LRCLIB didn't have,
-  which is where one of the commit messages from that stretch came from,
-  <i>"don't pay demucs to prove a track has no vocals."</i> Looping canvas videos for
-  album art went on after I probed the official source and hit a wall, and then came
-  image-to-3D meshes and a local coding agent, which I added because building my chat assistants
+  Text to speech went on for a daily listening brief/character DJ feature, and stem separation went on and
+  promptly fed back into the original lane by transcribing lyrics LRCLIB didn't have.
+  Looping videos to play behind album art was next, created by cpu processes and also through MiniMaxH3,
+  and then came image-to-3D meshes and a local coding agent, which I added because building my chat assistants
   on a small local model had already shown me that models tuned for a consumer
   graphics card can carry real work, and I didn't want every task leaning on paid
-  frontier tokens. Each lane copied the same queue-and-lease mechanics, and the
-  workers advertise what they can do through a capability heartbeat that probes
-  everything live at beat time, a rule I wrote after a stale venv spent four days
-  advertising a capability it didn't actually have.</p>
+  frontier tokens. Each lane copied the same queue-and-lease mechanics.</p>
 
   <p>At the busiest stretch it was two machines and several AI coding agents
   coordinating through a shared board, along with a knowledge-base wiki where I wrote
@@ -73,14 +64,13 @@
   first, then made sure they stayed green on the new one, so I could prove the
   behavior had not changed. Later I moved the whole thing onto a real database and had
   it keep an append-only history of every job instead of overwriting state, which
-  means I can actually answer what happened to any job after the fact, and it keeps
-  limping along instead of falling over when the database is unavailable.</p>
+  means I can actually answer what happened to any job after the fact.</p>
 
   <h2>What the system is now</h2>
-  <p>The "my own Spotify" goal eventually reached the players themselves, so I
+  <p>The "my own streaming service" goal eventually reached the players themselves, so I
   forked my desktop and Android music clients to make the home-grown features show
   up on every screen, including my playlist folders, the looping video art the server
-  generates for albums (which was inspired by Spotify's version), and, on the phone,
+  generates for albums, and, on the phone,
   the chat assistant built right into the player.</p>
 
 <figure class="diorama" aria-label="Animated diagram of the hedgy-hub pipeline: a song enters the hub, jobs travel out to lyrics, mood analysis, and GPU workers and return; one job's lease expires mid-flight and is re-served to the second worker; a finished cover lands on the playlist shelf.">
@@ -223,5 +213,5 @@
   check the harness before blaming the model when an agent fails, because most of
   what looks like a weak model turns out to be a weak environment around it.</p>
 
-  <p><a href="index.html#music">← Back to the projects</a></p>
+  <p><a href="#/" onclick="window.scrollTo(0,0)">← Back to the projects</a></p>
 </article>

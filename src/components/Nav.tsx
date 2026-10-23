@@ -40,6 +40,7 @@ export function Nav() {
           <a className="item" href="#work" onClick={section('work')}>Work</a>
           <a className="item" href="#music" onClick={section('music')}>Music</a>
           <a className="item" href="#games" onClick={section('games')}>Games</a>
+          <Link className="item" to="/bio" onClick={close}>About</Link>
           <Link className="item" to="/story" onClick={close}>Server Story</Link>
           <Link className="item" to="/listening" onClick={close}>Listening</Link>
         </div>

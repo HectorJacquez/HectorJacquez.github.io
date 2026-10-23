@@ -65,8 +65,14 @@ nav.top .brand {
   letter-spacing: 0.02em; transition: filter .2s ease, transform .2s ease;
 }
 nav.top .brand .brandmark {
-  background: var(--accent); border-radius: 999px; padding: 6px 14px;
+  position: relative; overflow: hidden;
+  border-radius: 999px; padding: 6px 14px;
   display: inline-flex; align-items: center; justify-content: center;
+  background: #f0a050;
+}
+.brandmark-noise {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
 }
 nav.top .brand .brandname {
   color: var(--ink); font-weight: 700; font-size: 1.1rem; line-height: 1; white-space: nowrap;
@@ -75,7 +81,7 @@ nav.top .brand:hover { text-decoration: none; filter: brightness(1.05); transfor
 nav.top .brand:hover .brandname { color: var(--accent); }
 /* niko-nose brandmark: same-size pill as the name, logo centred inside */
 .brandmark { flex: 0 0 auto; transition: transform .25s ease; }
-.brandimg { height: 28px; width: auto; display: block; }
+.brandimg { height: 28px; width: auto; display: block; position: relative; z-index: 1; transform: translateX(-2px) rotate(2deg); }
 nav.top .brand:hover .brandmark { transform: scale(1.04) rotate(-3deg); }
 .brandmark .eq { fill: var(--accent); transform-box: fill-box; transform-origin: bottom; }
 .brandmark .eq2 { fill: var(--accent-2); }
@@ -193,6 +199,11 @@ header.hero { position: relative; padding: 5.5rem 0 3.5rem; }
     var(--accent);
   color: #0b1406; border-color: transparent; font-weight: 600;
 }
+.btn.icon-btn {
+  padding: 0.6rem 0.7rem; display: inline-flex; align-items: center; justify-content: center;
+  line-height: 0;
+}
+.btn.icon-btn svg { display: block; }
 @media (prefers-reduced-motion: reduce) {
   .btn, .btn:hover, .btn:active { transform: none; transition: border-color .15s; }
 }
@@ -312,6 +323,17 @@ header.hero { position: relative; padding: 5.5rem 0 3.5rem; }
   .tv.boot .tv-screen, .tv-title { animation: none; }
 }
 
+/* ---------- hero gradient behind CRT ---------- */
+.crt-wrap { position: relative; }
+.hero-gradient {
+  position: absolute; inset: -20% -30%;
+  border-radius: 50%; overflow: hidden;
+  opacity: 0.15; filter: blur(40px);
+  pointer-events: none; z-index: 0;
+}
+.crt-3d { z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .hero-gradient { display: none; } }
+
 /* ---------- 3D CRT ---------- */
 .crt-3d {
   position: relative; cursor: pointer;
@@ -386,6 +408,27 @@ header.hero { position: relative; padding: 5.5rem 0 3.5rem; }
 body > *:not(.sidewave):not(.top):not(.musicdot) { position: relative; z-index: 1; }
 /* React mounts everything under #root, so lift its content above the canvases too */
 #root > *:not(.sidewave):not(.top):not(.musicdot) { position: relative; z-index: 1; }
+
+/* ---------- employment history ---------- */
+.jobs { display: flex; flex-direction: column; gap: 0; }
+.job {
+  display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem;
+  padding: 1.1rem 0; border-bottom: 1px solid var(--line);
+}
+.job:first-child { border-top: 1px solid var(--line); }
+.job-dates {
+  font-family: var(--mono); font-size: 0.8rem; color: var(--accent-2);
+  padding-top: 0.15rem;
+}
+.job strong { font-size: 1rem; }
+.job-role {
+  font-size: 0.88rem; color: var(--ink-dim);
+}
+.job-role::before { content: ' · '; }
+.job p { margin: 0.3rem 0 0; font-size: 0.9rem; color: var(--ink-dim); }
+@media (max-width: 600px) {
+  .job { grid-template-columns: 1fr; gap: 0.2rem; }
+}
 
 /* ---------- sections ---------- */
 section { padding: 3.4rem 0; }

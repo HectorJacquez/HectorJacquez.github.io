@@ -7,6 +7,12 @@ import { Nav } from './Nav'
 const renderNav = () => render(<MemoryRouter><Nav /></MemoryRouter>)
 
 describe('Nav', () => {
+  it('renders the About and Server Story nav links', () => {
+    renderNav()
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/bio')
+    expect(screen.getByRole('link', { name: 'Server Story' })).toHaveAttribute('href', '/story')
+  })
+
   it('starts with the mobile menu collapsed', () => {
     renderNav()
     expect(screen.getByRole('button', { name: /menu/i })).toHaveAttribute('aria-expanded', 'false')
