@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { volumeFromDrag } from '../audio/volume'
 import { vizBus, connectAnalyser } from '../audio/vizBus'
+import { sfx } from '../sfx'
 
 /** The corner Water player: play/pause + a drag-to-set volume knob. Lives in the
  *  shell so it persists across routes. */
@@ -10,7 +11,7 @@ export function MusicDot() {
   const [playing, setPlaying] = useState(false)
   const [vol, setVol] = useState(0.35)
 
-  useEffect(() => { if (audio.current) audio.current.volume = vol }, [vol])
+  useEffect(() => { if (audio.current) audio.current.volume = vol; sfx.setVolume(vol / 0.35) }, [vol])
 
   // keep the shared bus in sync so the edge visualizer swells and idles with us
   useEffect(() => { vizBus.playing = playing }, [playing])

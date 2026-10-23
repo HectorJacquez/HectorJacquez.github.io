@@ -9,6 +9,7 @@ import { FloatingShapes } from '../components/FloatingShapes'
 import { TextAnimate } from '../components/TextAnimate'
 import { useSectionLink } from '../components/useSectionLink'
 import { musicCards, musicMinis, workCards, workMinis, gameCards, gameMinis, type Mini } from '../data/projects'
+import { sfx } from '../sfx'
 
 function MiniCard({ m }: { m: Mini }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -40,7 +41,7 @@ function MiniCard({ m }: { m: Mini }) {
     el.style.removeProperty('--ry')
   }
   return (
-    <div className="mini" ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} onTouchMove={onTouch} onTouchEnd={() => { lastTouch.current = Date.now(); onLeave() }}>
+    <div className="mini" ref={ref} onMouseEnter={sfx.miniHover} onMouseMove={onMove} onMouseLeave={onLeave} onTouchMove={onTouch} onTouchEnd={() => { lastTouch.current = Date.now(); onLeave() }}>
       <span className="shift-border" />
       <b>{m.link ? <a href={m.link} target="_blank" rel="noopener noreferrer">{m.title}</a> : m.title}</b>
       <span>{m.note}</span>
@@ -75,9 +76,9 @@ export function Home() {
               </p>
               <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
               <div className="cta-row">
-                <a className="btn primary glow-btn" href="#experience" onClick={toWork}>See my work</a>
-                <Link className="btn" to="/bio">About</Link>
-                <Link className="btn" to="/story">Server story</Link>
+                <a className="btn primary glow-btn" href="#experience" onMouseEnter={sfx.btnHover} onClick={(e) => { sfx.btnClick(); toWork(e) }}>See my work</a>
+                <Link className="btn" to="/bio" onMouseEnter={sfx.btnHover} onClick={sfx.btnClick}>About</Link>
+                <Link className="btn" to="/story" onMouseEnter={sfx.btnHover} onClick={sfx.btnClick}>Server story</Link>
                 <a className="btn icon-btn" href="mailto:hector.jacquez@outlook.com" aria-label="Email me">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 </a>
@@ -119,7 +120,7 @@ export function Home() {
                   />
                 </ShaderGradientCanvas>
               </div>
-              <CRT3D onActivate={() => navigate('/paint')} />
+              <CRT3D onActivate={() => { sfx.crtClick(); navigate('/paint') }} />
             </div>
           </div>
         </div>

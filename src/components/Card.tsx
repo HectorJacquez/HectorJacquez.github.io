@@ -1,5 +1,6 @@
 import { useRef, type MouseEvent } from 'react'
 import type { Project } from '../data/projects'
+import { sfx } from '../sfx'
 
 export function Card({ p }: { p: Project }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -36,7 +37,7 @@ export function Card({ p }: { p: Project }) {
   }
 
   return (
-    <div className="card" ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} onTouchMove={onTouch} onTouchEnd={() => { lastTouch.current = Date.now(); onLeave() }}>
+    <div className="card" ref={ref} onMouseEnter={sfx.cardHover} onMouseMove={onMove} onMouseLeave={onLeave} onTouchMove={onTouch} onTouchEnd={() => { lastTouch.current = Date.now(); onLeave() }}>
       <span className="shift-border" />
       <span className="tag">{p.tag}</span>
       <h3>{p.title}</h3>

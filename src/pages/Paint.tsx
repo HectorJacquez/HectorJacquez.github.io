@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { sfx } from '../sfx'
 
 const MODEL = `${import.meta.env.BASE_URL}models/CRT.glb?v=3`
 const PAINT_SCRIPT = `${import.meta.env.BASE_URL}play/paint/hedgy-paint.js`
@@ -143,6 +144,8 @@ export function Paint() {
         S.last = null
         canvas.setPointerCapture(ev.pointerId)
         snapshot((hit.object as any).userData.pc)
+        if (toolRef.current === 'stamp') sfx.paintStamp()
+        else sfx.paintStart()
         paintAt(hit)
       })
       canvas.addEventListener('pointermove', (ev: PointerEvent) => {
@@ -158,6 +161,7 @@ export function Paint() {
         S.strokePointer = null
         S.last = null
         S.controls.enabled = true
+        sfx.paintStop()
       }
       canvas.addEventListener('pointerup', endStroke)
       canvas.addEventListener('pointercancel', endStroke)
@@ -225,6 +229,7 @@ export function Paint() {
     document.head.appendChild(script)
 
     return () => {
+      sfx.paintStop()
       if (sceneRef.current) {
         cancelAnimationFrame(sceneRef.current.animId)
         sceneRef.current.renderer.dispose()
