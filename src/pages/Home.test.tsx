@@ -27,9 +27,9 @@ describe('Home', () => {
     expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', expect.stringContaining('github.com'))
   })
 
-  it('has a Bio button linking to /bio', () => {
+  it('has an About button linking to /bio', () => {
     render(<MemoryRouter><Home /></MemoryRouter>)
-    const bio = screen.getByRole('link', { name: 'Bio' })
+    const bio = screen.getByRole('link', { name: 'About' })
     expect(bio.getAttribute('href')).toBe('/bio')
   })
 

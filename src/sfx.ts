@@ -78,7 +78,7 @@ export const sfx = {
   cardHover: () => play(base() + 'chime-hover.ogg', 0.45, true),
   miniHover: () => play(base() + 'chime-mini.ogg', 0.45, true),
   navClick:  () => play(base() + 'chime-nav.ogg', 0.55, true),
-  crtClick:  () => play(base() + 'crt-switch.ogg', 0.7),
+  crtClick:  () => play(base() + 'crt-switch.ogg', 0.4),
   paintStart: () => {
     if (muted || paintLoop) return
     const ac = getCtx()

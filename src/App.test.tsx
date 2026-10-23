@@ -17,13 +17,13 @@ describe('App shell', () => {
     await userEvent.click(screen.getAllByRole('link', { name: /server story/i })[0]) // -> /story
     expect(document.querySelector('.essay')).not.toBeNull()
     await userEvent.click(screen.getByRole('link', { name: 'Music' }))            // in-page section link
-    // must land back on the home page, not a blank route
-    expect(screen.getByRole('heading', { level: 1, name: /fullstack software engineer/i })).toBeTruthy()
+    // must land back on the home page, not a blank route (navigation is async)
+    expect(await screen.findByText(/looking for my next fullstack role/i)).toBeTruthy()
   })
 
   it('routes to the bio page', async () => {
     render(<App />)
-    await userEvent.click(screen.getAllByRole('link', { name: /bio/i })[0])
+    await userEvent.click(screen.getAllByRole('link', { name: /about/i })[0])
     expect(document.querySelector('.essay')).not.toBeNull()
   })
 })
