@@ -138,10 +138,9 @@ export function Listening() {
       </Chart>
 
       <p className="provenance">From my self-hosted listening history, 2014–2026 · play counts
-      merged across streaming export and my own server, deduplicated before summing · mood
-      scores from my local analysis pipeline (Essentia models); tracks whose mood vector came
-      back empty are excluded from the map · the listening-time figure is partly estimated from
-      track lengths, and years before 2014 were never logged, so real totals run higher, not lower.</p>
+      merged across streaming export and my own server · mood scores from my local analysis
+      pipeline (Essentia models) · the listening-time figure is partly estimated from track
+      lengths, and years before 2014 were never logged, so real totals run higher, not lower.</p>
     </main>
   )
 }
