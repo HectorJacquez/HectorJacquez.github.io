@@ -26,3 +26,4 @@ public/play/cat-rpg/
 *.njsproj
 *.sln
 *.sw?
+.claude/

@@ -164,7 +164,7 @@ nav.top .nav-toggle[aria-expanded="true"] .bars::after { transform: translateY(-
 }
 
 /* ---------- hero + ambient glow ---------- */
-header.hero { position: relative; padding: 5.5rem 0 3.5rem; }
+header.hero { position: relative; padding: 5.5rem 0 3.5rem; overflow-x: clip; }
 /* ambient glow that drifts behind the hero AND content sections */
 #root::before {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
@@ -349,7 +349,7 @@ header.hero { position: relative; padding: 5.5rem 0 3.5rem; }
 }
 
 /* ---------- hero gradient behind CRT ---------- */
-.crt-wrap { position: relative; overflow: hidden; }
+.crt-wrap { position: relative; }
 .hero-gradient {
   position: absolute; inset: -20% -30%;
   border-radius: 50%; overflow: hidden;
