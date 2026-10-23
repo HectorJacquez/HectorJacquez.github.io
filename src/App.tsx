@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route, Link } from 'react-router-dom'
 import { Home } from './pages/Home'
+import { Bio } from './pages/Bio'
 import { Story } from './pages/Story'
 import { Listening } from './pages/Listening'
 import { Paint } from './pages/Paint'
@@ -28,6 +29,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/paint" element={<Paint />} />
+        <Route path="/bio" element={<Bio />} />
         <Route path="/story" element={<Story />} />
         <Route path="/listening" element={<Listening />} />
       </Routes>

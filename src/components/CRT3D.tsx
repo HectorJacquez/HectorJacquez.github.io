@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, Suspense } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 
 const MODEL = `${import.meta.env.BASE_URL}models/CRT.glb?v=3`
@@ -66,6 +67,10 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
         <Suspense fallback={null}>
           <CRTModel onClick={onActivate} />
         </Suspense>
+        <EffectComposer>
+          <Bloom luminanceThreshold={0.6} luminanceSmoothing={0.4} intensity={0.35} mipmapBlur />
+          <Vignette offset={0.3} darkness={0.55} />
+        </EffectComposer>
       </Canvas>
       <span className="crt-hint">click to paint</span>
     </div>
