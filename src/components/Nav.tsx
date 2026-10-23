@@ -37,10 +37,10 @@ export function Nav() {
           <span className="bars" aria-hidden="true" />
         </button>
         <div className={open ? 'nav-links open' : 'nav-links'}>
-          <a className="item" href="#work" onClick={section('work')}>Work</a>
+          <a className="item" href="#experience" onClick={section('experience')}>Work</a>
+          <Link className="item" to="/bio" onClick={close}>About</Link>
           <a className="item" href="#music" onClick={section('music')}>Music</a>
           <a className="item" href="#games" onClick={section('games')}>Games</a>
-          <Link className="item" to="/bio" onClick={close}>About</Link>
           <Link className="item" to="/story" onClick={close}>Server Story</Link>
           <Link className="item" to="/listening" onClick={close}>Listening</Link>
         </div>

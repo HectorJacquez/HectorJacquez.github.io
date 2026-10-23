@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { Home } from './Home'
 
@@ -31,5 +31,30 @@ describe('Home', () => {
     render(<MemoryRouter><Home /></MemoryRouter>)
     const bio = screen.getByRole('link', { name: 'Bio' })
     expect(bio.getAttribute('href')).toBe('/bio')
+  })
+
+  it('renders shift-border elements inside mini cards', () => {
+    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+    const minis = container.querySelectorAll('.mini')
+    expect(minis.length).toBeGreaterThan(0)
+    for (const mini of minis) {
+      expect(mini.querySelector('.shift-border')).not.toBeNull()
+    }
+  })
+
+  it('mini cards reset tilt on touch end', () => {
+    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+    const mini = container.querySelector('.mini')!
+    mini.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 60, right: 100, bottom: 60, x: 0, y: 0, toJSON: () => {} })
+    fireEvent.touchMove(mini, { touches: [{ clientX: 50, clientY: 30 }] })
+    expect(mini.style.getPropertyValue('--rx')).toBeTruthy()
+    fireEvent.touchEnd(mini)
+    expect(mini.style.getPropertyValue('--rx')).toBe('')
+  })
+
+  it('renders TextAnimate in the hero heading', () => {
+    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+    expect(container.querySelector('.text-animate')).not.toBeNull()
+    expect(container.querySelectorAll('.text-animate-unit').length).toBeGreaterThan(0)
   })
 })
