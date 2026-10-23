@@ -1,10 +1,10 @@
 import { useEffect, type ReactNode } from 'react'
-import { kpis, monthly, MONTHS, topArtists, hourly } from '../data/listening'
+import { kpis, monthly, MONTHS, topArtists, hourly, moodQuadrants } from '../data/listening'
 import { MonthlyHeatmap } from '../charts/MonthlyHeatmap'
 import { HandoffChart } from '../charts/HandoffChart'
 import { TopArtists } from '../charts/TopArtists'
 import { ListeningClock } from '../charts/ListeningClock'
-// MoodQuadrants is held until the analyzer finishes the full library (see below).
+import { MoodQuadrants } from '../charts/MoodQuadrants'
 
 const n = (v: number) => v.toLocaleString()
 
@@ -103,14 +103,26 @@ export function Listening() {
         <TopArtists />
       </Chart>
 
-      {/* The mood "shape of my library" chart is held until the analyzer finishes
-          the full library: only ~5.5k of 17k tracks are scored so far (and climbing),
-          so the quadrant shares aren't representative yet. MoodQuadrants + moodQuadrants
-          data are kept in the repo; the sync re-enables this once coverage is complete. */}
+      <Chart
+        title="The shape of my library"
+        note={<>Every track in the library runs through my local mood-analysis pipeline (Essentia models for valence and intensity). Of {n(17245)} tracks, {n(moodQuadrants.reduce((s, q) => s + q.tracks, 0))} landed in a clear quadrant. Over half sit in the sad · calm corner, which tracks with the shoegaze and post-rock that dominate the collection; the happy · intense quadrant is the second largest, mostly J-rock and punk.</>}
+        table={
+          <table>
+            <thead><tr><th>Quadrant</th><th>Tracks</th><th>Share</th></tr></thead>
+            <tbody>
+              {moodQuadrants.map((q) => (
+                <tr key={q.label}><td>{q.label}</td><td>{n(q.tracks)}</td><td>{q.share}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        }
+      >
+        <MoodQuadrants />
+      </Chart>
 
       <Chart
         title="The listening clock"
-        note="The 212,602 plays that carry an hour-of-day stamp, in local time. The early-afternoon peak is the work soundtrack; 19% of everything happened after dark (10pm to 4am)."
+        note="The 209,512 plays that carry an hour-of-day stamp, in local time. The early-afternoon peak is the work soundtrack; 19% of everything happened after dark (10pm to 4am)."
         table={
           <table>
             <thead><tr><th>Hour</th><th>Plays</th></tr></thead>

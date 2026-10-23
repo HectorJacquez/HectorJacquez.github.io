@@ -1,27 +1,63 @@
+import { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShaderGradientCanvas, ShaderGradient } from 'shadergradient'
 import { Card } from '../components/Card'
 import { TopWave } from '../components/TopWave'
 import { CRT3D } from '../components/CRT3D'
 import { GameTV } from '../components/GameTV'
+import { FloatingShapes } from '../components/FloatingShapes'
+import { TextAnimate } from '../components/TextAnimate'
 import { useSectionLink } from '../components/useSectionLink'
 import { musicCards, musicMinis, workCards, workMinis, gameCards, gameMinis, type Mini } from '../data/projects'
+
+function MiniCard({ m }: { m: Mini }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const lastTouch = useRef(0)
+  function applyTilt(el: HTMLDivElement, clientX: number, clientY: number) {
+    const r = el.getBoundingClientRect()
+    const x = (clientX - r.left) / r.width
+    const y = (clientY - r.top) / r.height
+    el.style.setProperty('--mx', `${x * 100}%`)
+    el.style.setProperty('--my', `${y * 100}%`)
+    el.style.setProperty('--rx', `${(y - 0.5) * -6}deg`)
+    el.style.setProperty('--ry', `${(x - 0.5) * 6}deg`)
+  }
+  function onMove(e: React.MouseEvent) {
+    if (Date.now() - lastTouch.current < 500) return
+    const el = ref.current
+    if (!el) return
+    applyTilt(el, e.clientX, e.clientY)
+  }
+  function onTouch(e: React.TouchEvent) {
+    const el = ref.current
+    if (!el || !e.touches[0]) return
+    applyTilt(el, e.touches[0].clientX, e.touches[0].clientY)
+  }
+  function onLeave() {
+    const el = ref.current
+    if (!el) return
+    el.style.removeProperty('--rx')
+    el.style.removeProperty('--ry')
+  }
+  return (
+    <div className="mini" ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} onTouchMove={onTouch} onTouchEnd={() => { lastTouch.current = Date.now(); onLeave() }}>
+      <span className="shift-border" />
+      <b>{m.link ? <a href={m.link} target="_blank" rel="noopener noreferrer">{m.title}</a> : m.title}</b>
+      <span>{m.note}</span>
+    </div>
+  )
+}
 
 function Minis({ items }: { items: Mini[] }) {
   return (
     <div className="mini-grid" style={{ marginTop: '1.1rem' }}>
-      {items.map((m) => (
-        <div key={m.title} className="mini">
-          <b>{m.link ? <a href={m.link} target="_blank" rel="noopener noreferrer">{m.title}</a> : m.title}</b>
-          <span>{m.note}</span>
-        </div>
-      ))}
+      {items.map((m) => <MiniCard key={m.title} m={m} />)}
     </div>
   )
 }
 
 export function Home() {
-  const toWork = useSectionLink()('work')
+  const toWork = useSectionLink()('experience')
   const navigate = useNavigate()
   return (
     <>
@@ -30,7 +66,7 @@ export function Home() {
           <TopWave />
           <div className="hero-grid">
             <div className="hero-text">
-              <h1 className="kicker">Fullstack Software Engineer</h1>
+              <h1 className="kicker"><TextAnimate stagger={80}>Fullstack Software Engineer</TextAnimate></h1>
               <p className="lede">
                 Seven years of fullstack experience, mostly remote. Four years in Java and
                 Sencha ExtJS with SQL Server, three before that in C# and .NET on banking
@@ -39,8 +75,8 @@ export function Home() {
               </p>
               <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
               <div className="cta-row">
-                <a className="btn primary" href="#work" onClick={toWork}>See my work</a>
-                <Link className="btn" to="/bio">Bio</Link>
+                <a className="btn primary glow-btn" href="#experience" onClick={toWork}>See my work</a>
+                <Link className="btn" to="/bio">About</Link>
                 <Link className="btn" to="/story">Server story</Link>
                 <a className="btn icon-btn" href="mailto:hector.jacquez@outlook.com" aria-label="Email me">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
@@ -114,7 +150,10 @@ export function Home() {
         <div className="kicker">Engineering</div>
         <h2>Systems and tools</h2>
         <p className="sub">The infrastructure behind my server, and some other tools.</p>
-        <div className="cards">{workCards.map((p) => <Card key={p.title} p={p} />)}</div>
+        <div style={{ position: 'relative' }}>
+          <FloatingShapes />
+          <div className="cards">{workCards.map((p) => <Card key={p.title} p={p} />)}</div>
+        </div>
         <Minis items={workMinis} />
       </div></section>
 

@@ -1,13 +1,13 @@
 // My listening history, regenerated from the live music server by
-// scripts/sync-listening-stats.py on 2026-10-19. Do not hand-edit: rerun the script.
+// scripts/sync-listening-stats.py on 2026-10-23. Do not hand-edit: rerun the script.
 // Plays/top-artists/days/library come from the hub's merged-play-store stats
 // (Navidrome already folds in the imported Spotify + MusicBee history); the dated
 // grids come from the Spotify archive (through Aug 2026) and the live Navidrome
 // scrobble log (Aug 2026 on) -- the one window where the two are separable.
 
 export const kpis = [
-  { value: '231,854', label: 'plays, all-time' },
-  { value: '≈587 days', label: 'of continuous audio' },
+  { value: '232,147', label: 'plays, all-time' },
+  { value: '≈588 days', label: 'of continuous audio' },
   { value: '17,245', label: 'tracks in the library' },
   { value: '19%', label: 'played after dark' },
 ]
@@ -17,7 +17,7 @@ export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', '
 /** Plays per month, split by source. `spotify` is the dated Spotify archive
  *  (2014 - Aug 2026); `navidrome` is the live self-hosted scrobble log, which
  *  only begins Aug 2026 (the handoff). Charts read the sum for totals and the
- *  split to show the migration. 5,420 dated Navidrome plays so far. */
+ *  split to show the migration. 5,709 dated Navidrome plays so far. */
 export const monthly: { year: number; spotify: number[]; navidrome: number[] }[] = [
   { year: 2014, spotify: [0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
   { year: 2015, spotify: [0, 3, 0, 75, 0, 0, 0, 0, 0, 0, 0, 349], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
@@ -31,30 +31,30 @@ export const monthly: { year: number; spotify: number[]; navidrome: number[] }[]
   { year: 2023, spotify: [1960, 2962, 2449, 2675, 2265, 1993, 1657, 1805, 1208, 2355, 2592, 2611], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
   { year: 2024, spotify: [2648, 1785, 2259, 1259, 1306, 1342, 1849, 2136, 1677, 1204, 814, 2475], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
   { year: 2025, spotify: [2773, 606, 737, 1499, 1590, 729, 586, 626, 627, 332, 599, 551], navidrome: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
-  { year: 2026, spotify: [247, 37, 598, 983, 345, 821, 703, 129, 0, 0, 0, 0], navidrome: [0, 0, 0, 0, 0, 0, 0, 1368, 2590, 1462, 0, 0] },
+  { year: 2026, spotify: [247, 37, 598, 983, 345, 821, 703, 129, 0, 0, 0, 0], navidrome: [0, 0, 0, 0, 0, 0, 0, 1368, 2590, 1751, 0, 0] },
 ]
 
 /** All-time top ten artists. */
 export const topArtists: { name: string; plays: number }[] = [
-  { name: 'Aphex Twin', plays: 3346 },
-  { name: 'Machine Girl', plays: 3035 },
-  { name: 'Death Grips', plays: 2845 },
-  { name: 'Casino Versus Japan', plays: 2817 },
-  { name: 'Radiohead', plays: 2479 },
-  { name: 'Deerhoof', plays: 2457 },
-  { name: 'Gorillaz', plays: 2439 },
-  { name: 'Boards of Canada', plays: 2300 },
-  { name: 'Nick Drake', plays: 1969 },
+  { name: 'Aphex Twin', plays: 3347 },
+  { name: 'Machine Girl', plays: 3041 },
+  { name: 'Death Grips', plays: 2846 },
+  { name: 'Casino Versus Japan', plays: 2825 },
+  { name: 'Radiohead', plays: 2482 },
+  { name: 'Deerhoof', plays: 2460 },
+  { name: 'Gorillaz', plays: 2442 },
+  { name: 'Boards of Canada', plays: 2307 },
+  { name: 'Nick Drake', plays: 1971 },
   { name: 'King Gizzard & The Lizard Wizard', plays: 1938 },
 ]
 
-/** The 4,535 tracks with mood scores, by valence/intensity quadrant.
- *  The Listening page holds this chart until the analyzer finishes the library. */
+/** The 10,701 tracks with mood scores, by valence/intensity quadrant.
+ *  Full library scored as of 2026-10-23. */
 export const moodQuadrants: { label: string; tracks: number; share: string }[] = [
-  { label: 'sad · calm', tracks: 2321, share: '51%' },
-  { label: 'happy · intense', tracks: 1454, share: '32%' },
-  { label: 'sad · intense', tracks: 466, share: '10%' },
-  { label: 'happy · calm', tracks: 294, share: '6%' },
+  { label: 'sad · calm', tracks: 5544, share: '52%' },
+  { label: 'happy · intense', tracks: 3437, share: '32%' },
+  { label: 'sad · intense', tracks: 866, share: '8%' },
+  { label: 'happy · calm', tracks: 854, share: '8%' },
 ]
 
 /** Plays by hour of day (local time), from the 209,512 stamped plays. */
