@@ -21,8 +21,8 @@ describe('Card', () => {
     const card = container.querySelector('.card')!
     card.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200, right: 200, bottom: 200, x: 0, y: 0, toJSON: () => {} })
     fireEvent.mouseMove(card, { clientX: 100, clientY: 100 })
-    expect(card.style.getPropertyValue('--rx')).toBeTruthy()
-    expect(card.style.getPropertyValue('--ry')).toBeTruthy()
+    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBeTruthy()
+    expect((card as HTMLElement).style.getPropertyValue('--ry')).toBeTruthy()
   })
 
   it('clears tilt CSS variables on mouse leave', () => {
@@ -31,8 +31,8 @@ describe('Card', () => {
     card.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200, right: 200, bottom: 200, x: 0, y: 0, toJSON: () => {} })
     fireEvent.mouseMove(card, { clientX: 100, clientY: 100 })
     fireEvent.mouseLeave(card)
-    expect(card.style.getPropertyValue('--rx')).toBe('')
-    expect(card.style.getPropertyValue('--ry')).toBe('')
+    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBe('')
+    expect((card as HTMLElement).style.getPropertyValue('--ry')).toBe('')
   })
 
   it('clears tilt on touch end', () => {
@@ -40,9 +40,9 @@ describe('Card', () => {
     const card = container.querySelector('.card')!
     card.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200, right: 200, bottom: 200, x: 0, y: 0, toJSON: () => {} })
     fireEvent.touchMove(card, { touches: [{ clientX: 100, clientY: 100 }] })
-    expect(card.style.getPropertyValue('--rx')).toBeTruthy()
+    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBeTruthy()
     fireEvent.touchEnd(card)
-    expect(card.style.getPropertyValue('--rx')).toBe('')
-    expect(card.style.getPropertyValue('--ry')).toBe('')
+    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBe('')
+    expect((card as HTMLElement).style.getPropertyValue('--ry')).toBe('')
   })
 })

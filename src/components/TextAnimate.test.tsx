@@ -20,7 +20,7 @@ describe('TextAnimate', () => {
 
   it('applies staggered transition delays', () => {
     const { container } = render(<TextAnimate stagger={100}>One Two Three</TextAnimate>)
-    const units = container.querySelectorAll('.text-animate-unit')
+    const units = container.querySelectorAll('.text-animate-unit') as NodeListOf<HTMLElement>
     expect(units[0].style.transitionDelay).toBe('0ms')
     expect(units[1].style.transitionDelay).toBe('100ms')
     expect(units[2].style.transitionDelay).toBe('200ms')

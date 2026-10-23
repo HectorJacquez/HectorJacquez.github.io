@@ -47,9 +47,9 @@ describe('Home', () => {
     const mini = container.querySelector('.mini')!
     mini.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 60, right: 100, bottom: 60, x: 0, y: 0, toJSON: () => {} })
     fireEvent.touchMove(mini, { touches: [{ clientX: 50, clientY: 30 }] })
-    expect(mini.style.getPropertyValue('--rx')).toBeTruthy()
+    expect((mini as HTMLElement).style.getPropertyValue('--rx')).toBeTruthy()
     fireEvent.touchEnd(mini)
-    expect(mini.style.getPropertyValue('--rx')).toBe('')
+    expect((mini as HTMLElement).style.getPropertyValue('--rx')).toBe('')
   })
 
   it('renders TextAnimate in the hero heading', () => {

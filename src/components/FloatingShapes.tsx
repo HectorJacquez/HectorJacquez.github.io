@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
-import { Float, MeshTransmissionMaterial } from '@react-three/drei'
-import { Suspense, lazy, useState, useEffect } from 'react'
+import { Float } from '@react-three/drei'
+import { Suspense, useState, useEffect } from 'react'
 
 function Shape({ geo, position, scale, speed, floatIntensity, rotationIntensity }: {
   geo: 'dodecahedron' | 'icosahedron' | 'octahedron'
