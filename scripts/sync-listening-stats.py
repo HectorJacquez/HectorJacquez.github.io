@@ -19,8 +19,8 @@ hidden until the analyzer has scored the whole library (only ~5.5k of 17k so far
 Run it with the hub's venv python so the Postgres (psycopg) and --refresh paths
 work; plain system python falls back to the zip and warns.
 
-Usage:
-    ~/Documents/hedgy-hub/venv/bin/python scripts/sync-listening-stats.py [--refresh]
+Usage (HEDGY_HUB = path to the hub checkout):
+    HEDGY_HUB=/path/to/hedgy-hub /path/to/hedgy-hub/venv/bin/python scripts/sync-listening-stats.py [--refresh]
 """
 from __future__ import annotations
 import collections
@@ -31,7 +31,9 @@ import sys
 import zipfile
 import zoneinfo
 
-HUB = os.environ.get("HEDGY_HUB", "/home/hedge/Documents/hedgy-hub")
+HUB = os.environ.get("HEDGY_HUB")
+if not HUB:
+    sys.exit("set HEDGY_HUB to the hub checkout path, e.g. HEDGY_HUB=/path/to/hedgy-hub")
 CACHE = os.path.join(HUB, "state", "stats-cache.json")
 EXPORT = os.path.join(HUB, "spotify-export.zip")
 HERE = os.path.dirname(os.path.abspath(__file__))

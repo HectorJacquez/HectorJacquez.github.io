@@ -25,8 +25,9 @@ green rather than only ever green.
 Listening data comes from the live server, not hand-edited.
 
 ```bash
-~/Documents/hedgy-hub/venv/bin/python scripts/sync-listening-stats.py          # from cache
-~/Documents/hedgy-hub/venv/bin/python scripts/sync-listening-stats.py --refresh # rebuild cache first
+export HEDGY_HUB=/path/to/hedgy-hub
+"$HEDGY_HUB"/venv/bin/python scripts/sync-listening-stats.py          # from cache
+"$HEDGY_HUB"/venv/bin/python scripts/sync-listening-stats.py --refresh # rebuild cache first
 ```
 
 ## Development

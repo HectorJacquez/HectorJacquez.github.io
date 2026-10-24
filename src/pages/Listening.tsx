@@ -31,7 +31,7 @@ export function Listening() {
     <main className="wrap">
       <header className="stats-head">
         <div className="kicker">Data · from my own server</div>
-        <h1>Twelve years of <em>listening</em></h1>
+        <h1>12 years of <em>listening</em></h1>
         <p className="dek">I left Spotify and built my own music server, which means I also
         own the data. Every chart below is baked from my self-hosted listening history
         and the audio-analysis pipeline that scores my library, no analytics service involved.</p>

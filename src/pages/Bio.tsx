@@ -17,17 +17,17 @@ export function Bio() {
         </p>
 
         <p>
-          These days I work as a fullstack software engineer. I spent the last four years at ISI
-          writing Java and Sencha ExtJS, and three years before that at CSI in C# and .NET, mostly
+          These days I work as a fullstack software engineer. I spent the last 4 years at ISI
+          writing Java and Sencha ExtJS, and 3 years before that at CSI in C# and .NET, mostly
           on banking software. Both roles had me working across the backend and the frontend,
           building services and then putting them to use in the interface, and spending a lot of
           time in SQL making sure data was flowing the way it should. I have gotten up to speed on
-          three different legacy codebases, and I have been told more than once that I pick up
+          3 different legacy codebases, and I have been told more than once that I pick up
           unfamiliar systems faster than most.
         </p>
 
         <p>
-          I have worked remotely for four years, collaborating with several teams and product
+          I have worked remotely for 4 years, collaborating with several teams and product
           designers, and I have managed to make a real impact without being in the room. I like to
           think that says something about how I work: independently when I need to, but always
           staying in touch with the people I am building alongside.
