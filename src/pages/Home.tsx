@@ -69,8 +69,8 @@ export function Home() {
             <div className="hero-text">
               <h1 className="kicker"><TextAnimate stagger={80}>Fullstack Software Engineer</TextAnimate></h1>
               <p className="lede">
-                Seven years of fullstack experience, mostly remote. Four years in Java and
-                Sencha ExtJS with SQL Server, three before that in C# and .NET on banking
+                7 years of fullstack experience, mostly remote. 4 years in Java and
+                Sencha ExtJS with SQL Server, 3 before that in C# and .NET on banking
                 software. I use AI coding tools in my day-to-day work. In my own time I
                 build around music, art, and games.
               </p>

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
@@ -10,7 +10,6 @@ const PAINT_RES = 512
 const UNDO_CAP = 20
 const SWATCHES = ['#f2a65a', '#e0533d', '#e58fb1', '#9ece6a', '#4ec9b0',
   '#7aa2f7', '#9a6fd0', '#f2efe8', '#8a5a3b', '#1b1b1f']
-const STICKER_CHARS = ['🐱', '🍄', '⭐', '❤️', '🎵', '🔥', '👾', '😎']
 
 type Tool = 'brush' | 'fill' | 'stamp' | 'orbit'
 
@@ -23,13 +22,78 @@ interface SceneState {
   tool: Tool; color: string; brushSize: number; animId: number
 }
 
-function makeSticker(ch: string) {
+type Sticker = { id: string; draw: (x: CanvasRenderingContext2D) => void }
+
+function starPath(x: CanvasRenderingContext2D, cx: number, cy: number, spikes: number, outer: number, inner: number) {
+  let rot = -Math.PI / 2
+  const step = Math.PI / spikes
+  x.beginPath()
+  x.moveTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer)
+  for (let i = 0; i < spikes; i++) {
+    rot += step; x.lineTo(cx + Math.cos(rot) * inner, cy + Math.sin(rot) * inner)
+    rot += step; x.lineTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer)
+  }
+  x.closePath()
+}
+
+/** White sticker border + colored fill + a faint dark edge, on the current path. */
+function fillSticker(x: CanvasRenderingContext2D, color: string) {
+  x.lineJoin = 'round'; x.lineCap = 'round'
+  x.lineWidth = 15; x.strokeStyle = '#fff'; x.stroke()
+  x.fillStyle = color; x.fill()
+  x.lineWidth = 2; x.strokeStyle = 'rgba(0,0,0,0.18)'; x.stroke()
+}
+
+const STICKERS: Sticker[] = [
+  { id: 'star', draw: (x) => { starPath(x, 64, 66, 5, 46, 20); fillSticker(x, '#ffc34d') } },
+  { id: 'heart', draw: (x) => {
+    x.beginPath(); x.moveTo(64, 102)
+    x.bezierCurveTo(8, 60, 26, 18, 64, 46)
+    x.bezierCurveTo(102, 18, 120, 60, 64, 102)
+    x.closePath(); fillSticker(x, '#ff6b9d')
+  } },
+  { id: 'bolt', draw: (x) => {
+    x.beginPath(); x.moveTo(76, 14); x.lineTo(36, 72); x.lineTo(58, 72)
+    x.lineTo(50, 114); x.lineTo(94, 52); x.lineTo(70, 52)
+    x.closePath(); fillSticker(x, '#ffd84a')
+  } },
+  { id: 'sparkle', draw: (x) => {
+    const cx = 64, cy = 64, o = 50, i = 13
+    const p: [number, number][] = [[0,-o],[i,-i],[o,0],[i,i],[0,o],[-i,i],[-o,0],[-i,-i]]
+    x.beginPath(); p.forEach((q, idx) => idx ? x.lineTo(cx+q[0], cy+q[1]) : x.moveTo(cx+q[0], cy+q[1]))
+    x.closePath(); fillSticker(x, '#5ec8d4')
+  } },
+  { id: 'gem', draw: (x) => {
+    x.beginPath(); x.moveTo(64, 16); x.lineTo(106, 54); x.lineTo(64, 114); x.lineTo(22, 54)
+    x.closePath(); fillSticker(x, '#a78bfa')
+  } },
+  { id: 'drop', draw: (x) => {
+    x.beginPath(); x.moveTo(64, 16)
+    x.bezierCurveTo(104, 68, 94, 112, 64, 112)
+    x.bezierCurveTo(34, 112, 24, 68, 64, 16)
+    x.closePath(); fillSticker(x, '#6bc6ff')
+  } },
+  { id: 'flower', draw: (x) => {
+    for (let i = 0; i < 6; i++) {
+      const a = i * Math.PI / 3
+      x.beginPath(); x.ellipse(64 + Math.cos(a) * 25, 64 + Math.sin(a) * 25, 19, 19, 0, 0, Math.PI * 2)
+      fillSticker(x, '#ff8fb3')
+    }
+    x.beginPath(); x.arc(64, 64, 16, 0, Math.PI * 2); fillSticker(x, '#ffc34d')
+  } },
+  { id: 'moon', draw: (x) => {
+    x.beginPath()
+    x.arc(58, 64, 44, Math.PI * 0.5, Math.PI * 1.5, false)
+    x.arc(80, 58, 42, Math.PI * 1.35, Math.PI * 0.62, true)
+    x.closePath(); fillSticker(x, '#ffd27a')
+  } },
+]
+
+function makeSticker(s: Sticker) {
   const c = document.createElement('canvas')
   c.width = c.height = 128
   const x = c.getContext('2d')!
-  x.textAlign = 'center'; x.textBaseline = 'middle'
-  x.font = '104px sans-serif'
-  x.fillText(ch, 64, 72)
+  s.draw(x)
   return c
 }
 
@@ -81,7 +145,7 @@ export function Paint() {
 
       const S: SceneState = {
         renderer, scene, camera, controls: null as any, root: null, pcs: [],
-        undoStack: [], sticker: makeSticker('🐱'), HP,
+        undoStack: [], sticker: makeSticker(STICKERS[0]), HP,
         painting: false, strokePointer: null, last: null, activePC: null,
         tool: 'brush', color: '#f2a65a', brushSize: 10, animId: 0
       }
@@ -256,10 +320,12 @@ export function Paint() {
     }
   }, [])
 
-  const selectSticker = useCallback((ch: string) => {
-    if (sceneRef.current) sceneRef.current.sticker = makeSticker(ch)
+  const selectSticker = useCallback((s: Sticker) => {
+    if (sceneRef.current) sceneRef.current.sticker = makeSticker(s)
     setTool('stamp')
   }, [])
+
+  const stickerPreviews = useMemo(() => STICKERS.map((s) => makeSticker(s).toDataURL()), [])
 
   return (
     <main className="wrap paint-page">
@@ -296,9 +362,11 @@ export function Paint() {
         </span>
         <span className="grp">
           <span className="lab">sticker</span>
-          {STICKER_CHARS.map(ch => (
-            <button key={ch} onClick={() => selectSticker(ch)}
-              style={{ fontSize: '1.15rem', lineHeight: '1', padding: '0.2rem 0.5rem' }}>{ch}</button>
+          {STICKERS.map((s, i) => (
+            <button key={s.id} onClick={() => selectSticker(s)} aria-label={s.id}
+              style={{ padding: '0.2rem 0.3rem', lineHeight: 0 }}>
+              <img src={stickerPreviews[i]} alt={s.id} width={22} height={22} style={{ display: 'block' }} />
+            </button>
           ))}
         </span>
         <span className="grp">

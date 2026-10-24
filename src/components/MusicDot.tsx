@@ -46,7 +46,17 @@ export function MusicDot() {
     <>
       <div className={playing ? 'musicdot playing' : 'musicdot'} title="Water, from my own album">
         <button className="md-btn" aria-label={playing ? 'Pause' : 'Play Water, my own music'} onClick={toggle}>
-          <span className="pbicon">{playing ? '❚❚' : '▶'}</span>
+          <span className="pbicon">
+            {playing ? (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect x="7" y="5" width="3.6" height="14" rx="1.2" /><rect x="13.4" y="5" width="3.6" height="14" rx="1.2" />
+              </svg>
+            ) : (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5.2v13.6a1 1 0 0 0 1.52.85l10.9-6.8a1 1 0 0 0 0-1.7L9.52 4.35A1 1 0 0 0 8 5.2z" />
+              </svg>
+            )}
+          </span>
         </button>
         <div className="knob" role="slider" tabIndex={0} aria-label="Volume"
              aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(vol * 100)}
