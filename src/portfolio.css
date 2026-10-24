@@ -83,7 +83,7 @@ nav.top .brand:hover { text-decoration: none; filter: brightness(1.05); transfor
 nav.top .brand:hover .brandname { color: var(--accent); }
 /* niko-nose brandmark: same-size pill as the name, logo centred inside */
 .brandmark { flex: 0 0 auto; transition: transform .25s ease; }
-.brandimg { height: 28px; width: auto; display: block; position: relative; z-index: 1; transform: translateX(-2px) rotate(2deg); }
+.brandimg { height: 31px; width: auto; display: block; position: relative; z-index: 1; transform: translateX(0px) rotate(2deg); }
 nav.top .brand:hover .brandmark { transform: scale(1.04) rotate(-3deg); }
 .brandmark .eq { fill: var(--accent); transform-box: fill-box; transform-origin: bottom; }
 .brandmark .eq2 { fill: var(--accent-2); }
