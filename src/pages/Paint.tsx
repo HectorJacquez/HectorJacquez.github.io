@@ -102,7 +102,7 @@ export function Paint() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [tool, setTool] = useState<Tool>('brush')
   const [color, setColor] = useState('#f2a65a')
-  const [brushSize, setBrushSize] = useState(10)
+  const [brushSize, setBrushSize] = useState(3)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -147,7 +147,7 @@ export function Paint() {
         renderer, scene, camera, controls: null as any, root: null, pcs: [],
         undoStack: [], sticker: makeSticker(STICKERS[0]), HP,
         painting: false, strokePointer: null, last: null, activePC: null,
-        tool: 'brush', color: '#f2a65a', brushSize: 10, animId: 0
+        tool: 'brush', color: '#f2a65a', brushSize: 3, animId: 0
       }
       sceneRef.current = S
 
@@ -186,7 +186,7 @@ export function Paint() {
         const t = toolRef.current
         if (t === 'stamp') {
           if (!S.sticker) return
-          const sz = sizeRef.current * 3
+          const sz = 20 + sizeRef.current * 4
           pc.ctx.drawImage(S.sticker, hit.uv!.x * pc.can.width - sz / 2, hit.uv!.y * pc.can.height - sz / 2, sz, sz)
           HP.refresh(pc)
         } else if (t === 'fill') {
@@ -265,6 +265,11 @@ export function Paint() {
             PAINT_RES, PAINT_RES, '#bfb8ab')
           pc.original = pc.ctx.getImageData(0, 0, pc.can.width, pc.can.height)
           mat.map = pc.tex
+          // hedgy-paint still sets the removed `encoding` field, so without this the
+          // texture is read as linear and renders washed out
+          pc.tex.colorSpace = THREE.SRGBColorSpace
+          pc.tex.anisotropy = renderer.capabilities.getMaxAnisotropy()
+          pc.tex.needsUpdate = true
           if ('metalness' in mat) mat.metalness = 0
           if ('roughness' in mat) mat.roughness = 1
           mat.transparent = false
@@ -351,7 +356,7 @@ export function Paint() {
         </span>
         <span className="grp">
           <span className="lab">size</span>
-          <input type="range" min="4" max="64" value={brushSize} onChange={e => setBrushSize(+e.target.value)} />
+          <input type="range" min="1" max="24" value={brushSize} onChange={e => setBrushSize(+e.target.value)} />
         </span>
         <span className="grp">
           <span className="lab">colour</span>

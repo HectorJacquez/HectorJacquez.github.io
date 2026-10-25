@@ -1,9 +1,11 @@
 import { useRef, useState, useEffect, useMemo, Suspense } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
+import { useGLTF, PerformanceMonitor } from '@react-three/drei'
 import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import * as THREE from 'three'
 import { sfx } from '../sfx'
+import { stepQuality, qualityOverride, type Quality } from './quality'
+import { stepSpring, isSettled, type SpringState } from '../motion/spring'
 
 const MODEL = `${import.meta.env.BASE_URL}models/CRT.glb?v=3`
 const PHOTO = `${import.meta.env.BASE_URL}face.png`
@@ -11,7 +13,9 @@ const PHOTO = `${import.meta.env.BASE_URL}face.png`
 // reveal timing (seconds)
 const FIRST_DELAY = 5   // drawn face holds this long before the first switch
 const IDLE_GAP = 5      // drawn face hold between reveals
-const SPIN_DUR = 1.3    // one full 360 turn
+const SPIN_DUR = 1.6    // one full 360 turn
+// the TV chases the eased spin path on this spring, so it glides and settles instead of braking
+const SPIN_SPRING = { stiffness: 120, damping: 16 }
 const SHOW_DUR = 10     // how long the real portrait stays up
 
 // the screen glass inside the 256x256 texture atlas (top-left tile)
@@ -20,7 +24,24 @@ const G = { x: 8, y: 9, w: 50, h: 50 }
 // sparkle palette: green / purple / orange
 const SPARK_COLORS = ['#9ece6a', '#a78bfa', '#f2a65a', '#e0b84a', '#7ee0b0']
 
-const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2)
+const easeInOutSine = (p: number) => -(Math.cos(Math.PI * p) - 1) / 2
+
+/** "Sharp bilinear" pixel art: each texel stays solid inside and blends only across a
+ *  one-screen-pixel strip at its edges, so it reads crisp without popping as it moves. */
+function sharpPixels(m: THREE.MeshStandardMaterial) {
+  m.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
+      #ifdef USE_MAP
+        vec2 texSize = vec2(textureSize(map, 0));
+        vec2 px = vMapUv * texSize;
+        vec2 seam = floor(px + 0.5);
+        px = seam + clamp((px - seam) / max(fwidth(px), vec2(1e-5)), -0.5, 0.5);
+        // original derivatives, so mip selection isn't thrown off by the snapped uv
+        diffuseColor *= textureGrad(map, px / texSize, dFdx(vMapUv), dFdy(vMapUv));
+      #endif
+    `)
+  }
+}
 
 /** Draw the pixel-art atlas at 4x, then composite the photo onto the screen glass
  *  with light scanlines and a gentle vignette so it reads as a picture on the CRT. */
@@ -110,7 +131,7 @@ function Sparkles({ apiRef }: { apiRef: React.MutableRefObject<{ set: (v: number
 function CRTModel({ onClick, reduced }: { onClick: () => void; reduced: boolean }) {
   const gltf = useGLTF(MODEL)
   const ref = useRef<THREE.Group>(null)
-  const { viewport } = useThree()
+  const { viewport, gl } = useThree()
   const scene = useMemo(() => gltf.scene.clone(true), [gltf])
 
   const mat = useRef<THREE.MeshStandardMaterial | null>(null)
@@ -119,7 +140,7 @@ function CRTModel({ onClick, reduced }: { onClick: () => void; reduced: boolean 
   const sparkApi = useRef<{ set: (v: number) => void } | null>(null)
   const rev = useRef({
     phase: 'idle' as 'idle' | 'spinOut' | 'show' | 'spinBack',
-    start: 0, nextAt: FIRST_DELAY, swapped: false,
+    start: 0, nextAt: FIRST_DELAY, swapped: false, spin: { x: 0, v: 0 } as SpringState,
   })
 
   useEffect(() => {
@@ -130,9 +151,12 @@ function CRTModel({ onClick, reduced }: { onClick: () => void; reduced: boolean 
       mesh.material = (mesh.material as THREE.MeshStandardMaterial).clone()
       const m = mesh.material as THREE.MeshStandardMaterial
       if (m.map) {
-        m.map.magFilter = THREE.NearestFilter
-        m.map.minFilter = THREE.NearestFilter
+        m.map.magFilter = THREE.LinearFilter
+        m.map.minFilter = THREE.LinearMipmapLinearFilter
+        m.map.generateMipmaps = true
+        m.map.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy())
         m.map.needsUpdate = true
+        sharpPixels(m)
         screenMat = m
       }
     })
@@ -155,12 +179,15 @@ function CRTModel({ onClick, reduced }: { onClick: () => void; reduced: boolean 
       tex.magFilter = THREE.LinearFilter
       tex.minFilter = THREE.LinearMipmapLinearFilter
       tex.generateMipmaps = true
+      tex.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy())
       tex.needsUpdate = true
+      // upload now, not on the first swap mid-spin where it would hitch a frame
+      gl.initTexture(tex)
       photoMap.current = tex
     }
-  }, [scene, reduced])
+  }, [scene, reduced, gl])
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const g = ref.current
     if (!g) return
     const t = state.clock.elapsedTime
@@ -174,26 +201,29 @@ function CRTModel({ onClick, reduced }: { onClick: () => void; reduced: boolean 
       g.rotation.y = -Math.PI / 2 + sway
       g.position.y = bob
       if (!reduced && r.phase === 'idle' && t >= r.nextAt && photoMap.current) {
-        r.phase = 'spinOut'; r.start = t; r.swapped = false
+        r.phase = 'spinOut'; r.start = t; r.swapped = false; r.spin = { x: 0, v: 0 }
         sfx.miniHover()
       }
       if (r.phase === 'show' && t - r.start > SHOW_DUR) {
-        r.phase = 'spinBack'; r.start = t; r.swapped = false
+        r.phase = 'spinBack'; r.start = t; r.swapped = false; r.spin = { x: 0, v: 0 }
         sfx.miniHover()
       }
     } else {
       const p = Math.min(1, (t - r.start) / SPIN_DUR)
+      const turn = Math.PI * 2
+      r.spin = stepSpring(r.spin, easeInOutSine(p) * turn, delta, SPIN_SPRING)
       intensity = Math.sin(p * Math.PI)
       g.rotation.x = Math.sin(t * 0.5) * 0.04
-      g.rotation.y = -Math.PI / 2 + easeInOut(p) * Math.PI * 2
+      // the idle sway keeps running through the spin, so the start and end don't jump
+      g.rotation.y = -Math.PI / 2 + sway + r.spin.x
       g.position.y = bob + intensity * 0.05
-      if (!r.swapped && p >= 0.5 && mat.current) {
+      if (!r.swapped && r.spin.x >= Math.PI && mat.current) {
         r.swapped = true
         mat.current.map = r.phase === 'spinOut' ? photoMap.current : origMap.current
         mat.current.needsUpdate = true
       }
-      if (p >= 1) {
-        g.rotation.y = -Math.PI / 2
+      if (p >= 1 && isSettled(r.spin, turn, 0.002)) {
+        g.rotation.y = -Math.PI / 2 + sway
         if (r.phase === 'spinOut') { r.phase = 'show'; r.start = t }
         else { r.phase = 'idle'; r.nextAt = t + IDLE_GAP }
       }
@@ -217,6 +247,13 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
   const reduced = useMemo(() => {
     try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches } catch { return false }
   }, [])
+  // accept ?quality= before the hash (/?quality=0#/) or inside it (#/?quality=0)
+  const forced = useMemo(() => qualityOverride(
+    `${window.location.search}&${window.location.hash.split('?')[1] ?? ''}`), [])
+  const [quality, setQuality] = useState<Quality>(forced ?? 2)
+  const adapt = (ev: 'decline' | 'incline' | 'fallback') => {
+    if (forced === null) setQuality((q) => stepQuality(q, ev))
+  }
 
   if (!gl) return null
 
@@ -227,6 +264,7 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
     >
       <Canvas
         gl={{ antialias: true, alpha: true }}
+        dpr={quality === 0 ? 1 : [1, 2]}
         camera={{ position: [0, 0.3, 3.2], fov: 36 }}
         onCreated={({ gl: renderer }) => {
           renderer.setClearColor(0x000000, 0)
@@ -234,16 +272,22 @@ export function CRT3D({ onActivate }: { onActivate: () => void }) {
         }}
         onError={() => setGl(false)}
       >
+        <PerformanceMonitor flipflops={3}
+          onDecline={() => adapt('decline')}
+          onIncline={() => adapt('incline')}
+          onFallback={() => adapt('fallback')} />
         <ambientLight intensity={0.55} />
         <directionalLight position={[3, 3, 3]} intensity={0.9} />
         <pointLight position={[-2, 1, 2]} intensity={0.3} color="#a78bfa" />
         <Suspense fallback={null}>
           <CRTModel onClick={onActivate} reduced={reduced} />
         </Suspense>
-        <EffectComposer>
-          <Bloom luminanceThreshold={0.6} luminanceSmoothing={0.4} intensity={0.35} mipmapBlur />
-          <Vignette offset={0.3} darkness={0.55} />
-        </EffectComposer>
+        {quality === 2 && (
+          <EffectComposer>
+            <Bloom luminanceThreshold={0.6} luminanceSmoothing={0.4} intensity={0.35} mipmapBlur />
+            <Vignette offset={0.3} darkness={0.55} />
+          </EffectComposer>
+        )}
       </Canvas>
       <span className="crt-hint">click to paint</span>
     </div>
