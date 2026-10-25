@@ -199,6 +199,12 @@ export function Paint() {
       }
 
       canvas.addEventListener('pointerdown', (ev: PointerEvent) => {
+        // right-click opens a menu that swallows the pointerup, leaving the stroke stuck open
+        if (ev.button !== 0) return
+        // a press from the same pointer, or after capture was lost, means the previous
+        // release never arrived (menu, app switch); close that stroke instead of blocking
+        if (S.painting && (ev.pointerId === S.strokePointer ||
+            S.strokePointer === null || !canvas.hasPointerCapture(S.strokePointer))) endStroke()
         if (toolRef.current === 'orbit' || S.painting) return
         const hit = castAt(ev)
         if (!hit) return
@@ -229,6 +235,7 @@ export function Paint() {
       }
       canvas.addEventListener('pointerup', endStroke)
       canvas.addEventListener('pointercancel', endStroke)
+      canvas.addEventListener('lostpointercapture', endStroke)
 
       const controls = new OrbitControls(camera, canvas)
       controls.enableDamping = true
