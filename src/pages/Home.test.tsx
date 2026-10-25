@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { Home } from './Home'
@@ -42,14 +42,21 @@ describe('Home', () => {
     }
   })
 
-  it('mini cards reset tilt on touch end', () => {
-    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
-    const mini = container.querySelector('.mini')!
-    mini.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 60, right: 100, bottom: 60, x: 0, y: 0, toJSON: () => {} })
-    fireEvent.touchMove(mini, { touches: [{ clientX: 50, clientY: 30 }] })
-    expect((mini as HTMLElement).style.getPropertyValue('--rx')).toBeTruthy()
-    fireEvent.touchEnd(mini)
-    expect((mini as HTMLElement).style.getPropertyValue('--rx')).toBe('')
+  it('mini cards spring back and clear their tilt after a touch ends', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame'] })
+    try {
+      const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+      const mini = container.querySelector('.mini') as HTMLElement
+      mini.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 60, right: 100, bottom: 60, x: 0, y: 0, toJSON: () => {} })
+      fireEvent.touchMove(mini, { touches: [{ clientX: 90, clientY: 10 }] })
+      vi.advanceTimersByTime(400)
+      expect(parseFloat(mini.style.getPropertyValue('--rx'))).toBeGreaterThan(1)
+      fireEvent.touchEnd(mini)
+      vi.advanceTimersByTime(3000)
+      expect(mini.style.getPropertyValue('--rx')).toBe('')
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('renders TextAnimate in the hero heading', () => {

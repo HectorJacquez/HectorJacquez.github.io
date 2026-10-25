@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShaderGradientCanvas, ShaderGradient } from 'shadergradient'
 import { Card } from '../components/Card'
@@ -8,40 +7,14 @@ import { GameTV } from '../components/GameTV'
 import { FloatingShapes } from '../components/FloatingShapes'
 import { TextAnimate } from '../components/TextAnimate'
 import { useSectionLink } from '../components/useSectionLink'
+import { useSpringTilt } from '../components/useSpringTilt'
 import { musicCards, musicMinis, workCards, workMinis, gameCards, gameMinis, type Mini } from '../data/projects'
 import { sfx } from '../sfx'
 
 function MiniCard({ m }: { m: Mini }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const lastTouch = useRef(0)
-  function applyTilt(el: HTMLDivElement, clientX: number, clientY: number) {
-    const r = el.getBoundingClientRect()
-    const x = (clientX - r.left) / r.width
-    const y = (clientY - r.top) / r.height
-    el.style.setProperty('--mx', `${x * 100}%`)
-    el.style.setProperty('--my', `${y * 100}%`)
-    el.style.setProperty('--rx', `${(y - 0.5) * -6}deg`)
-    el.style.setProperty('--ry', `${(x - 0.5) * 6}deg`)
-  }
-  function onMove(e: React.MouseEvent) {
-    if (Date.now() - lastTouch.current < 500) return
-    const el = ref.current
-    if (!el) return
-    applyTilt(el, e.clientX, e.clientY)
-  }
-  function onTouch(e: React.TouchEvent) {
-    const el = ref.current
-    if (!el || !e.touches[0]) return
-    applyTilt(el, e.touches[0].clientX, e.touches[0].clientY)
-  }
-  function onLeave() {
-    const el = ref.current
-    if (!el) return
-    el.style.removeProperty('--rx')
-    el.style.removeProperty('--ry')
-  }
+  const { ref, handlers } = useSpringTilt<HTMLDivElement>(6)
   return (
-    <div className="mini" ref={ref} onMouseEnter={sfx.miniHover} onMouseMove={onMove} onMouseLeave={onLeave} onTouchMove={onTouch} onTouchEnd={() => { lastTouch.current = Date.now(); onLeave() }}>
+    <div className="mini" ref={ref} onMouseEnter={sfx.miniHover} {...handlers}>
       <span className="shift-border" />
       <b>{m.link ? <a href={m.link} target="_blank" rel="noopener noreferrer">{m.title}</a> : m.title}</b>
       <span>{m.note}</span>

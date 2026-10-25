@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, fireEvent } from '@testing-library/react'
 import { Card } from './Card'
 
@@ -16,33 +16,46 @@ describe('Card', () => {
     expect(container.querySelector('.card .shift-border')).not.toBeNull()
   })
 
-  it('sets tilt CSS variables on mouse move', () => {
-    const { container } = render(<Card p={project} />)
-    const card = container.querySelector('.card')!
-    card.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200, right: 200, bottom: 200, x: 0, y: 0, toJSON: () => {} })
-    fireEvent.mouseMove(card, { clientX: 100, clientY: 100 })
-    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBeTruthy()
-    expect((card as HTMLElement).style.getPropertyValue('--ry')).toBeTruthy()
-  })
+  describe('spring tilt', () => {
+    beforeEach(() => { vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame'] }) })
+    afterEach(() => { vi.useRealTimers() })
 
-  it('clears tilt CSS variables on mouse leave', () => {
-    const { container } = render(<Card p={project} />)
-    const card = container.querySelector('.card')!
-    card.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200, right: 200, bottom: 200, x: 0, y: 0, toJSON: () => {} })
-    fireEvent.mouseMove(card, { clientX: 100, clientY: 100 })
-    fireEvent.mouseLeave(card)
-    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBe('')
-    expect((card as HTMLElement).style.getPropertyValue('--ry')).toBe('')
-  })
+    function setup() {
+      const { container } = render(<Card p={project} />)
+      const card = container.querySelector('.card') as HTMLElement
+      card.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200, right: 200, bottom: 200, x: 0, y: 0, toJSON: () => {} })
+      return card
+    }
+    const rx = (el: HTMLElement) => el.style.getPropertyValue('--rx')
 
-  it('clears tilt on touch end', () => {
-    const { container } = render(<Card p={project} />)
-    const card = container.querySelector('.card')!
-    card.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200, right: 200, bottom: 200, x: 0, y: 0, toJSON: () => {} })
-    fireEvent.touchMove(card, { touches: [{ clientX: 100, clientY: 100 }] })
-    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBeTruthy()
-    fireEvent.touchEnd(card)
-    expect((card as HTMLElement).style.getPropertyValue('--rx')).toBe('')
-    expect((card as HTMLElement).style.getPropertyValue('--ry')).toBe('')
+    it('eases the tilt in over a few frames instead of jumping', () => {
+      const card = setup()
+      fireEvent.mouseMove(card, { clientX: 180, clientY: 40 })
+      expect(rx(card)).toBe('')
+      vi.advanceTimersByTime(400)
+      expect(parseFloat(rx(card))).toBeGreaterThan(1)
+      expect(parseFloat(card.style.getPropertyValue('--ry'))).toBeGreaterThan(1)
+    })
+
+    it('springs back after the pointer leaves, then clears', () => {
+      const card = setup()
+      fireEvent.mouseMove(card, { clientX: 180, clientY: 40 })
+      vi.advanceTimersByTime(400)
+      fireEvent.mouseLeave(card)
+      expect(rx(card)).not.toBe('')
+      vi.advanceTimersByTime(3000)
+      expect(rx(card)).toBe('')
+      expect(card.style.getPropertyValue('--ry')).toBe('')
+    })
+
+    it('springs back and clears after a touch ends', () => {
+      const card = setup()
+      fireEvent.touchMove(card, { touches: [{ clientX: 180, clientY: 40 }] })
+      vi.advanceTimersByTime(400)
+      expect(parseFloat(rx(card))).toBeGreaterThan(1)
+      fireEvent.touchEnd(card)
+      vi.advanceTimersByTime(3000)
+      expect(rx(card)).toBe('')
+    })
   })
 })
