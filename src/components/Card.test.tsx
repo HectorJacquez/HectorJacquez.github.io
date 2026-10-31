@@ -11,9 +11,11 @@ const project = {
 }
 
 describe('Card', () => {
-  it('renders a shift-border element inside the card', () => {
+  it('has no eyebrow tag above the title and no rainbow hover border', () => {
     const { container } = render(<Card p={project} />)
-    expect(container.querySelector('.card .shift-border')).not.toBeNull()
+    expect(container.querySelector('.card .tag')).toBeNull()
+    expect(container.querySelector('.card .shift-border')).toBeNull()
+    expect(container.querySelector('.card > h3')?.textContent).toBe('Test Project')
   })
 
   describe('spring tilt', () => {

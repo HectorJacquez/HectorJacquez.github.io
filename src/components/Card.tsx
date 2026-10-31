@@ -7,8 +7,6 @@ export function Card({ p }: { p: Project }) {
 
   return (
     <div className="card" ref={ref} onMouseEnter={sfx.cardHover} {...handlers}>
-      <span className="shift-border" />
-      <span className="tag">{p.tag}</span>
       <h3>{p.title}</h3>
       <p>{p.body}</p>
       <div className="card-foot">

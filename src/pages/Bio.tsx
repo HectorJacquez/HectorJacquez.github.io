@@ -5,7 +5,6 @@ export function Bio() {
   return (
     <main className="wrap">
       <article className="essay">
-        <div className="kicker">About me</div>
         <h1>How I got here</h1>
 
         <p>

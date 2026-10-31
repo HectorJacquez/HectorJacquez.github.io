@@ -15,7 +15,6 @@ function MiniCard({ m }: { m: Mini }) {
   const { ref, handlers } = useSpringTilt<HTMLDivElement>(6)
   return (
     <div className="mini" ref={ref} onMouseEnter={sfx.miniHover} {...handlers}>
-      <span className="shift-border" />
       <b>{m.link ? <a href={m.link} target="_blank" rel="noopener noreferrer">{m.title}</a> : m.title}</b>
       <span>{m.note}</span>
     </div>
@@ -40,7 +39,7 @@ export function Home() {
           <TopWave />
           <div className="hero-grid">
             <div className="hero-text">
-              <h1 className="kicker"><TextAnimate stagger={80}>Fullstack Software Engineer</TextAnimate></h1>
+              <h1><TextAnimate stagger={80}>Fullstack Software Engineer</TextAnimate></h1>
               <p className="lede">
                 7 years of fullstack experience, mostly remote. 4 years in Java and
                 Sencha ExtJS with SQL Server, 3 before that in C# and .NET on banking
@@ -49,7 +48,7 @@ export function Home() {
               </p>
               <p className="openwork">I'm looking for my next fullstack role, remote preferred.</p>
               <div className="cta-row">
-                <a className="btn primary glow-btn" href="#experience" onMouseEnter={sfx.btnHover} onClick={(e) => { sfx.btnClick(); toWork(e) }}>See my work</a>
+                <a className="btn primary" href="#experience" onMouseEnter={sfx.btnHover} onClick={(e) => { sfx.btnClick(); toWork(e) }}>See my work</a>
                 <Link className="btn" to="/bio" onMouseEnter={sfx.btnHover} onClick={sfx.btnClick}>About</Link>
                 <Link className="btn" to="/story" onMouseEnter={sfx.btnHover} onClick={sfx.btnClick}>Server story</Link>
                 <span className="social-row">
@@ -102,7 +101,6 @@ export function Home() {
       </header>
 
       <section id="experience"><div className="wrap">
-        <div className="kicker">Experience</div>
         <h2>Where I've worked</h2>
         <div className="jobs">
           <div className="job">
@@ -123,7 +121,6 @@ export function Home() {
       </div></section>
 
       <section id="work"><div className="wrap">
-        <div className="kicker">Engineering</div>
         <h2>Systems and tools</h2>
         <p className="sub">The infrastructure behind my server, and some other tools.</p>
         <div style={{ position: 'relative' }}>
@@ -134,7 +131,6 @@ export function Home() {
       </div></section>
 
       <section id="music"><div className="wrap">
-        <div className="kicker">Music</div>
         <h2>Music</h2>
         <p className="sub">Most of what I've built started with wanting something for my own music or for experimenting with game dev tools.</p>
         <div className="cards">{musicCards.map((p) => <Card key={p.title} p={p} />)}</div>
@@ -142,7 +138,6 @@ export function Home() {
       </div></section>
 
       <section id="games"><div className="wrap">
-        <div className="kicker">Games &amp; game dev</div>
         <h2>Games and game dev</h2>
         <p className="sub">These two you can play with right now.</p>
         <GameTV />
@@ -152,7 +147,6 @@ export function Home() {
       </div></section>
 
       <section><div className="wrap">
-        <div className="kicker">Server Story</div>
         <h2>How wanting my own Spotify turned into all of this</h2>
         <div className="teaser">
           <blockquote>

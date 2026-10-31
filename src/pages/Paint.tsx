@@ -341,7 +341,6 @@ export function Paint() {
 
   return (
     <main className="wrap paint-page">
-      <div className="kicker">Playable demo</div>
       <h2>Paint on a Model</h2>
       <p className="sub">
         Draw straight onto a 3D model with mouse or touch. Pick a tool, pick a colour,

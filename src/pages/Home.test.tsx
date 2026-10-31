@@ -33,13 +33,18 @@ describe('Home', () => {
     expect(bio.getAttribute('href')).toBe('/bio')
   })
 
-  it('renders shift-border elements inside mini cards', () => {
+  it('has no eyebrow labels and no rainbow hover borders', () => {
     const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
-    const minis = container.querySelectorAll('.mini')
-    expect(minis.length).toBeGreaterThan(0)
-    for (const mini of minis) {
-      expect(mini.querySelector('.shift-border')).not.toBeNull()
-    }
+    expect(container.querySelectorAll('.kicker')).toHaveLength(0)
+    expect(container.querySelectorAll('.shift-border')).toHaveLength(0)
+    expect(container.querySelectorAll('.mini').length).toBeGreaterThan(0)
+  })
+
+  it('leads with a real headline rather than an eyebrow-styled title', () => {
+    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+    const h1 = container.querySelector('.hero h1')
+    expect(h1).not.toBeNull()
+    expect(h1!.classList.contains('kicker')).toBe(false)
   })
 
   it('mini cards spring back and clear their tilt after a touch ends', () => {
