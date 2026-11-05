@@ -4,8 +4,8 @@ export interface Mini { title: string; note: string; link?: string }
 
 export const musicCards: Project[] = [
   { title: 'AutoCharter',
-    body: "Turns songs into playable Clone Hero drum charts. Onset models and ride/crash classifiers I trained on my own corpus do the detection. I play every chart myself to check if it feels right under the sticks.",
-    pills: ['Python', 'PyTorch', 'onset CNNs', 'Clone Hero'], links: [{ soon: 'demo video soon' }, { soon: 'write-up soon' }] },
+    body: "Turns songs into playable Clone Hero drum charts. ADTOF finds the drum hits. I built everything that turns them into a playable chart, plus trained models that split ride from crash and fix hi-hat/snare mistakes. I play every chart myself to check if it feels right under the sticks.",
+    pills: ['Python', 'PyTorch', 'ADTOF', 'Clone Hero'], links: [{ soon: 'demo video soon' }, { soon: 'write-up soon' }] },
   { title: 'Living-Room Karaoke',
     body: "Demucs strips the vocals while a note lane scrolls on screen. YIN pitch scoring grades whatever octave you sing in and compensates for USB mic delay so the score matches what you actually hear.",
     pills: ['DSP', 'YIN', 'Demucs', 'browser audio'], links: [{ soon: 'demo video soon' }] },
