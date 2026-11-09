@@ -9,7 +9,7 @@ export const kpis = [
   { value: '232,147', label: 'plays, all-time' },
   { value: '≈588 days', label: 'of continuous audio' },
   { value: '17,245', label: 'tracks in the library' },
-  { value: '19%', label: 'played after dark' },
+  { value: '19%', label: 'played 10pm to 4am' },
 ]
 
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']

@@ -5,7 +5,7 @@ import { Listening } from './Listening'
 describe('Listening page', () => {
   it('renders every chart section and its data', () => {
     render(<Listening />)
-    for (const title of ['Every month since 2014', 'Leaving Spotify, in one chart', 'The all-time ten', 'The listening clock', 'The shape of my library']) {
+    for (const title of ['Plays by month', 'Spotify vs. my server in 2026', 'Top 10 artists', 'Plays by time of day', 'My library by mood']) {
       expect(screen.getByRole('heading', { name: title })).toBeTruthy()
     }
     // a data-driven value that only appears if a chart/table actually rendered

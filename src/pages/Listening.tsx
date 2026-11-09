@@ -31,9 +31,8 @@ export function Listening() {
     <main className="wrap">
       <header className="stats-head">
         <h1>12 years of <em>listening</em></h1>
-        <p className="dek">I left Spotify and built my own music server, which means I also
-        own the data. Every chart below is baked from my self-hosted listening history
-        and the audio-analysis pipeline that scores my library, no analytics service involved.</p>
+        <p className="dek">I left Spotify and moved my listening onto my own music server.
+        These charts come from that play history and from my own analysis of the library.</p>
       </header>
 
       <div className="kpis">
@@ -43,8 +42,8 @@ export function Listening() {
       </div>
 
       <Chart
-        title="Every month since 2014"
-        note="The play log, month by month. The quiet opening isn't silence, it's the years my desktop players kept no log; streaming history picks up in earnest in 2017, and 2018 is the loudest year on record. Orange months come from my Spotify archive; purple months are my own server, which starts logging in August 2026 when I moved my listening onto it and mostly stopped streaming. The colour flip is the migration."
+        title="Plays by month"
+        note="Orange is Spotify, purple is my own server. My desktop players didn't keep a log before 2017, so the early years look quiet. 2018 was my biggest year."
         table={
           <table>
             <thead><tr><th>Year</th>{MONTHS.map((m) => <th key={m}>{m}</th>)}<th>Total</th></tr></thead>
@@ -67,8 +66,8 @@ export function Listening() {
       </Chart>
 
       <Chart
-        title="Leaving Spotify, in one chart"
-        note="2026, month by month, split by where the plays came from. Spotify (orange) trails off through the summer; my own server (purple) picks up from August, when I made it my daily player and kept Spotify only for saving new songs to the wishlist. Before August my server kept no dated log, so this is the first stretch where the two are separable."
+        title="Spotify vs. my server in 2026"
+        note="I switched to my own server in August, and now I only use Spotify to save new songs to my wishlist. My server didn't keep dated plays before then."
         table={
           <table>
             <thead><tr><th>Month</th><th>Spotify</th><th>My server</th></tr></thead>
@@ -86,8 +85,8 @@ export function Listening() {
       </Chart>
 
       <Chart
-        title="The all-time ten"
-        note="Top artists across every era and source, streaming history and local server plays merged, with the overlap deduplicated so nobody gets counted twice."
+        title="Top 10 artists"
+        note="Spotify and my server combined, with each play counted once."
         table={
           <table>
             <thead><tr><th>#</th><th>Artist</th><th>Plays</th></tr></thead>
@@ -103,8 +102,8 @@ export function Listening() {
       </Chart>
 
       <Chart
-        title="The shape of my library"
-        note={<>Every track in the library runs through my local mood-analysis pipeline (Essentia models for valence and intensity). Of {n(17245)} tracks, {n(moodQuadrants.reduce((s, q) => s + q.tracks, 0))} landed in a clear quadrant. Over half sit in the sad · calm corner, which tracks with the shoegaze and post-rock that dominate the collection; the happy · intense quadrant is the second largest, mostly J-rock and punk.</>}
+        title="My library by mood"
+        note={<>My analysis pipeline (Essentia models) scores every track for mood. Of {n(17245)} tracks, {n(moodQuadrants.reduce((s, q) => s + q.tracks, 0))} fit clearly into one group. Over half are sad and calm, a lot of shoegaze and post-rock. Happy and intense is next, mostly J-rock and punk.</>}
         table={
           <table>
             <thead><tr><th>Quadrant</th><th>Tracks</th><th>Share</th></tr></thead>
@@ -120,8 +119,8 @@ export function Listening() {
       </Chart>
 
       <Chart
-        title="The listening clock"
-        note="The 209,512 plays that carry an hour-of-day stamp, in local time. The early-afternoon peak is the work soundtrack; 19% of everything happened after dark (10pm to 4am)."
+        title="Plays by time of day"
+        note="209,512 plays have a time of day, in local time. 19% happened between 10pm and 4am."
         table={
           <table>
             <thead><tr><th>Hour</th><th>Plays</th></tr></thead>
@@ -136,10 +135,8 @@ export function Listening() {
         <ListeningClock />
       </Chart>
 
-      <p className="provenance">From my self-hosted listening history, 2014–2026 · play counts
-      merged across streaming export and my own server · mood scores from my local analysis
-      pipeline (Essentia models) · the listening-time figure is partly estimated from track
-      lengths, and years before 2014 were never logged, so real totals run higher, not lower.</p>
+      <p className="provenance">Data from my own server, 2014 to 2026. Listening time is partly
+      estimated from track lengths, and nothing before 2014 was logged.</p>
     </main>
   )
 }

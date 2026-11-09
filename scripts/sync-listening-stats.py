@@ -205,7 +205,7 @@ export const kpis = [
   {{ value: '{commas(u['total_plays'])}', label: 'plays, all-time' }},
   {{ value: '≈{days} days', label: 'of continuous audio' }},
   {{ value: '{commas(totals['tracks'])}', label: 'tracks in the library' }},
-  {{ value: '{dark_pct}%', label: 'played after dark' }},
+  {{ value: '{dark_pct}%', label: 'played 10pm to 4am' }},
 ]
 
 export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
