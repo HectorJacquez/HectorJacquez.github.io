@@ -3,7 +3,6 @@ import { ShaderGradientCanvas, ShaderGradient } from 'shadergradient'
 import { Card } from '../components/Card'
 import { TopWave } from '../components/TopWave'
 import { CRT3D } from '../components/CRT3D'
-import { GameTV } from '../components/GameTV'
 import { FloatingShapes } from '../components/FloatingShapes'
 import { TextAnimate } from '../components/TextAnimate'
 import { useSectionLink } from '../components/useSectionLink'
@@ -157,7 +156,6 @@ export function Home() {
       <section id="games"><div className="wrap">
         <h2>Games and game dev</h2>
         <p className="sub">These two you can play with right now.</p>
-        <GameTV />
         <div className="cards">{gameCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <p className="sub" style={{ marginTop: '1.6rem' }}>Not shown here yet, and still in progress: a 3D graybox runner, a music-venue scene, and Nintendo 64 homebrew demos built with my own asset pipeline.</p>
         <Minis items={gameMinis} />

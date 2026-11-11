@@ -1,5 +1,7 @@
 import { useEffect } from 'react'
 
+/** Written in my own words. The earlier version was a smoothed-over paraphrase
+ *  of a cover letter I wrote; this one keeps the sentences I actually use. */
 export function Bio() {
   useEffect(() => { window.scrollTo(0, 0) }, [])
   return (
@@ -8,46 +10,44 @@ export function Bio() {
         <h1>How I got here</h1>
 
         <p>
-          My name is Hector Jacquez, and games are the reason I do any of this. They are what
-          first made me curious about how technology actually works, and that curiosity slowly
-          turned into a love of programming that eventually became my career. Along the way games
-          also introduced me to the other things I care about most, music and art, and they have
-          been a steady source of joy for as long as I can remember.
+          My name is Hector Jacquez. Gaming is what drove me to learn about technology, and it's
+          what got me into programming in the first place. Games have also introduced me to the
+          other things I care about, music and art, and they've provided me joy my whole life.
+          It's always been my dream to work in or around games, even though I held myself back
+          from saying so until the last couple of years.
         </p>
 
         <p>
-          These days I work as a fullstack software engineer. I spent the last 4 years at ISI
-          writing Java and Sencha ExtJS, and 3 years before that at CSI in C# and .NET, mostly
-          on banking software. Both roles had me working across the backend and the frontend,
-          building services and then putting them to use in the interface, and spending a lot of
-          time in SQL making sure data was flowing the way it should. I have gotten up to speed on
-          3 different legacy codebases, and I have been told more than once that I pick up
-          unfamiliar systems faster than most.
+          I'm a fullstack software engineer. I spent the last 4 years at ISI writing Java and
+          Sencha ExtJS, and 3 years before that at CSI in C# and .NET, mostly on banking software.
+          Both jobs had me on the backend and the frontend: I created services and then put them
+          to use in the UI, and I worked in SQL a lot, verifying data was flowing correctly and
+          writing utilities. I've gotten up to speed on 3 different legacy codebases, and I've been
+          commended for learning systems quicker than average. ISI laid off a big part of the team
+          in October 2026, so right now I'm looking for the next place.
         </p>
 
         <p>
-          I have worked remotely for 4 years, collaborating with several teams and product
-          designers, and I have managed to make a real impact without being in the room. I like to
-          think that says something about how I work: independently when I need to, but always
-          staying in touch with the people I am building alongside.
+          I've worked remotely for 4 years with multiple teams and product designers. I was even
+          hired into a position in a different state while remote, which I think shows I can work
+          on my own and still be a communicative team member.
         </p>
 
         <p>
-          Outside of work is where the games come back in. I have taken part in a couple of small
-          game jams in Godot, where I focused on gameplay programming along with the music and
-          sound. I also modify Game Boy games as a side hobby. It started with repairing old
-          handhelds, and the next thing I knew I was reading through the Pokemon Crystal source
-          code. I have spent some time with Unreal and Unity as well, though I do not have anything
-          finished there yet, and I have picked up basic Photoshop and a few music production tools
-          along the way. I pick up new software quickly, and that is a part of the work I really
-          enjoy. Most of what lives on this site came out of that same impulse, building things
-          around music, art, and games.
+          Outside of work is where the games come back in. I've done two small game jams in Godot,
+          where my focus was gameplay programming, music and sounds. I also modify Game Boy games,
+          just as a side hobby. It started out with repairing Game Boys, and next thing I knew I
+          was learning about the Pokemon Crystal source code. I've spent some time with Unreal and
+          Unity too, but no finished projects there yet. Between all these hobbies I've picked up
+          basic Photoshop, a bunch of game editors and music production software, and an ability
+          to quickly pick up new software, which is honestly the part of this work I enjoy most.
+          Almost everything on this site came out of that: wanting something for my own music, or
+          wanting to see if I could build it.
         </p>
 
         <p>
-          Working in and around games has always been the dream, and even if it took me a while to
-          admit that to myself, it is the direction I keep gravitating toward. I am at my happiest
-          when the things I love and the work I do start to overlap.
+          I'd love to integrate music, art and games into my career as a software dev someday.
+          Until then, this site is where that happens.
         </p>
       </article>
     </main>
