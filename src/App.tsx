@@ -4,6 +4,7 @@ import { Bio } from './pages/Bio'
 import { Story } from './pages/Story'
 import { Listening } from './pages/Listening'
 import { Paint } from './pages/Paint'
+import { Play } from './pages/Play'
 import { MusicDot } from './components/MusicDot'
 import { Visualizer } from './components/Visualizer'
 import { Nav } from './components/Nav'
@@ -29,6 +30,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/paint" element={<Paint />} />
+        <Route path="/play" element={<Play />} />
         <Route path="/bio" element={<Bio />} />
         <Route path="/story" element={<Story />} />
         <Route path="/listening" element={<Listening />} />

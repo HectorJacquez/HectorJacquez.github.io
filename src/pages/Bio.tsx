@@ -10,21 +10,20 @@ export function Bio() {
         <h1>How I got here</h1>
 
         <p>
-          My name is Hector Jacquez. Gaming is what drove me to learn about technology, and it's
-          what got me into programming in the first place. Games have also introduced me to the
-          other things I care about, music and art, and they've provided me joy my whole life.
-          It's always been my dream to work in or around games, even though I held myself back
-          from saying so until the last couple of years.
+          My name is Hector Jacquez. I'm a fullstack software engineer. Gaming is what drove me to
+          learn about technology, and it's what got me into programming in the first place. Games
+          have also introduced me to the other things I care about, music and art, and they've
+          provided me joy my whole life. It's always been my dream to work in or around games, so
+          I do it in my free time.
         </p>
 
         <p>
-          I'm a fullstack software engineer. I spent the last 4 years at ISI writing Java and
+          I spent the last 4 years at ISI writing Java and
           Sencha ExtJS, and 3 years before that at CSI in C# and .NET, mostly on banking software.
           Both jobs had me on the backend and the frontend: I created services and then put them
           to use in the UI, and I worked in SQL a lot, verifying data was flowing correctly and
           writing utilities. I've gotten up to speed on 3 different legacy codebases, and I've been
-          commended for learning systems quicker than average. ISI laid off a big part of the team
-          in October 2026, so right now I'm looking for the next place.
+          commended for learning systems quicker than average.
         </p>
 
         <p>

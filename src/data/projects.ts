@@ -39,7 +39,7 @@ export const workCards: Project[] = [
 export const gameCards: Project[] = [
   { title: "Nico's Bizarre Adventure",
     body: "An early demo of a Mario & Luigi style RPG starring my two cats. Built in Godot with timed action commands, a small overworld, and a boss at the end. Runs right here in the browser and works with a controller.",
-    pills: ['Godot 4', 'GDScript', 'web export'], links: [{ text: 'Play the demo', href: '/play/cat-rpg.html' }] },
+    pills: ['Godot 4', 'GDScript', 'web export'], links: [{ text: 'Play the demo', href: '#/play' }] },
   { title: 'Paint on a Model',
     body: "Draw straight onto a 3D model in the browser. Nothing uploads and nothing is saved; refresh to start over.",
     pills: ['three.js', 'WebGL', 'UV painting'], links: [{ text: 'Open the painter', href: '#/paint' }] },
