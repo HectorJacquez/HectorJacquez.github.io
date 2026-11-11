@@ -69,4 +69,16 @@ describe('Home', () => {
     expect(container.querySelector('.text-animate')).not.toBeNull()
     expect(container.querySelectorAll('.text-animate-unit').length).toBeGreaterThan(0)
   })
+
+  it('marks the forks that live on GitHub with the GitHub logo', () => {
+    render(<MemoryRouter><Home /></MemoryRouter>)
+    const feishin = screen.getAllByRole('link', { name: 'Feishin fork on GitHub' })[0]
+    expect(feishin).toHaveAttribute('href', expect.stringContaining('github.com/HectorJacquez/feishin'))
+    expect(feishin.querySelector('svg.gh')).not.toBeNull()
+  })
+
+  it('no longer lists Pocket Trace Recorder', () => {
+    render(<MemoryRouter><Home /></MemoryRouter>)
+    expect(screen.queryByText('Pocket Trace Recorder')).toBeNull()
+  })
 })
