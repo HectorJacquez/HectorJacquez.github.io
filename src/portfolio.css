@@ -291,7 +291,7 @@ header.hero { position: relative; padding: 4rem 0 3.5rem; overflow-x: clip; }
 }
 .crt-3d canvas { width: 100% !important; height: 100% !important; display: block; }
 .crt-hint {
-  position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%);
+  position: absolute; top: 61%; left: 50%; transform: translateX(-50%); white-space: nowrap;
   font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.18em;
   text-transform: uppercase; color: var(--ink-faint);
   opacity: 0; transition: opacity 0.3s;
