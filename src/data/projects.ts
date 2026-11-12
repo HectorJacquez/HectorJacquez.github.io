@@ -2,41 +2,21 @@ export type CardLink = { text: string; href: string } | { soon: string }
 export interface Project { title: string; body: string; pills: string[]; links: CardLink[] }
 export interface Mini { title: string; note: string; link?: string }
 
-export const musicCards: Project[] = [
-  { title: 'AutoCharter',
-    body: "Turns songs into playable Clone Hero drum charts. ADTOF finds the drum hits. I built everything that turns them into a playable chart, plus trained models that split ride from crash and fix hi-hat/snare mistakes. I play every chart myself to check if it feels right under the sticks.",
-    pills: ['Python', 'PyTorch', 'ADTOF', 'Clone Hero'], links: [{ soon: 'demo video soon' }, { soon: 'write-up soon' }] },
-  { title: 'Living-Room Karaoke',
-    body: "Demucs strips the vocals while a note lane scrolls on screen. YIN pitch scoring grades whatever octave you sing in and compensates for USB mic delay so the score matches what you actually hear.",
-    pills: ['DSP', 'YIN', 'Demucs', 'browser audio'], links: [{ soon: 'demo video soon' }] },
-  { title: 'One Visualizer, Three Hosts',
-    body: "I added multi-visualizer support to my desktop player, then carried it into my Android client, a Godot toolkit, and a browser preset editor. The engine (butterchurn, the open-source Milkdrop) isn't mine.",
-    pills: ['WebGL', 'butterchurn', 'Godot', 'Android'], links: [{ soon: 'preset lab video soon' }] },
-  { title: '48 Moods',
-    body: "A Navidrome plugin that keeps 48 mood playlists fresh. The ML half analyzes every track in my library and the plugin itself runs as WASM inside a 30-second budget. A chat layer on top lets you ask for a playlist by mood or ask trivia grounded in real sources.",
-    pills: ['Go', 'WASM', 'Essentia', 'FastAPI'], links: [{ soon: 'repo soon' }] },
+// GitHub-linked chips go first in each list: they are the ones a reader can open.
+export const workMinis: Mini[] = [
+  { title: 'Listening (Angular)', note: 'a demo over my music server\'s listening history, with artist bios, facts and previews pulled live from Wikipedia, MusicBrainz and iTunes', link: 'https://github.com/HectorJacquez/listening-angular' },
+  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
+  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
+  { title: 'pullqueue', note: 'the job queue behind my server\'s GPU work. Workers poll for jobs, a lease expires when one dies so the job re-serves, and completion only runs once' },
+  { title: 'gpustack', note: 'keeps stem separation, local LLMs, and a coding agent from fighting over one 12 GB GPU, with a file lock and a memory pressure gate' },
+  { title: 'co-hog', note: 'a coding agent that runs on my own GPU so not every task needs paid tokens. The harness mattered more than the model' },
 ]
 export const musicMinis: Mini[] = [
-  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
-  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
-  { title: 'Listening (Angular)', note: 'a demo over my music server\'s listening history, with artist bios, facts and previews pulled live from Wikipedia, MusicBrainz and iTunes', link: 'https://github.com/HectorJacquez/listening-angular' },
+  { title: 'AutoCharter', note: 'turns songs into playable Clone Hero drum charts. ADTOF finds the drum hits, I built everything that turns them into a chart, and I play every chart myself to check it' },
+  { title: 'Living-Room Karaoke', note: 'Demucs strips the vocals while a note lane scrolls on screen, and YIN pitch scoring grades whatever octave you sing in' },
+  { title: 'One Visualizer, Three Hosts', note: 'multi-visualizer support in my desktop player, carried into my Android client, a Godot toolkit, and a browser preset editor. The engine, butterchurn, isn\'t mine' },
+  { title: '48 Moods', note: 'a Navidrome plugin that keeps 48 mood playlists fresh, running as WASM inside a 30-second budget' },
   { title: 'Lyrics pipeline', note: 'LRCLIB first, then whisper on separated stems for the rest, plus romaji and translation for the Japanese half' },
-]
-export const workMinis: Mini[] = [
-  { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
-  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
-  { title: 'Listening (Angular)', note: 'a demo over my music server\'s listening history, with artist bios, facts and previews pulled live from Wikipedia, MusicBrainz and iTunes', link: 'https://github.com/HectorJacquez/listening-angular' },
-]
-export const workCards: Project[] = [
-  { title: 'pullqueue',
-    body: "The job queue behind my server's GPU work: stem separation, cover art, voice, and 3D meshes. Workers poll for jobs. A lease expires when one dies so the job re-serves, and completion is arbitrated so it only runs once. Packaged as a standalone library with crash-recovery tests in CI.",
-    pills: ['Python', 'Postgres', 'event sourcing', 'CI'], links: [{ soon: 'repo soon' }] },
-  { title: 'gpustack',
-    body: "Arbitration layer that keeps stem separation, local LLMs, and a coding agent from fighting over one 12 GB GPU. It coordinates through a file lock, breaks it if the holder dies, and gates on memory pressure rather than hoping two models fit.",
-    pills: ['Python', 'GPU', 'file locking', 'ML infra'], links: [{ soon: 'repo soon' }] },
-  { title: 'The Agent Workshop',
-    body: "co-hog is a coding agent that runs on my own GPU so not every task needs paid tokens. The harness mattered more than the model: check the harness first when an agent fails. Bigger campaigns like porting 5 Minecraft mods ran on frontier agents, and each new failure mode became a reusable diagnostic skill.",
-    pills: ['llama.cpp', 'agent harness', 'diagnostic skills'], links: [{ soon: 'write-up soon' }] },
 ]
 export const gameCards: Project[] = [
   { title: "Nico's Bizarre Adventure",

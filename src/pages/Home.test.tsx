@@ -9,8 +9,8 @@ describe('Home', () => {
     screen.getByRole('heading', { name: /^music$/i })
     screen.getByRole('heading', { name: /systems and tools/i })
     screen.getByRole('heading', { name: /games and game dev/i })
-    expect(screen.getByRole('heading', { name: /autocharter/i })).toBeTruthy()
-    expect(screen.getByRole('heading', { name: /pullqueue/i })).toBeTruthy()
+    expect(screen.getByText('AutoCharter')).toBeTruthy()
+    expect(screen.getByText('pullqueue')).toBeTruthy()
   })
 
   it('renders the Experience section with employment history', () => {
@@ -82,6 +82,20 @@ describe('Home', () => {
     const listening = screen.getAllByRole('link', { name: 'Listening (Angular) on GitHub' })[0]
     expect(listening).toHaveAttribute('href', 'https://github.com/HectorJacquez/listening-angular')
     expect(listening.querySelector('svg.gh')).not.toBeNull()
+  })
+
+  it('lists the chips with a GitHub repo first', () => {
+    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+    const minis = [...container.querySelectorAll('#work .mini')]
+    const linked = minis.map((m) => m.querySelector('svg.gh') !== null)
+    expect(linked.slice(0, 3)).toEqual([true, true, true])
+    expect(linked.slice(3)).not.toContain(true)
+  })
+
+  it('shows the server projects as chips, not big cards', () => {
+    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+    expect(container.querySelector('#work .card')).toBeNull()
+    expect(container.querySelector('#music .card')).toBeNull()
   })
 
   it('no longer lists Pocket Trace Recorder', () => {

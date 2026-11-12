@@ -7,7 +7,7 @@ import { FloatingShapes } from '../components/FloatingShapes'
 import { TextAnimate } from '../components/TextAnimate'
 import { useSectionLink } from '../components/useSectionLink'
 import { useSpringTilt } from '../components/useSpringTilt'
-import { musicCards, musicMinis, workCards, workMinis, gameCards, gameMinis, type Mini } from '../data/projects'
+import { musicMinis, workMinis, gameCards, gameMinis, type Mini } from '../data/projects'
 import { sfx } from '../sfx'
 
 /** The GitHub mark, inline so it takes the link's colour. Shown on a mini whose
@@ -141,15 +141,13 @@ export function Home() {
         <p className="sub">The infrastructure behind my server, and some other tools.</p>
         <div style={{ position: 'relative' }}>
           <FloatingShapes />
-          <div className="cards">{workCards.map((p) => <Card key={p.title} p={p} />)}</div>
+          <Minis items={workMinis} />
         </div>
-        <Minis items={workMinis} />
       </div></section>
 
       <section id="music"><div className="wrap">
         <h2>Music</h2>
         <p className="sub">Most of what I've built started with wanting something for my own music or for experimenting with game dev tools.</p>
-        <div className="cards">{musicCards.map((p) => <Card key={p.title} p={p} />)}</div>
         <Minis items={musicMinis} />
       </div></section>
 
