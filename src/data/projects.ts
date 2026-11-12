@@ -19,11 +19,13 @@ export const musicCards: Project[] = [
 export const musicMinis: Mini[] = [
   { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
   { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
+  { title: 'Listening (Angular)', note: 'a demo over my music server\'s listening history, with artist bios, facts and previews pulled live from Wikipedia, MusicBrainz and iTunes', link: 'https://github.com/HectorJacquez/listening-angular' },
   { title: 'Lyrics pipeline', note: 'LRCLIB first, then whisper on separated stems for the rest, plus romaji and translation for the Japanese half' },
 ]
 export const workMinis: Mini[] = [
   { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
   { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
+  { title: 'Listening (Angular)', note: 'a demo over my music server\'s listening history, with artist bios, facts and previews pulled live from Wikipedia, MusicBrainz and iTunes', link: 'https://github.com/HectorJacquez/listening-angular' },
 ]
 export const workCards: Project[] = [
   { title: 'pullqueue',

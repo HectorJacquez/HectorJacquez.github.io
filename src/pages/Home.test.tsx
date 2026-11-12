@@ -77,6 +77,13 @@ describe('Home', () => {
     expect(feishin.querySelector('svg.gh')).not.toBeNull()
   })
 
+  it('links the Angular listening demo to its GitHub repo', () => {
+    render(<MemoryRouter><Home /></MemoryRouter>)
+    const listening = screen.getAllByRole('link', { name: 'Listening (Angular) on GitHub' })[0]
+    expect(listening).toHaveAttribute('href', 'https://github.com/HectorJacquez/listening-angular')
+    expect(listening.querySelector('svg.gh')).not.toBeNull()
+  })
+
   it('no longer lists Pocket Trace Recorder', () => {
     render(<MemoryRouter><Home /></MemoryRouter>)
     expect(screen.queryByText('Pocket Trace Recorder')).toBeNull()
