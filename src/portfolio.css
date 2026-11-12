@@ -263,12 +263,12 @@ header.hero { position: relative; padding: 5.5rem 0 3.5rem; overflow-x: clip; }
   transform-origin: 50% 15px; transform: translateX(-50%) rotate(var(--ang, -135deg));
 }
 @media (max-width: 1100px) { .musicdot { top: auto; bottom: 16px; right: 16px; } }
-@media (max-width: 600px) {
-  .musicdot { top: auto !important; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); gap: 10px; }
-  .md-btn { width: 46px; height: 46px; font-size: 0.95rem; }
-  .knob { width: 44px; height: 44px; }
-  .knob-ind { top: 5px; height: 13px; transform-origin: 50% 17px; }
-  .hero .cta-row { padding-bottom: 4.2rem; }
+/* phones: the play button sits in the header beside the menu, so it never covers the page.
+   The knob goes; the phone's own volume buttons do that job. */
+@media (max-width: 760px) {
+  .musicdot { top: 10px; bottom: auto; right: calc(4.6rem + env(safe-area-inset-right, 0px)); }
+  .md-btn { width: 38px; height: 38px; }
+  .knob { display: none; }
 }
 
 

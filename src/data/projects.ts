@@ -6,7 +6,7 @@ export interface Mini { title: string; note: string; link?: string; soon?: strin
 export const workMinis: Mini[] = [
   { title: 'Listening (Angular)', note: 'a demo over my music server\'s listening history, with artist bios, facts and previews pulled live from Wikipedia, MusicBrainz and iTunes', link: 'https://github.com/HectorJacquez/listening-angular' },
   { title: 'Feishin fork', note: 'a desktop music client I forked, with my playlist folders, looping video art behind albums, and visualizer overlays', link: 'https://github.com/HectorJacquez/feishin/tree/hedgy' },
-  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, the Hedgy chat built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
+  { title: 'Tempo fork', note: 'an Android music client I forked, with my playlists, my personal music chat bot built in, lyrics modes, and a lot of stability fixes', link: 'https://github.com/HectorJacquez/tempo/tree/hedgy' },
   { title: 'pullqueue', note: 'the job queue behind my server\'s GPU work. Workers poll for jobs, a lease expires when one dies so the job re-serves, and completion only runs once', soon: ['repo soon'] },
   { title: 'gpustack', note: 'keeps stem separation, local LLMs, and a coding agent from fighting over one 12 GB GPU, with a file lock and a memory pressure gate', soon: ['repo soon'] },
   { title: 'co-hog', note: 'a coding agent that runs on my own GPU so not every task needs paid tokens. The harness mattered more than the model', soon: ['write-up soon'] },
