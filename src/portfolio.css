@@ -298,6 +298,8 @@ header.hero { position: relative; padding: 4rem 0 3.5rem; overflow-x: clip; }
   pointer-events: none;
 }
 .crt-3d:hover .crt-hint { opacity: 1; }
+/* the model is drawn above the middle of its box; lower it to sit level with the text */
+@media (min-width: 861px) { .crt-3d { top: 3.5rem; } }
 @media (max-width: 860px) {
   .crt-3d { max-width: 260px; margin-top: 1rem; }
 }
