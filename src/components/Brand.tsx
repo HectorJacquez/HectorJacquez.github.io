@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
 import niko from '../assets/niko-nose-3.png'
 
-/** The niko-nose pill + name, linking home. Uses the ported portfolio.css. */
+/** The niko-nose pill + name, linking home. Clicking it also scrolls to the top,
+ *  since the link alone does nothing when you are already on the home page. */
 export function Brand() {
   return (
-    <Link className="brand" to="/">
+    <Link className="brand" to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
       <span className="brandmark">
         <svg className="brandmark-noise" aria-hidden="true">
           <defs>
