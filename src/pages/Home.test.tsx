@@ -98,6 +98,16 @@ describe('Home', () => {
     expect(container.querySelector('#music .card')).toBeNull()
   })
 
+  it('marks chips without a repo as coming soon, and asks for a drummer on AutoCharter', () => {
+    const { container } = render(<MemoryRouter><Home /></MemoryRouter>)
+    const chip = (title: string) => [...container.querySelectorAll('.mini')].find((m) => m.querySelector('b')?.textContent === title)!
+    expect(chip('pullqueue').querySelector('.mini-soon')?.textContent).toBe('repo soon')
+    expect(chip('Feishin fork').querySelector('.mini-soon')).toBeNull()
+    const auto = chip('AutoCharter')
+    expect(auto.querySelector('.mini-ask')?.textContent).toMatch(/looking for a drummer/)
+    expect(auto.querySelector('.mini-ask a')).toHaveAttribute('href', 'mailto:hector.jacquez@outlook.com')
+  })
+
   it('no longer lists Pocket Trace Recorder', () => {
     render(<MemoryRouter><Home /></MemoryRouter>)
     expect(screen.queryByText('Pocket Trace Recorder')).toBeNull()

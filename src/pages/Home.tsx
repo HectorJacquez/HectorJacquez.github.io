@@ -33,6 +33,8 @@ function MiniCard({ m }: { m: Mini }) {
           : m.title}
       </b>
       <span>{m.note}</span>
+      {m.ask && <span className="mini-ask">{m.ask.text}<a href={m.ask.href}>{m.ask.linkText}</a>.</span>}
+      {m.soon && <span className="mini-soon">{m.soon.join(' · ')}</span>}
     </div>
   )
 }
